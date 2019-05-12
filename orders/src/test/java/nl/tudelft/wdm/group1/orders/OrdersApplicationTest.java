@@ -46,6 +46,8 @@ public class OrdersApplicationTest {
                 post("/orders")
         ).andExpect(status().isOk()).andReturn();
 
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
         Order order = orderRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
         assertThat(order).isNotEqualTo("<add useful asserts>");

@@ -46,6 +46,8 @@ public class StockApplicationTest {
                 post("/stock")
         ).andExpect(status().isOk()).andReturn();
 
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
         StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
         assertThat(stockItem).isNotEqualTo("<add useful asserts>");

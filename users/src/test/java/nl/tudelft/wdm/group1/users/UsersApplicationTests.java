@@ -54,6 +54,8 @@ public class UsersApplicationTests {
                         .param("city", "Rome")
         ).andExpect(status().isOk()).andReturn();
 
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
         User user = userRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
         assertThat(user.getFirstName()).isEqualTo("Jane");
