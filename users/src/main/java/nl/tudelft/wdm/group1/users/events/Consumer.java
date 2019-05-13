@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.users.events;
 
+import nl.tudelft.wdm.group1.users.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.users.User;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
@@ -22,5 +23,12 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", user));
 
         userRepository.addOrReplace(user);
+    }
+
+    @KafkaListener(topics = "userDeleted")
+    public void consumeUserDeleted(User user) throws ResourceNotFoundException {
+        logger.info(String.format("#### -> Consumed message -> %s", user));
+
+        userRepository.remove(user.getId());
     }
 }

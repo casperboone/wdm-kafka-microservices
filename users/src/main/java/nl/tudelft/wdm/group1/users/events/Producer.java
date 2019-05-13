@@ -19,6 +19,11 @@ public class Producer {
         this.kafkaTemplate.send("userCreated", user);
     }
 
+    public void emitUserDeleted(User user) {
+        logger.info(String.format("#### -> Producing message -> %s", user));
+        this.kafkaTemplate.send("userDeleted", user);
+    }
+
     public void emitCreditSubtracted(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
         this.kafkaTemplate.send("creditSubtracted", user);

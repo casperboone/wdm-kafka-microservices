@@ -50,6 +50,6 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        userRepository.remove(id);
+        producer.emitUserDeleted(userRepository.find(id));
     }
 }
