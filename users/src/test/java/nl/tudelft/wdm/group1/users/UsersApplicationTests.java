@@ -37,7 +37,7 @@ public class UsersApplicationTests {
     private User defaultUser;
 
     @Before
-    public void setUp() {
+    public void setUp() throws CreditChangeInvalidException {
         defaultUser = new User("John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
         defaultUser.addCredit(2249);
         userRepository.add(defaultUser);
@@ -104,6 +104,14 @@ public class UsersApplicationTests {
     }
 
     @Test
+    public void addNegativeCreditAmount() throws Exception {
+        this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/add/-1500"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultUser.getCredit()).isEqualTo(2249);
+    }
+
+    @Test
     public void subtractCreditWhenAvailable() throws Exception {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/1500"))
                 .andExpect(status().isOk());
@@ -114,6 +122,14 @@ public class UsersApplicationTests {
     @Test
     public void subtractCreditWhenNotAvailable() throws Exception {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/3000"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultUser.getCredit()).isEqualTo(2249);
+    }
+
+    @Test
+    public void subtractNegativeCreditAmount() throws Exception {
+        this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/-1500"))
                 .andExpect(status().isUnprocessableEntity());
 
         assertThat(defaultUser.getCredit()).isEqualTo(2249);

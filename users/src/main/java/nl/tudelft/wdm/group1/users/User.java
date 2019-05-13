@@ -51,11 +51,17 @@ public class User {
         return credit;
     }
 
-    public void addCredit(int amount) {
+    public void addCredit(int amount) throws CreditChangeInvalidException {
+        if (amount < 0) {
+            throw new CreditChangeInvalidException("A negative credit amount cannot be added.");
+        }
         credit += amount;
     }
 
-    public void subtractCredit(int amount) throws InsufficientCreditException {
+    public void subtractCredit(int amount) throws InsufficientCreditException, CreditChangeInvalidException {
+        if (amount < 0) {
+            throw new CreditChangeInvalidException("A negative credit amount cannot be subtracted.");
+        }
         if (amount > credit) {
             throw new InsufficientCreditException("Insufficient balance.");
         }
