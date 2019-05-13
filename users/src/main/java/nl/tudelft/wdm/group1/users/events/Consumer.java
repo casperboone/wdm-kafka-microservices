@@ -17,7 +17,7 @@ public class Consumer {
         this.userRepository = userRepository;
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic}")
+    @KafkaListener(topics = {"userCreated", "creditAdded", "creditSubtracted"})
     public void consume(User user) {
         logger.info(String.format("#### -> Consumed message -> %s", user));
 

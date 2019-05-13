@@ -4,7 +4,6 @@ import nl.tudelft.wdm.group1.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +11,21 @@ import org.springframework.stereotype.Service;
 public class Producer {
     private static final Logger logger = LoggerFactory.getLogger(Producer.class);
 
-    @Value("${spring.kafka.topic}")
-    private String topic;
-
     @Autowired
     private KafkaTemplate<String, User> kafkaTemplate;
 
-    public void send(User user) {
+    public void emitUserCreated(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
-        this.kafkaTemplate.send(topic, user);
+        this.kafkaTemplate.send("userCreated", user);
+    }
+
+    public void emitCreditSubtracted(User user) {
+        logger.info(String.format("#### -> Producing message -> %s", user));
+        this.kafkaTemplate.send("creditSubtracted", user);
+    }
+
+    public void emitCreditAdded(User user) {
+        logger.info(String.format("#### -> Producing message -> %s", user));
+        this.kafkaTemplate.send("creditAdded", user);
     }
 }

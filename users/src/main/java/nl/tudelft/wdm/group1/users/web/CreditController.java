@@ -38,7 +38,7 @@ public class CreditController {
     ) throws ResourceNotFoundException, InsufficientCreditException {
         User user = userRepository.find(id);
         user.subtractCredit(amount);
-        producer.send(user);
+        producer.emitCreditSubtracted(user);
         return user;
     }
 
@@ -49,7 +49,7 @@ public class CreditController {
     ) throws ResourceNotFoundException {
         User user = userRepository.find(id);
         user.addCredit(amount);
-        producer.send(user);
+        producer.emitCreditAdded(user);
         return user;
     }
 }

@@ -1,6 +1,5 @@
 spring:
   kafka:
-    topic: users3
     consumer:
       bootstrap-servers: localhost:9092
       group-id: group_id2

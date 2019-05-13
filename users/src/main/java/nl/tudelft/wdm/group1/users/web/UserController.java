@@ -38,7 +38,7 @@ public class UserController {
     ) {
         User user = new User(firstName, lastName, street, zip, city);
 
-        producer.send(user);
+        producer.emitUserCreated(user);
 
         return user;
     }
