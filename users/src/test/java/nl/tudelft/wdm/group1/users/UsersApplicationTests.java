@@ -84,6 +84,8 @@ public class UsersApplicationTests {
         this.mockMvc.perform(delete("/users/" + defaultUser.getId()))
                 .andExpect(status().isOk());
 
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
         assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }

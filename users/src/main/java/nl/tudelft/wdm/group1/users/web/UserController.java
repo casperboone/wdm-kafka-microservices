@@ -38,7 +38,7 @@ public class UserController {
     ) {
         User user = new User(firstName, lastName, street, zip, city);
 
-        producer.send(user);
+        producer.emitUserCreated(user);
 
         return user;
     }
@@ -50,6 +50,6 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        userRepository.remove(id);
+        producer.emitUserDeleted(userRepository.find(id));
     }
 }
