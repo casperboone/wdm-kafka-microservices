@@ -1,5 +1,26 @@
 language: java
 
+services:
+  - docker
+
+install: skip
+script: skip
+
+jobs:
+  include:
+    - stage: test
+      name: "Test orders service"
+      script: ./ci/build.sh orders
+    - script: ./ci/build.sh payments
+      name: "Test payments service"
+    - script: ./ci/build.sh stock
+      name: "Test stock service"
+    - script: ./ci/build.sh users
+      name: "Test users service"
+    - stage: end-to-end
+      name: "Run end-to-end tests"
+      script: ./ci/test.sh
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

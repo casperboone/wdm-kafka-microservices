@@ -11,8 +11,6 @@ buildscript {
 
 subprojects {
     apply plugin: "java"
-    apply plugin: "org.springframework.boot"
-    apply plugin: 'io.spring.dependency-management'
 
     group = 'nl.tudelft.wdm.group1'
     version = '0.0.1-SNAPSHOT'
@@ -21,6 +19,12 @@ subprojects {
     repositories {
         mavenCentral()
     }
+}
+
+// end-to-end does not need spring
+configure(subprojects - project(":end-to-end")) {
+    apply plugin: "org.springframework.boot"
+    apply plugin: 'io.spring.dependency-management'
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
