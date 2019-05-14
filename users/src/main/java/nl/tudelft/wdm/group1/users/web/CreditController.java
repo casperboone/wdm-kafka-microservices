@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.users.web;
 
+import nl.tudelft.wdm.group1.users.CreditChangeInvalidException;
 import nl.tudelft.wdm.group1.users.InsufficientCreditException;
 import nl.tudelft.wdm.group1.users.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.users.User;
@@ -35,7 +36,7 @@ public class CreditController {
     public User subtractCredit(
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
-    ) throws ResourceNotFoundException, InsufficientCreditException {
+    ) throws ResourceNotFoundException, InsufficientCreditException, CreditChangeInvalidException {
         User user = userRepository.find(id);
         user.subtractCredit(amount);
         producer.send(user);
@@ -46,7 +47,7 @@ public class CreditController {
     public User addCredit(
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
-    ) throws ResourceNotFoundException {
+    ) throws ResourceNotFoundException, CreditChangeInvalidException {
         User user = userRepository.find(id);
         user.addCredit(amount);
         producer.send(user);
