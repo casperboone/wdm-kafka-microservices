@@ -1,22 +1,48 @@
 package nl.tudelft.wdm.group1.orders;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class Order {
     private UUID id;
+    private UUID userId;
+    private Set<UUID> itemIds;
 
     public Order() {
-        id = UUID.randomUUID(); // TODO: Remove this line as soon as the non-default constructor is created
+    }
+
+    public Order(UUID userId, Set<UUID> itemIds) {
+        id = UUID.randomUUID();
+        this.userId = userId;
+        this.itemIds = itemIds;
     }
 
     public UUID getId() {
         return id;
     }
 
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public Set<UUID> getItemIds() {
+        return itemIds;
+    }
+
+    public void addItem(UUID itemId) {
+        itemIds.add(itemId);
+    }
+
+    public void deleteItem(UUID itemId) {
+        itemIds.remove(itemId);
+    }
+
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
+                ", userId=" + userId +
+                ", itemIds=" + itemIds +
                 '}';
     }
 }
