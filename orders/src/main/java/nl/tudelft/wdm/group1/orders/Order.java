@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.orders;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,10 +12,10 @@ public class Order {
     public Order() {
     }
 
-    public Order(UUID userId, Set<UUID> itemIds) {
+    public Order(UUID userId) {
         id = UUID.randomUUID();
         this.userId = userId;
-        this.itemIds = itemIds;
+        this.itemIds = new HashSet<>();
     }
 
     public UUID getId() {

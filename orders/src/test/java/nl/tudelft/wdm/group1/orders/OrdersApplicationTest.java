@@ -18,7 +18,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,24 +47,28 @@ public class OrdersApplicationTest {
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "orders");
 
     private Order defaultOrder;
+    private UUID defaultOrderItemId = UUID.randomUUID();
 
     @Before
-    public void setUp() {
-        defaultOrder = new Order();
+    public void setUp() throws Exception {
+        defaultOrder = new Order(UUID.randomUUID());
+        defaultOrder.addItem(defaultOrderItemId);
         orderRepository.add(defaultOrder);
+        assertThat(orderRepository.find(defaultOrder.getId())).isNotNull();
     }
 
     @Test
     public void createNewOrder() throws Exception {
         MvcResult result = this.mockMvc.perform(
-                post("/orders")
+                post("/orders/" + defaultOrder.getUserId())
         ).andExpect(status().isOk()).andReturn();
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
         Order order = orderRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
-        assertThat(order).isNotEqualTo("<add useful asserts>");
+        assertThat(order.getUserId()).isEqualTo(defaultOrder.getUserId());
+        assertThat(order.getItemIds()).isEmpty();
     }
 
     @Test
@@ -70,6 +76,38 @@ public class OrdersApplicationTest {
         this.mockMvc.perform(get("/orders/" + defaultOrder.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(defaultOrder.getId().toString())));
+    }
+
+    @Test
+    public void removeAnOrder() throws Exception {
+        this.mockMvc.perform(delete("/orders/" + defaultOrder.getId()))
+                .andExpect(status().isOk());
+
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
+        assertThatThrownBy(() -> orderRepository.find(defaultOrder.getId()))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void addAnItemToAnOrder() throws Exception {
+        UUID newItemId = UUID.randomUUID();
+        this.mockMvc.perform(post("/orders/" + defaultOrder.getId() + "/items/" + newItemId))
+                .andExpect(status().isOk());
+
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
+        assertThat(defaultOrder.getItemIds()).containsExactly(defaultOrderItemId, newItemId);
+    }
+
+    @Test
+    public void removeAnItemFromAnOrder() throws Exception {
+        this.mockMvc.perform(delete("/orders/" + defaultOrder.getId() + "/items/" + defaultOrderItemId))
+                .andExpect(status().isOk());
+
+        Thread.sleep(2000); // TODO: Remove this ugly hack
+
+        assertThat(defaultOrder.getItemIds()).isEmpty();
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
