@@ -63,7 +63,7 @@ public class OrdersApplicationTest {
                 post("/orders/" + defaultOrder.getUserId())
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        Thread.sleep(5000); // TODO: Remove this ugly hack
 
         Order order = orderRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
@@ -97,7 +97,7 @@ public class OrdersApplicationTest {
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
-        assertThat(defaultOrder.getItemIds()).containsExactly(defaultOrderItemId, newItemId);
+        assertThat(defaultOrder.getItemIds()).contains(defaultOrderItemId, newItemId);
     }
 
     @Test
