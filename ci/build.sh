@@ -5,6 +5,7 @@ set -ev
 SUB_PROJECT=$1
 IMAGE_NAME=wdmk/${SUB_PROJECT}:${TRAVIS_BRANCH}_${TRAVIS_BUILD_NUMBER}
 IMAGE_NAME_SHORT=wdmk/${SUB_PROJECT}:${TRAVIS_BRANCH}
+IMAGE_NAME_LATEST=wdmk/${SUB_PROJECT}:latest
 
 # Build and test this sub project
 ./gradlew :${SUB_PROJECT}:assemble :${SUB_PROJECT}:check
@@ -25,7 +26,7 @@ if [[ "$TRAVIS_PULL_REQUEST" = "false" ]]; then
   # For master also push to the latest tag
   if [[ "$TRAVIS_BRANCH" = "master" ]]; then
     docker tag ${IMAGE_NAME} ${IMAGE_NAME_LATEST}
-    docker push ${IMAGE_NAME} ${IMAGE_NAME_LATEST}
+    docker push ${IMAGE_NAME_LATEST}
   fi
 fi
 
@@ -33,5 +34,5 @@ fi
 if [[ -n "$TRAVIS_TAG" ]]; then
   IMAGE_NAME_TAG=wdmk/${SUB_PROJECT}:"$TRAVIS_TAG"
   docker tag ${IMAGE_NAME} ${IMAGE_NAME_TAG}
-  docker push ${IMAGE_NAME} ${IMAGE_NAME_TAG}
+  docker push ${IMAGE_NAME_TAG}
 fi
