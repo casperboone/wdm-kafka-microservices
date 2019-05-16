@@ -20,7 +20,7 @@ You can specify a specific version by setting the `IMAGE_VERSION` environment va
 
 ### Docker compose (with build)
 
-To start with docker-compsose with building first run the following commands.
+To start with docker-compose with building first run the following commands.
 
 ```bash
 # Build the jar files
