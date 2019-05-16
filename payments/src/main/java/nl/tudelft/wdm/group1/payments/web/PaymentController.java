@@ -26,17 +26,34 @@ public class PaymentController {
         this.paymentRepository = paymentRepository;
     }
 
-    @PostMapping
-    public Payment addPayment() {
-        Payment payment = new Payment();
+    //POST /payments/{user_id}/{order_id}
+    //subtracts the amount of the order from the users credit (returns failure if credit is not enough)
+    @PostMapping("/{userId}/{orderId}")
+    public Payment addPayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) {
+        if(!paymentRepository.containsPaymentOrderId(orderId)) {
+            Payment payment = new Payment(userId, orderId);
+            // TODO: subtracts the amount of the order from the user's credit (returns failure if credit is not enough)
+            producer.emitPaymentCreated(order);
+            return payment;
+        } else {
+            return null;
+        }
+    }
 
-        producer.send(payment);
-
+    //DELETE /payments/{user_id}/{order_id}
+    //cancels payment made by a specific user for a specific order.
+    @DeleteMapping("/{userId}/{orderId}")
+    public Payment deletePayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
+        Payment payment = paymentRepository.findByOrderId(orderId);
+        // TODO: adds the amount of the order to the user's credit
+        producer.emitPaymentDeleted(order);
         return payment;
     }
 
-    @GetMapping("/{id}")
-    public Payment getPayment(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return paymentRepository.find(id);
+    //GET /payments/{order_id}
+    //returns the status of the payment (paid or not)
+    @GetMapping("/{orderId}")
+    public Payment getPayment(@PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
+        return paymentRepository.findByOrderId(orderId);
     }
 }

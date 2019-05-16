@@ -17,10 +17,15 @@ public class Consumer {
         this.paymentRepository = paymentRepository;
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic}")
+    @KafkaListener(topics = {"paymentCreated"})
     public void consume(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
-
         paymentRepository.addOrReplace(payment);
+    }
+
+    @KafkaListener(topics = {"paymentDeleted"})
+    public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
+        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        paymentRepository.remove(payment.getId());
     }
 }

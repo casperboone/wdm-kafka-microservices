@@ -18,8 +18,13 @@ public class Producer {
     @Autowired
     private KafkaTemplate<String, Payment> kafkaTemplate;
 
-    public void send(Payment payment) {
+    public void emitPaymentCreated(Payment payment) {
         logger.info(String.format("#### -> Producing message -> %s", payment));
-        this.kafkaTemplate.send(topic, payment);
+        this.kafkaTemplate.send("paymentCreated", payment);
+    }
+
+    public void emitPaymentDeleted(Payment payment) {
+        logger.info(String.format("#### -> Producing message -> %s", payment));
+        this.kafkaTemplate.send("paymentDeleted", payment);
     }
 }
