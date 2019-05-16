@@ -21,7 +21,7 @@ public class Payment {
         return userId;
     }
 
-    public Set<UUID> getOrderId() {
+    public UUID getOrderId() {
         return orderId;
     }
 

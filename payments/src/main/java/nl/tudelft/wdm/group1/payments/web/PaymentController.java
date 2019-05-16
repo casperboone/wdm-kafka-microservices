@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +34,7 @@ public class PaymentController {
         if(!paymentRepository.containsPaymentOrderId(orderId)) {
             Payment payment = new Payment(userId, orderId);
             // TODO: subtracts the amount of the order from the user's credit (returns failure if credit is not enough)
-            producer.emitPaymentCreated(order);
+            producer.emitPaymentCreated(payment);
             return payment;
         } else {
             return null;
@@ -46,7 +47,7 @@ public class PaymentController {
     public Payment deletePayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
         Payment payment = paymentRepository.findByOrderId(orderId);
         // TODO: adds the amount of the order to the user's credit
-        producer.emitPaymentDeleted(order);
+        producer.emitPaymentDeleted(payment);
         return payment;
     }
 

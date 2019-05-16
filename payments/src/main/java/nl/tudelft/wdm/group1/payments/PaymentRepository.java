@@ -37,7 +37,7 @@ public class PaymentRepository {
         return paymentsByOrderId.get(orderId);
     }
 
-    public Payment containsPaymentOrderId(UUID orderId) {
+    public boolean containsPaymentOrderId(UUID orderId) {
         return paymentsByOrderId.containsKey(orderId);
     }
 
