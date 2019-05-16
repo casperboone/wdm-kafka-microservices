@@ -47,29 +47,36 @@ public class PaymentsApplicationTest {
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "payments");
 
     private Payment defaultPayment;
+    private UUID defaultUserItemId = UUID.randomUUID();
+    private UUID defaultOrderItemId = UUID.randomUUID();
 
     @Before
-    public void setUp() {
-        defaultPayment = new Payment();
+    public void setUp() throws Exception {
+        defaultPayment = new Payment(defaultUserItemId, defaultOrderItemId);
         paymentRepository.add(defaultPayment);
+        assertThat(paymentRepository.find(defaultPayment.getId())).isNotNull();
     }
 
     @Test
     public void createNewPayment() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+
         MvcResult result = this.mockMvc.perform(
-                post("/payments")
+                post("/payments/" + userId + "/" + orderId)
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        Thread.sleep(10000); // TODO: Remove this ugly hack
 
         Payment payment = paymentRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
-        assertThat(payment).isNotEqualTo("<add useful asserts>");
+        assertThat(payment.getUserId()).isEqualTo(userId);
+        assertThat(payment.getOrderId()).isEqualTo(orderId);
     }
 
     @Test
     public void retrieveAPayment() throws Exception {
-        this.mockMvc.perform(get("/payments/" + defaultPayment.getId()))
+        this.mockMvc.perform(get("/payments/" + defaultOrderItemId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
     }
