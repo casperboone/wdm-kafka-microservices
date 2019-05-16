@@ -23,24 +23,28 @@ services:
     ports:
       - "8080:80"
   orders:
+    image: wdmk/orders:${IMAGE_VERSION:-latest}
     build: orders
     links:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   payments:
+    image: wdmk/payments:${IMAGE_VERSION:-latest}
     build: payments
     links:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   stock:
+    image: wdmk/stock:${IMAGE_VERSION:-latest}
     build: stock
     links:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   users:
+    image: wdmk/users:${IMAGE_VERSION:-latest}
     build: users
     links:
       - kafka
