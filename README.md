@@ -38,6 +38,9 @@ docker-compose up
 Run the following commands to get up and running. Kubernetes is set up to pull latest.
 
 ```bash
+# Install nginx ingress in the cluster
+helm install stable/nginx-ingress --name nginx-ingress
+
 # Start Kafka & Zookeeper
 kubectl apply -f k8s/development
 
