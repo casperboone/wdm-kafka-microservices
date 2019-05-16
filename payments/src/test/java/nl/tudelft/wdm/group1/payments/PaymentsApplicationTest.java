@@ -22,6 +22,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,12 +48,12 @@ public class PaymentsApplicationTest {
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "payments");
 
     private Payment defaultPayment;
-    private UUID defaultUserItemId = UUID.randomUUID();
-    private UUID defaultOrderItemId = UUID.randomUUID();
+    private UUID defaultUserId = UUID.randomUUID();
+    private UUID defaultOrderId = UUID.randomUUID();
 
     @Before
     public void setUp() throws Exception {
-        defaultPayment = new Payment(defaultUserItemId, defaultOrderItemId);
+        defaultPayment = new Payment(defaultUserId, defaultOrderId);
         paymentRepository.add(defaultPayment);
         assertThat(paymentRepository.find(defaultPayment.getId())).isNotNull();
     }
@@ -76,8 +77,15 @@ public class PaymentsApplicationTest {
     }
 
     @Test
+    public void deleteAPayment() throws Exception {
+        this.mockMvc.perform(delete("/payments/" + defaultUserId + "/" + defaultOrderId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
+    }
+
+    @Test
     public void retrieveAPayment() throws Exception {
-        this.mockMvc.perform(get("/payments/" + defaultOrderItemId))
+        this.mockMvc.perform(get("/payments/" + defaultOrderId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
     }
