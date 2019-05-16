@@ -29,8 +29,8 @@ public class Payment {
     public String toString() {
         return "Payment{" +
                 "id=" + id +
-                "userId=" + userId +
-                "orderId=" + orderId +
+                ", userId=" + userId +
+                ", orderId=" + orderId +
                 '}';
     }
 }

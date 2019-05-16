@@ -66,12 +66,13 @@ public class PaymentsApplicationTest {
                 post("/payments/" + userId + "/" + orderId)
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(10000); // TODO: Remove this ugly hack
+        Thread.sleep(2000); // TODO: Remove this ugly hack
 
-        Payment payment = paymentRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        UUID newUserId = UUID.fromString(getJsonValue(result, "$.userId"));
+        UUID newOrderId = UUID.fromString(getJsonValue(result, "$.orderId"));
 
-        assertThat(payment.getUserId()).isEqualTo(userId);
-        assertThat(payment.getOrderId()).isEqualTo(orderId);
+        assertThat(newUserId).isEqualTo(userId);
+        assertThat(newOrderId).isEqualTo(orderId);
     }
 
     @Test
