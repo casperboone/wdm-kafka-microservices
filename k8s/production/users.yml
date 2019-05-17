@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: users
-          image: wdmk/users:k8s # TODO: Make latest
+          image: wdmk/users:latest
           ports:
             - containerPort: 8080
           livenessProbe:

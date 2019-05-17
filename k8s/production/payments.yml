@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: payments
-          image: wdmk/payments:k8s # TODO: Make latest
+          image: wdmk/payments:latest
           ports:
             - containerPort: 8080
           livenessProbe:
