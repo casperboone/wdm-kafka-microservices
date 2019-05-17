@@ -3,7 +3,7 @@ dependencies {
     compile group: 'io.rest-assured', name: 'rest-assured', version: '4.0.0'
 }
 
-// By default tests and build are disable so they are not ran when the project builds.
+// By default tests and build are disabled so they are not run when the project builds.
 assemble.enabled = false;
 test.enabled = false;
 

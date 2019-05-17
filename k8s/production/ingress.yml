@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wdm-kafka-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /orders
+            backend:
+              serviceName: wdm-kafka-orders
+              servicePort: 8080
+          - path: /payments
+            backend:
+              serviceName: wdm-kafka-payments
+              servicePort: 8080
+          - path: /stock
+            backend:
+              serviceName: wdm-kafka-stock
+              servicePort: 8080
+          - path: /users
+            backend:
+              serviceName: wdm-kafka-users
+              servicePort: 8080

@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wdm-kafka-users
+  labels:
+    app: wdm-kafka
+    service: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wdm-kafka
+      service: users
+  template:
+    metadata:
+      labels:
+        app: wdm-kafka
+        service: users
+    spec:
+      containers:
+        - name: users
+          image: wdmk/users:latest
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          env:
+            - name: LOG_LEVEL
+              value: INFO
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: wdm-kafka-kafka:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wdm-kafka-users
+  labels:
+    app: wdm-kafka
+    service: users
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30004
+  selector:
+    app: wdm-kafka
+    service: users
