@@ -20,9 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -92,8 +90,10 @@ public class OrdersApplicationTest {
     @Test
     public void addAnItemToAnOrder() throws Exception {
         UUID newItemId = UUID.randomUUID();
-        this.mockMvc.perform(post("/orders/" + defaultOrder.getId() + "/items/" + newItemId))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(
+                post("/orders/" + defaultOrder.getId() + "/items")
+                        .param("itemId", newItemId.toString())
+        ).andExpect(status().isOk());
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
@@ -102,8 +102,10 @@ public class OrdersApplicationTest {
 
     @Test
     public void removeAnItemFromAnOrder() throws Exception {
-        this.mockMvc.perform(delete("/orders/" + defaultOrder.getId() + "/items/" + defaultOrderItemId))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(
+                delete("/orders/" + defaultOrder.getId() + "/items")
+                        .param("itemId", defaultOrderItemId.toString())
+        ).andExpect(status().isOk());
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 

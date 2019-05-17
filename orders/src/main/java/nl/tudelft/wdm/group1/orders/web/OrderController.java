@@ -5,12 +5,7 @@ import nl.tudelft.wdm.group1.orders.OrderRepository;
 import nl.tudelft.wdm.group1.orders.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.orders.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -50,8 +45,8 @@ public class OrderController {
         return order;
     }
 
-    @PostMapping("/{id}/items/{itemId}")
-    public Order addOrderItem(@PathVariable(value = "id") UUID id, @PathVariable(value = "itemId") UUID itemId) throws ResourceNotFoundException {
+    @PostMapping("/{id}/items")
+    public Order addOrderItem(@PathVariable(value = "id") UUID id, @RequestParam("itemId") UUID itemId) throws ResourceNotFoundException {
         Order order = orderRepository.find(id);
         order.addItem(itemId);
 
@@ -60,8 +55,8 @@ public class OrderController {
         return order;
     }
 
-    @DeleteMapping("/{id}/items/{itemId}")
-    public Order deleteOrderItem(@PathVariable(value = "id") UUID id, @PathVariable(value = "itemId") UUID itemId) throws ResourceNotFoundException {
+    @DeleteMapping("/{id}/items")
+    public Order deleteOrderItem(@PathVariable(value = "id") UUID id, @RequestParam("itemId") UUID itemId) throws ResourceNotFoundException {
         Order order = orderRepository.find(id);
         order.deleteItem(itemId);
 
