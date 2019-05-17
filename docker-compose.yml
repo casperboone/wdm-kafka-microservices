@@ -27,6 +27,8 @@ services:
     build: orders
     links:
       - kafka
+    ports:
+      - "10001:8080"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   payments:
@@ -34,6 +36,8 @@ services:
     build: payments
     links:
       - kafka
+    ports:
+      - "10002:8080"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   stock:
@@ -41,6 +45,8 @@ services:
     build: stock
     links:
       - kafka
+    ports:
+      - "10003:8080"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   users:
@@ -48,5 +54,7 @@ services:
     build: users
     links:
       - kafka
+    ports:
+      - "10004:8080"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092

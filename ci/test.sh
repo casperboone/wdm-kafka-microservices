@@ -11,19 +11,32 @@ docker-compose pull
 # Start the environment in the background
 docker-compose up -d
 
-# Wait until the gateway is ready, so no 504 or 502 status is returned
-attempt_num=1
+function await {
+    port=$1
+    attempt_num=1
 
-until curl -Is http://localhost:8080/users | head -1 | grep -v 50
-do
- if (( attempt_num == 10 ))
- then
-     return 1
- else
-     echo Retrying to connect
-     sleep $(( attempt_num++ ))
- fi
-done
+    # Wait until status 200 is returned
+    until curl -Is http://localhost:${port} | head -1 | grep 200 > /dev/null
+    do
+     if (( attempt_num == 10 ))
+     then
+         return 1
+     else
+         echo Trying to connect to localhost:${port}
+         sleep $(( attempt_num++ ))
+     fi
+    done
+}
+
+# Check if al services are up
+await 10001
+echo Orders service is up
+await 10002
+echo Payments service is up
+await 10003
+echo Stock service is up
+await 10004
+echo Users service is up
 
 # Run the end to end tests with gradle
 ./gradlew end-to-end-test
