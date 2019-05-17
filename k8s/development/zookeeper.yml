@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wdm-kafka-zookeeper
+  labels:
+    app: wdm-kafka
+    service: zookeeper
+spec:
+  containers:
+    - name: zookeeper
+      image: wurstmeister/zookeeper
+      ports:
+        - containerPort: 2181
+      livenessProbe:
+        tcpSocket:
+          port: 2181
+        initialDelaySeconds: 60
+        periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wdm-kafka-zookeeper
+  labels:
+    app: wdm-kafka
+    service: zookeeper
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2181
+      targetPort: 2181
+  selector:
+    app: wdm-kafka
+    service: zookeeper
