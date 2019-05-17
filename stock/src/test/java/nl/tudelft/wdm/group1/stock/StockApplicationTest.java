@@ -78,7 +78,15 @@ public class StockApplicationTest {
         this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/100"))
                 .andExpect(status().isOk());
 
-        assertThat(defaultStockItem.getStock()).isEqualTo(200);
+        assertThat(defaultStockItem.getStock()).isEqualTo(200); //100 + 100 = 200
+    }
+
+    @Test
+    public void addNegativeStockAmount() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/-100"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
     }
 
     @Test
@@ -87,6 +95,14 @@ public class StockApplicationTest {
                 .andExpect(status().isOk());
 
         assertThat(defaultStockItem.getStock()).isEqualTo(90); //100 - 10 = 90
+    }
+
+    @Test
+    public void subractNegativeStockAmount() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/-10"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {

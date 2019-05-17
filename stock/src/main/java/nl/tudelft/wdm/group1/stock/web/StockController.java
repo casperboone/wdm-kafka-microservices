@@ -1,9 +1,6 @@
 package nl.tudelft.wdm.group1.stock.web;
 
-import nl.tudelft.wdm.group1.stock.InsufficientStockException;
-import nl.tudelft.wdm.group1.stock.StockItemRepository;
-import nl.tudelft.wdm.group1.stock.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.stock.StockItem;
+import nl.tudelft.wdm.group1.stock.*;
 import nl.tudelft.wdm.group1.stock.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +23,7 @@ public class StockController {
     @PostMapping
     public StockItem addStockItem(@RequestParam("stock") int stock) {
         StockItem stockItem = new StockItem(stock);
-
-        producer.send(stockItem);
+        producer.emitStockItemCreated(stockItem);
 
         return stockItem;
     }
@@ -41,10 +37,10 @@ public class StockController {
     public StockItem substractStockItemAmount(
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
-    ) throws ResourceNotFoundException, InsufficientStockException {
+    ) throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem item = stockItemRepository.find(id);
         item.subtractStock(amount);
-        producer.send(item);
+        producer.emitStockItemSubtracted(item);
 
         return item;
     }
@@ -53,10 +49,10 @@ public class StockController {
     public StockItem addStockItemAmount(
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
-    ) throws ResourceNotFoundException {
+    ) throws ResourceNotFoundException, InvalidStockChangeException {
         StockItem item = stockItemRepository.find(id);
         item.addStock(amount);
-        producer.send(item);
+        producer.emitStockItemAdded(item);
 
         return item;
     }
