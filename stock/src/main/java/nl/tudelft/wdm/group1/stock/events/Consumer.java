@@ -17,8 +17,8 @@ public class Consumer {
         this.stockItemRepository = stockItemRepository;
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic}")
-    public void consume(StockItem stockItem) {
+    @KafkaListener(topics = {"stockItemCreated", "stockAdded", "stockSubtracted"})
+    public void consume(final StockItem stockItem) {
         logger.info(String.format("#### -> Consumed message -> %s", stockItem));
 
         stockItemRepository.addOrReplace(stockItem);

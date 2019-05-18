@@ -48,28 +48,61 @@ public class StockApplicationTest {
 
     @Before
     public void setUp() {
-        defaultStockItem = new StockItem();
+        defaultStockItem = new StockItem(100);
         stockItemRepository.add(defaultStockItem);
     }
 
     @Test
     public void createNewStockItem() throws Exception {
         MvcResult result = this.mockMvc.perform(
-                post("/stock")
+                post("/stock").param("stock", "100")
         ).andExpect(status().isOk()).andReturn();
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
         StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
-        assertThat(stockItem).isNotEqualTo("<add useful asserts>");
+        assertThat(stockItem.getStock()).isEqualTo(100);
     }
 
     @Test
     public void retrieveAStockItem() throws Exception {
         this.mockMvc.perform(get("/stock/" + defaultStockItem.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultStockItem.getId().toString())));
+                .andExpect(jsonPath("$.id", is(defaultStockItem.getId().toString())))
+                .andExpect(jsonPath("$.stock", is(100)));
+    }
+
+    @Test
+    public void addStock() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/100"))
+                .andExpect(status().isOk());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(200); //100 + 100 = 200
+    }
+
+    @Test
+    public void addNegativeStockAmount() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/-100"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
+    }
+
+    @Test
+    public void subtractStock() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/10"))
+                .andExpect(status().isOk());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(90); //100 - 10 = 90
+    }
+
+    @Test
+    public void subractNegativeStockAmount() throws Exception {
+        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/-10"))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {

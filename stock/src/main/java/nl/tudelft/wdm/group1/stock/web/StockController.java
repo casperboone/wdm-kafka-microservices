@@ -1,15 +1,9 @@
 package nl.tudelft.wdm.group1.stock.web;
 
-import nl.tudelft.wdm.group1.stock.StockItemRepository;
-import nl.tudelft.wdm.group1.stock.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.stock.StockItem;
+import nl.tudelft.wdm.group1.stock.*;
 import nl.tudelft.wdm.group1.stock.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -27,10 +21,9 @@ public class StockController {
     }
 
     @PostMapping
-    public StockItem addStockItem() {
-        StockItem stockItem = new StockItem();
-
-        producer.send(stockItem);
+    public StockItem addStockItem(@RequestParam("stock") int stock) {
+        StockItem stockItem = new StockItem(stock);
+        producer.emitStockItemCreated(stockItem);
 
         return stockItem;
     }
@@ -39,4 +32,29 @@ public class StockController {
     public StockItem getStockItem(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
         return stockItemRepository.find(id);
     }
+
+    @PostMapping("/{id}/subtract/{amount}")
+    public StockItem substractStockItemAmount(
+            @PathVariable(value = "id") UUID id,
+            @PathVariable(value = "amount") int amount
+    ) throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
+        StockItem item = stockItemRepository.find(id);
+        item.subtractStock(amount);
+        producer.emitStockItemSubtracted(item);
+
+        return item;
+    }
+
+    @PostMapping("{id}/add/{amount}")
+    public StockItem addStockItemAmount(
+            @PathVariable(value = "id") UUID id,
+            @PathVariable(value = "amount") int amount
+    ) throws ResourceNotFoundException, InvalidStockChangeException {
+        StockItem item = stockItemRepository.find(id);
+        item.addStock(amount);
+        producer.emitStockItemAdded(item);
+
+        return item;
+    }
+
 }
