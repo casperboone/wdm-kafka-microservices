@@ -1,5 +1,7 @@
 # Web-scale Data Management on Kafka
 
+[![Build Status](https://travis-ci.com/casperboone/wdm-kafka-microservices.svg?branch=master)](https://travis-ci.com/casperboone/wdm-kafka-microservices)
+
 ## Setup
 
 ### Docker compose (without build)
