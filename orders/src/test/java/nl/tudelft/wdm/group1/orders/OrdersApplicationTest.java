@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,9 +64,11 @@ public class OrdersApplicationTest {
                 post("/orders/" + defaultOrder.getUserId())
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(5000); // TODO: Remove this ugly hack
+        UUID userUUID = UUID.fromString(getJsonValue(result, "$.id"));
 
-        Order order = orderRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        await().until(() -> orderRepository.contains(userUUID));
+
+        Order order = orderRepository.find(userUUID);
 
         assertThat(order.getUserId()).isEqualTo(defaultOrder.getUserId());
         assertThat(order.getItemIds()).isEmpty();
@@ -83,10 +86,8 @@ public class OrdersApplicationTest {
         this.mockMvc.perform(delete("/orders/" + defaultOrder.getId()))
                 .andExpect(status().isOk());
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
-        assertThatThrownBy(() -> orderRepository.find(defaultOrder.getId()))
-                .isInstanceOf(ResourceNotFoundException.class);
+        await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.find(defaultOrder.getId()))
+                .isInstanceOf(ResourceNotFoundException.class));
     }
 
     @Test
@@ -97,9 +98,7 @@ public class OrdersApplicationTest {
                         .param("itemId", newItemId.toString())
         ).andExpect(status().isOk());
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
-        assertThat(defaultOrder.getItemIds()).contains(defaultOrderItemId, newItemId);
+        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).contains(defaultOrderItemId, newItemId));
     }
 
     @Test
@@ -109,9 +108,7 @@ public class OrdersApplicationTest {
                         .param("itemId", defaultOrderItemId.toString())
         ).andExpect(status().isOk());
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
-        assertThat(defaultOrder.getItemIds()).isEmpty();
+        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).isEmpty());
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {

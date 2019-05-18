@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -62,7 +63,7 @@ public class StockApplicationTest {
                         .param("price", "999")
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        await().until(() -> stockItemRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
 
         StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 

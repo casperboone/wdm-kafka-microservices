@@ -64,8 +64,6 @@ public class PaymentsApplicationTest {
                 post("/payments/" + userId + "/" + orderId + "/" + defaultAmount)
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
         UUID newUserId = UUID.fromString(getJsonValue(result, "$.userId"));
         UUID newOrderId = UUID.fromString(getJsonValue(result, "$.orderId"));
         int newAmount = Integer.parseInt(getJsonValue(result, "$.amount"));

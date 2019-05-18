@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,7 +46,7 @@ public class UsersApplicationTests {
     private UserRepository userRepository;
 
     @ClassRule
-    public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "users3");
+    public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 1, "users3");
 
     private User defaultUser;
 
@@ -67,7 +68,7 @@ public class UsersApplicationTests {
                         .param("city", "Rome")
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        await().until(() -> userRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
 
         User user = userRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
@@ -97,10 +98,8 @@ public class UsersApplicationTests {
         this.mockMvc.perform(delete("/users/" + defaultUser.getId()))
                 .andExpect(status().isOk());
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
-        assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
-                .isInstanceOf(ResourceNotFoundException.class);
+        await().untilAsserted(() -> assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
+                .isInstanceOf(ResourceNotFoundException.class));
     }
 
     @Test

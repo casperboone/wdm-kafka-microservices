@@ -24,6 +24,10 @@ public class StockItemRepository {
         return stockItem;
     }
 
+    public boolean contains(UUID id) {
+        return stockItems.containsKey(id);
+    }
+
     public StockItem find(UUID id) throws ResourceNotFoundException {
         if (!stockItems.containsKey(id)) {
             throw new ResourceNotFoundException("Stock item with ID " + id + " cannot be found.");
