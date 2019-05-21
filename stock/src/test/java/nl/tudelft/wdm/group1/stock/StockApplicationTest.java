@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.stock;
 
 import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.StockItem;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

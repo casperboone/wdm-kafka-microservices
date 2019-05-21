@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.stock;
 
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.StockItem;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

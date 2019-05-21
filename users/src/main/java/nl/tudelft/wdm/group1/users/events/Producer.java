@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.users.events;
 
+import nl.tudelft.wdm.group1.common.User;
 import nl.tudelft.wdm.group1.common.UsersTopics;
-import nl.tudelft.wdm.group1.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
