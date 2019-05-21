@@ -13,7 +13,15 @@ spec:
             backend:
               serviceName: wdm-kafka-orders
               servicePort: 8080
+          - path: /orders/*
+            backend:
+              serviceName: wdm-kafka-orders
+              servicePort: 8080
           - path: /payments
+            backend:
+              serviceName: wdm-kafka-payments
+              servicePort: 8080
+          - path: /payments/*
             backend:
               serviceName: wdm-kafka-payments
               servicePort: 8080
@@ -21,7 +29,15 @@ spec:
             backend:
               serviceName: wdm-kafka-stock
               servicePort: 8080
+          - path: /stock/*
+            backend:
+              serviceName: wdm-kafka-stock
+              servicePort: 8080
           - path: /users
+            backend:
+              serviceName: wdm-kafka-users
+              servicePort: 8080
+          - path: /users/*
             backend:
               serviceName: wdm-kafka-users
               servicePort: 8080
