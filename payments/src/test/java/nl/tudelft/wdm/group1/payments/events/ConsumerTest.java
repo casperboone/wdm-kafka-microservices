@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.payments.Order;
-import nl.tudelft.wdm.group1.payments.Payment;
+import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.junit.Before;
 import org.junit.Test;
