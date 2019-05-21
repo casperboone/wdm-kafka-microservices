@@ -1,8 +1,8 @@
 package nl.tudelft.wdm.group1.orders.web;
 
-import nl.tudelft.wdm.group1.orders.Order;
+import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
-import nl.tudelft.wdm.group1.orders.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.orders.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.payments;
 
 import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.Payment;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -19,9 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

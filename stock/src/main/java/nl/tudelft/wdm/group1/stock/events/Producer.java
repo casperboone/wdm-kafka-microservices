@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.stock.events;
 
+import nl.tudelft.wdm.group1.common.StockItem;
 import nl.tudelft.wdm.group1.common.StockTopics;
-import nl.tudelft.wdm.group1.stock.StockItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

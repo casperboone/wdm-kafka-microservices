@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.orders;
 
+import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

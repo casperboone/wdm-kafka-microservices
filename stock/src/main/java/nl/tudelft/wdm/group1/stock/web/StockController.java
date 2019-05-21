@@ -1,6 +1,10 @@
 package nl.tudelft.wdm.group1.stock.web;
 
-import nl.tudelft.wdm.group1.stock.*;
+import nl.tudelft.wdm.group1.common.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import nl.tudelft.wdm.group1.stock.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

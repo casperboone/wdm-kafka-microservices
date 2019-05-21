@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.stock;
+package nl.tudelft.wdm.group1.common;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.stock.events;
 
+import nl.tudelft.wdm.group1.common.StockItem;
 import nl.tudelft.wdm.group1.common.StockTopics;
-import nl.tudelft.wdm.group1.stock.StockItem;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
