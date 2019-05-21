@@ -27,13 +27,14 @@ public class PaymentController {
         this.paymentRepository = paymentRepository;
     }
 
-    //POST /payments/{user_id}/{order_id}
-    //subtracts the amount of the order from the users credit (returns failure if credit is not enough)
-    @PostMapping("/{userId}/{orderId}")
-    public Payment addPayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) {
-        if(!paymentRepository.containsPaymentOrderId(orderId)) {
-            Payment payment = new Payment(userId, orderId);
-            // TODO: subtracts the amount of the order from the user's credit (returns failure if credit is not enough)
+    /*
+     * POST /payments/{user_id}/{order_id}
+     * subtracts the amount of the order from the users credit (returns failure if credit is not enough)
+     */
+    @PostMapping("/{userId}/{orderId}/{amount}")
+    public Payment addPayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId, @PathVariable(value = "amount") int amount) {
+        if(!paymentRepository.exists(orderId)) {
+            Payment payment = new Payment(userId, orderId, amount);
             producer.emitPaymentCreated(payment);
             return payment;
         } else {
@@ -41,20 +42,23 @@ public class PaymentController {
         }
     }
 
-    //DELETE /payments/{user_id}/{order_id}
-    //cancels payment made by a specific user for a specific order.
+    /*
+     * DELETE /payments/{user_id}/{order_id}
+     * cancels payment made by a specific user for a specific order.
+     */
     @DeleteMapping("/{userId}/{orderId}")
     public Payment deletePayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
-        Payment payment = paymentRepository.findByOrderId(orderId);
-        // TODO: adds the amount of the order to the user's credit
+        Payment payment = paymentRepository.find(orderId);
         producer.emitPaymentDeleted(payment);
         return payment;
     }
 
-    //GET /payments/{order_id}
-    //returns the status of the payment (paid or not)
+    /*
+     * GET /payments/{order_id}
+     * returns the status of the payment (paid or not)
+     */
     @GetMapping("/{orderId}")
     public Payment getPayment(@PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
-        return paymentRepository.findByOrderId(orderId);
+        return paymentRepository.find(orderId);
     }
 }

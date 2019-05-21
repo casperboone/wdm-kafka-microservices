@@ -1,8 +1,6 @@
 package nl.tudelft.wdm.group1.payments;
 
 import com.jayway.jsonpath.JsonPath;
-import nl.tudelft.wdm.group1.payments.Payment;
-import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -50,12 +48,12 @@ public class PaymentsApplicationTest {
     private Payment defaultPayment;
     private UUID defaultUserId = UUID.randomUUID();
     private UUID defaultOrderId = UUID.randomUUID();
+    private int defaultAmount = 100;
 
     @Before
     public void setUp() throws Exception {
-        defaultPayment = new Payment(defaultUserId, defaultOrderId);
+        defaultPayment = new Payment(defaultUserId, defaultOrderId, defaultAmount);
         paymentRepository.add(defaultPayment);
-        assertThat(paymentRepository.find(defaultPayment.getId())).isNotNull();
     }
 
     @Test
@@ -64,30 +62,32 @@ public class PaymentsApplicationTest {
         UUID orderId = UUID.randomUUID();
 
         MvcResult result = this.mockMvc.perform(
-                post("/payments/" + userId + "/" + orderId)
+                post("/payments/" + userId + "/" + orderId + "/" + defaultAmount)
         ).andExpect(status().isOk()).andReturn();
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
         UUID newUserId = UUID.fromString(getJsonValue(result, "$.userId"));
         UUID newOrderId = UUID.fromString(getJsonValue(result, "$.orderId"));
+        int newAmount = Integer.parseInt(getJsonValue(result, "$.amount"));
 
         assertThat(newUserId).isEqualTo(userId);
         assertThat(newOrderId).isEqualTo(orderId);
+        assertThat(newAmount).isEqualTo(defaultAmount);
     }
 
     @Test
     public void deleteAPayment() throws Exception {
         this.mockMvc.perform(delete("/payments/" + defaultUserId + "/" + defaultOrderId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
+                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
     }
 
     @Test
     public void retrieveAPayment() throws Exception {
         this.mockMvc.perform(get("/payments/" + defaultOrderId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
+                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {

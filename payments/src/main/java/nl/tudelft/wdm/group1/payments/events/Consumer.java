@@ -27,6 +27,6 @@ public class Consumer {
     @KafkaListener(topics = {"paymentDeleted"})
     public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
-        paymentRepository.remove(payment.getId());
+        paymentRepository.remove(payment.getOrderId());
     }
 }
