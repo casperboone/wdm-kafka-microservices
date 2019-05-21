@@ -9,7 +9,7 @@ public class Order {
     private UUID userId;
     private Set<UUID> itemIds;
     private boolean processedInStock;
-    private boolean payed;
+    private boolean paid;
     private int price;
 
     public Order() {
@@ -21,7 +21,7 @@ public class Order {
         this.itemIds = new HashSet<>();
         this.price = -1;
         this.processedInStock = false;
-        this.payed = false;
+        this.paid = false;
     }
 
     public UUID getId() {
@@ -40,8 +40,8 @@ public class Order {
         return processedInStock;
     }
 
-    public boolean isPayed() {
-        return payed;
+    public boolean isPaid() {
+        return paid;
     }
 
     public int getPrice() { return price; }
@@ -60,8 +60,8 @@ public class Order {
         this.processedInStock = processedInStock;
     }
 
-    public void setPayed(boolean payed) {
-        this.payed = payed;
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     @Override
@@ -71,7 +71,8 @@ public class Order {
                 ", userId=" + userId +
                 ", itemIds=" + itemIds +
                 ", processedInStock=" + processedInStock +
-                ", payed=" + payed +
+                ", paid=" + paid +
+                ", price=" + price +
                 '}';
     }
 }

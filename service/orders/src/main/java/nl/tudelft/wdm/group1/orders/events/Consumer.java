@@ -56,7 +56,7 @@ public class Consumer {
     public void consumePaymentSuccessful(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
-        order.setPayed(true);
+        order.setPaid(true);
         orderRepository.addOrReplace(order);
 
         // TODO notify user

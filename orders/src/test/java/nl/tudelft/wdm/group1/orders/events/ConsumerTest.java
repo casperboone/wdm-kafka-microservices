@@ -36,7 +36,7 @@ public class ConsumerTest {
     public void testHandlePaymentSuccessful() {
         Order order = new Order(UUID.randomUUID());
         consumer.consumePaymentSuccessful(order);
-        assertThat(order.isPayed()).isTrue();
+        assertThat(order.isPaid()).isTrue();
         verify(orderRepository).addOrReplace(order);
     }
 }
