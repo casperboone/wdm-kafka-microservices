@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.payments.Payment;
+import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -26,6 +26,11 @@ public class Order {
         return userId;
     }
 
+    // mock method
+    public int getAmount() {
+        return 42;
+    }
+
     public Set<UUID> getItemIds() {
         return itemIds;
     }
