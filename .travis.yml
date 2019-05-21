@@ -10,13 +10,22 @@ jobs:
   include:
     - stage: test
       name: "Test orders service"
+      script: ./gradlew :orders:check
+    - name: "Test payments service"
+      script: ./gradlew :payments:check
+    - name: "Test stock service"
+      script: ./gradlew :stock:check
+    - name: "Test users service"
+      script: ./gradlew :users:check
+    - stage: build
+      name: "Build orders service"
       script: ./ci/build.sh orders
-    - script: ./ci/build.sh payments
-      name: "Test payments service"
-    - script: ./ci/build.sh stock
-      name: "Test stock service"
-    - script: ./ci/build.sh users
-      name: "Test users service"
+    - name: "Build payments service"
+      script: ./ci/build.sh payments
+    - name: "Build stock service"
+      script: ./ci/build.sh stock
+    - name: "Build users service"
+      script: ./ci/build.sh users
     - stage: end-to-end
       name: "Run end-to-end tests"
       script: ./ci/test.sh
