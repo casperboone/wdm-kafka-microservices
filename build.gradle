@@ -21,14 +21,15 @@ subprojects {
     }
 }
 
-// end-to-end does not need spring
-configure(subprojects - project(":end-to-end")) {
+// end-to-end and common do not need spring and common
+configure(subprojects - project(':end-to-end') - project(':common')) {
     apply plugin: "org.springframework.boot"
     apply plugin: 'io.spring.dependency-management'
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.kafka:spring-kafka'
+        implementation project(':common')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.kafka:spring-kafka-test'
     }
