@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wdm-kafka-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: wdmk2
+    networking.gke.io/managed-certificates: wdmk-certificate
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /orders
+            backend:
+              serviceName: wdm-kafka-orders
+              servicePort: 8080
+          - path: /payments
+            backend:
+              serviceName: wdm-kafka-payments
+              servicePort: 8080
+          - path: /stock
+            backend:
+              serviceName: wdm-kafka-stock
+              servicePort: 8080
+          - path: /users
+            backend:
+              serviceName: wdm-kafka-users
+              servicePort: 8080
