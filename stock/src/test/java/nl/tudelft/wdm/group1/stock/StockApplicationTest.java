@@ -105,7 +105,7 @@ public class StockApplicationTest {
     }
 
     @Test
-    public void subractNegativeStockAmount() throws Exception {
+    public void subtractNegativeStockAmount() throws Exception {
         this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/-10"))
                 .andExpect(status().isUnprocessableEntity());
 
