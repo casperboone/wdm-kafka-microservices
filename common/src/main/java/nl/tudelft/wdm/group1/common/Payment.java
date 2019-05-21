@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.payments;
+package nl.tudelft.wdm.group1.common;
 
 import java.util.UUID;
 

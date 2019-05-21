@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.payments;
 
+import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
