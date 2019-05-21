@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.orders.events;
 
+import nl.tudelft.wdm.group1.common.OrdersTopics;
 import nl.tudelft.wdm.group1.orders.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,26 +17,26 @@ public class Producer {
 
     public void emitOrderCreated(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderCreated", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_CREATED, order);
     }
 
     public void emitOrderDeleted(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderDeleted", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_DELETED, order);
     }
 
     public void emitOrderItemAdded(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderItemAdded", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_ITEM_ADDED, order);
     }
 
     public void emitOrderItemDeleted(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderItemDeleted", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_ITEM_DELETED, order);
     }
 
     public void emitOrderCheckedOut(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderCheckedOut", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_CHECKED_OUT, order);
     }
 }

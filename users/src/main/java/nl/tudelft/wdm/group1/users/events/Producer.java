@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.users.events;
 
+import nl.tudelft.wdm.group1.common.UsersTopics;
 import nl.tudelft.wdm.group1.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,21 +17,21 @@ public class Producer {
 
     public void emitUserCreated(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
-        this.kafkaTemplate.send("userCreated", user);
+        this.kafkaTemplate.send(UsersTopics.USER_CREATED, user);
     }
 
     public void emitUserDeleted(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
-        this.kafkaTemplate.send("userDeleted", user);
+        this.kafkaTemplate.send(UsersTopics.USER_DELETED, user);
     }
 
     public void emitCreditSubtracted(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
-        this.kafkaTemplate.send("creditSubtracted", user);
+        this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED, user);
     }
 
     public void emitCreditAdded(User user) {
         logger.info(String.format("#### -> Producing message -> %s", user));
-        this.kafkaTemplate.send("creditAdded", user);
+        this.kafkaTemplate.send(UsersTopics.CREDIT_ADDED, user);
     }
 }
