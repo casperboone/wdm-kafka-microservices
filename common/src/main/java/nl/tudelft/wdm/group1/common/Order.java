@@ -8,6 +8,8 @@ public class Order {
     private UUID id;
     private UUID userId;
     private Set<UUID> itemIds;
+    private boolean processedInStock;
+    private boolean payed;
     private int price;
 
     public Order() {
@@ -18,6 +20,8 @@ public class Order {
         this.userId = userId;
         this.itemIds = new HashSet<>();
         this.price = -1;
+        this.processedInStock = false;
+        this.payed = false;
     }
 
     public UUID getId() {
@@ -32,6 +36,14 @@ public class Order {
         return itemIds;
     }
 
+    public boolean isProcessedInStock() {
+        return processedInStock;
+    }
+
+    public boolean isPayed() {
+        return payed;
+    }
+
     public int getPrice() { return price; }
 
     public void setPrice(int price) { this.price = price; }
@@ -44,12 +56,22 @@ public class Order {
         itemIds.remove(itemId);
     }
 
+    public void setProcessedInStock(boolean processedInStock) {
+        this.processedInStock = processedInStock;
+    }
+
+    public void setPayed(boolean payed) {
+        this.payed = payed;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
                 ", userId=" + userId +
                 ", itemIds=" + itemIds +
+                ", processedInStock=" + processedInStock +
+                ", payed=" + payed +
                 '}';
     }
 }

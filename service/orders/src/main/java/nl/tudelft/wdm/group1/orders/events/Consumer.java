@@ -6,17 +6,21 @@ import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Consumer {
     private final OrderRepository orderRepository;
+    private final Producer producer;
 
     private final Logger logger = LoggerFactory.getLogger(Consumer.class);
 
-    public Consumer(OrderRepository orderRepository) {
+    public Consumer(OrderRepository orderRepository, Producer producer) {
         this.orderRepository = orderRepository;
+        this.producer = producer;
     }
 
     @KafkaListener(topics = {
@@ -36,5 +40,25 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         orderRepository.remove(order.getId());
+    }
+
+    @KafkaListener(topics = "orderProcessedInStockSuccessful")
+    public void consumeOrderProcessedInStockSuccessful(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+
+        order.setProcessedInStock(true);
+        orderRepository.addOrReplace(order);
+
+        producer.emitOrderCheckedOut(order);
+    }
+
+    @KafkaListener(topics = "paymentSuccessful")
+    public void consumePaymentSuccessful(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+
+        order.setPayed(true);
+        orderRepository.addOrReplace(order);
+
+        // TODO notify user
     }
 }
