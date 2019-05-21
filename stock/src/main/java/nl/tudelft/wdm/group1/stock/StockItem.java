@@ -5,13 +5,17 @@ import java.util.UUID;
 public class StockItem {
     private UUID id;
     private int stock;
+    private String name;
+    private int price;
 
     public StockItem() {
 
     }
 
-    public StockItem(final int stock) {
+    public StockItem(final int stock, final String name, final int price) {
         this.id = UUID.randomUUID();
+        this.name = name;
+        this.price = price;
         this.stock = stock;
     }
 
@@ -19,7 +23,17 @@ public class StockItem {
         return id;
     }
 
-    public int getStock() { return this.stock; }
+    public int getStock() {
+        return stock;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
 
     public void addStock(final int amount) throws InvalidStockChangeException {
         if (amount < 0) {
@@ -29,7 +43,7 @@ public class StockItem {
     }
 
     public void subtractStock(final int amount)
-            throws InvalidStockChangeException, InsufficientStockException{
+            throws InvalidStockChangeException, InsufficientStockException {
         if (amount < 0) {
             throw new InvalidStockChangeException("Cannot subtract a negative value");
         }
@@ -44,8 +58,10 @@ public class StockItem {
     @Override
     public String toString() {
         return "StockItem{" +
-                "id=" + this.id +
-                "stock=" + this.stock +
+                "id=" + id +
+                ", stock=" + stock +
+                ", name='" + name + "'" +
+                ", price=" + price +
                 '}';
     }
 }

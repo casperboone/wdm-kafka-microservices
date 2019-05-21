@@ -21,8 +21,12 @@ public class StockController {
     }
 
     @PostMapping
-    public StockItem addStockItem(@RequestParam("stock") int stock) {
-        StockItem stockItem = new StockItem(stock);
+    public StockItem addStockItem(
+            @RequestParam("stock") int stock,
+            @RequestParam("name") String name,
+            @RequestParam("price") int price
+    ) {
+        StockItem stockItem = new StockItem(stock, name, price);
         producer.emitStockItemCreated(stockItem);
 
         return stockItem;

@@ -48,21 +48,26 @@ public class StockApplicationTest {
 
     @Before
     public void setUp() {
-        defaultStockItem = new StockItem(100);
+        defaultStockItem = new StockItem(100, "item1", 1000);
         stockItemRepository.add(defaultStockItem);
     }
 
     @Test
     public void createNewStockItem() throws Exception {
         MvcResult result = this.mockMvc.perform(
-                post("/stock").param("stock", "100")
+                post("/stock")
+                        .param("stock", "99")
+                        .param("name", "item2")
+                        .param("price", "999")
         ).andExpect(status().isOk()).andReturn();
 
         Thread.sleep(2000); // TODO: Remove this ugly hack
 
         StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
-        assertThat(stockItem.getStock()).isEqualTo(100);
+        assertThat(stockItem.getStock()).isEqualTo(99);
+        assertThat(stockItem.getName()).isEqualTo("item2");
+        assertThat(stockItem.getPrice()).isEqualTo(999);
     }
 
     @Test
@@ -70,7 +75,9 @@ public class StockApplicationTest {
         this.mockMvc.perform(get("/stock/" + defaultStockItem.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(defaultStockItem.getId().toString())))
-                .andExpect(jsonPath("$.stock", is(100)));
+                .andExpect(jsonPath("$.stock", is(100)))
+                .andExpect(jsonPath("$.name", is("item1")))
+                .andExpect(jsonPath("$.price", is(1000)));
     }
 
     @Test
@@ -98,7 +105,7 @@ public class StockApplicationTest {
     }
 
     @Test
-    public void subractNegativeStockAmount() throws Exception {
+    public void subtractNegativeStockAmount() throws Exception {
         this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/-10"))
                 .andExpect(status().isUnprocessableEntity());
 
