@@ -24,6 +24,10 @@ public class UserRepository {
         return user;
     }
 
+    public boolean contains(UUID id) {
+        return users.containsKey(id);
+    }
+
     public User find(UUID id) throws ResourceNotFoundException {
         if (!users.containsKey(id)) {
             throw new ResourceNotFoundException("User with ID " + id + " cannot be found.");
