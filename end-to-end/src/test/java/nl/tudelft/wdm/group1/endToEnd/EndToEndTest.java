@@ -1,19 +1,21 @@
 package nl.tudelft.wdm.group1.endToEnd;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static io.restassured.RestAssured.given;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
+import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 public class EndToEndTest {
-
     private static final String DEFAULT_BASE_URI = "http://localhost:8080";
     private static final String ENVIRONMENT_VARIABLE_BASE_URI = "END_TO_END_HOST";
     private static final String PROTOCOL_HTTP = "http";
@@ -39,6 +41,9 @@ public class EndToEndTest {
         }
 
         RestAssured.baseURI = baseURL.getProtocol() + "://" + baseURL.getHost();
+
+        Awaitility.setDefaultPollInterval(500, TimeUnit.MILLISECONDS);
+        Awaitility.setDefaultPollDelay(100, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -55,7 +60,9 @@ public class EndToEndTest {
         assertThat(response.get("firstName"), equalTo("Jane"));
         assertThat(response.get("lastName"), equalTo("Da"));
 
-        Thread.sleep(2000);
+        await().untilAsserted(() -> given()
+                .when().get("/users/" + response.get("id"))
+                .then().statusCode(200));
 
         JsonPath listResponse = given()
                 .when().get("/users/" + response.get("id"))
@@ -68,10 +75,8 @@ public class EndToEndTest {
                 .when().delete("/users/" + response.get("id"))
                 .then().statusCode(200);
 
-        Thread.sleep(2000);
-
-        given()
+        await().untilAsserted(() -> given()
                 .when().get("/users/" + response.get("id"))
-                .then().statusCode(404);
+                .then().statusCode(404));
     }
 }

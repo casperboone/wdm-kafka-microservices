@@ -1,8 +1,7 @@
 package nl.tudelft.wdm.group1.payments;
 
 import com.jayway.jsonpath.JsonPath;
-import nl.tudelft.wdm.group1.payments.Payment;
-import nl.tudelft.wdm.group1.payments.PaymentRepository;
+import nl.tudelft.wdm.group1.common.Payment;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,8 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,31 +45,46 @@ public class PaymentsApplicationTest {
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "payments");
 
     private Payment defaultPayment;
+    private UUID defaultUserId = UUID.randomUUID();
+    private UUID defaultOrderId = UUID.randomUUID();
+    private int defaultAmount = 100;
 
     @Before
-    public void setUp() {
-        defaultPayment = new Payment();
+    public void setUp() throws Exception {
+        defaultPayment = new Payment(defaultUserId, defaultOrderId, defaultAmount);
         paymentRepository.add(defaultPayment);
     }
 
     @Test
     public void createNewPayment() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+
         MvcResult result = this.mockMvc.perform(
-                post("/payments")
+                post("/payments/" + userId + "/" + orderId + "/" + defaultAmount)
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        UUID newUserId = UUID.fromString(getJsonValue(result, "$.userId"));
+        UUID newOrderId = UUID.fromString(getJsonValue(result, "$.orderId"));
+        int newAmount = Integer.parseInt(getJsonValue(result, "$.amount"));
 
-        Payment payment = paymentRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        assertThat(newUserId).isEqualTo(userId);
+        assertThat(newOrderId).isEqualTo(orderId);
+        assertThat(newAmount).isEqualTo(defaultAmount);
+    }
 
-        assertThat(payment).isNotEqualTo("<add useful asserts>");
+    @Test
+    public void deleteAPayment() throws Exception {
+        this.mockMvc.perform(delete("/payments/" + defaultUserId + "/" + defaultOrderId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
     }
 
     @Test
     public void retrieveAPayment() throws Exception {
-        this.mockMvc.perform(get("/payments/" + defaultPayment.getId()))
+        this.mockMvc.perform(get("/payments/" + defaultOrderId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultPayment.getId().toString())));
+                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {

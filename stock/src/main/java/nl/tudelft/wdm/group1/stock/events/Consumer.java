@@ -2,6 +2,9 @@ package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.orders.Order;
 import nl.tudelft.wdm.group1.stock.*;
+import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.StockTopics;
+import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,7 +27,7 @@ public class Consumer {
         this.producer = producer;
     }
 
-    @KafkaListener(topics = {"stockItemCreated", "stockAdded", "stockSubtracted"})
+    @KafkaListener(topics = {StockTopics.STOCK_ITEM_CREATED, StockTopics.STOCK_ADDED, StockTopics.STOCK_SUBTRACTED})
     public void consume(final StockItem stockItem) {
         logger.info(String.format("#### -> Consumed message -> %s", stockItem));
 

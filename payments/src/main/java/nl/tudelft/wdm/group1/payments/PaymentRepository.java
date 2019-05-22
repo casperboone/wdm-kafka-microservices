@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.payments;
 
+import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -11,28 +13,30 @@ public class PaymentRepository {
     private Map<UUID, Payment> payments = new HashMap<>();
 
     public Payment add(Payment payment) {
-        payments.putIfAbsent(payment.getId(), payment);
-
+        payments.putIfAbsent(payment.getOrderId(), payment);
         return payment;
     }
 
     public Payment addOrReplace(Payment payment) {
-        payments.put(payment.getId(), payment);
-
+        payments.put(payment.getOrderId(), payment);
         return payment;
     }
 
-    public Payment find(UUID id) throws ResourceNotFoundException {
-        if (!payments.containsKey(id)) {
-            throw new ResourceNotFoundException("Payment with ID " + id + " cannot be found.");
+    public Payment find(UUID orderId) throws ResourceNotFoundException {
+        if (!payments.containsKey(orderId)) {
+            throw new ResourceNotFoundException("Payment with OrderID " + orderId + " cannot be found.");
         }
-        return payments.get(id);
+        return payments.get(orderId);
     }
 
-    public void remove(UUID id) throws ResourceNotFoundException {
-        if (!payments.containsKey(id)) {
-            throw new ResourceNotFoundException("Payment with ID " + id + " cannot be found.");
+    public boolean exists(UUID orderId) {
+        return payments.containsKey(orderId);
+    }
+
+    public void remove(UUID orderId) throws ResourceNotFoundException {
+        if (!payments.containsKey(orderId)) {
+            throw new ResourceNotFoundException("Payment with OrderId " + orderId + " cannot be found.");
         }
-        payments.remove(id);
+        payments.remove(orderId);
     }
 }

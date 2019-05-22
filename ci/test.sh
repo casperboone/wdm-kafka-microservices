@@ -28,6 +28,8 @@ function await {
     done
 }
 
+./gradlew :end-to-end:testClasses
+
 # Check if al services are up
 await 10001
 echo Orders service is up

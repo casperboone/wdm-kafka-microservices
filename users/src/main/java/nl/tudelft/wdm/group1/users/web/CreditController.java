@@ -1,17 +1,13 @@
 package nl.tudelft.wdm.group1.users.web;
 
-import nl.tudelft.wdm.group1.users.CreditChangeInvalidException;
-import nl.tudelft.wdm.group1.users.InsufficientCreditException;
-import nl.tudelft.wdm.group1.users.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.users.User;
+import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.User;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import nl.tudelft.wdm.group1.users.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 

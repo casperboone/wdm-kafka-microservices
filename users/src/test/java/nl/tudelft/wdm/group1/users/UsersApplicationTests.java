@@ -1,20 +1,16 @@
 package nl.tudelft.wdm.group1.users;
 
 import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.User;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafkaStreams;
-import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,16 +18,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,7 +46,7 @@ public class UsersApplicationTests {
     private UserRepository userRepository;
 
     @ClassRule
-    public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "users3");
+    public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 1, "users3");
 
     private User defaultUser;
 
@@ -75,7 +68,7 @@ public class UsersApplicationTests {
                         .param("city", "Rome")
         ).andExpect(status().isOk()).andReturn();
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
+        await().until(() -> userRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
 
         User user = userRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
 
@@ -105,10 +98,8 @@ public class UsersApplicationTests {
         this.mockMvc.perform(delete("/users/" + defaultUser.getId()))
                 .andExpect(status().isOk());
 
-        Thread.sleep(2000); // TODO: Remove this ugly hack
-
-        assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
-                .isInstanceOf(ResourceNotFoundException.class);
+        await().untilAsserted(() -> assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
+                .isInstanceOf(ResourceNotFoundException.class));
     }
 
     @Test

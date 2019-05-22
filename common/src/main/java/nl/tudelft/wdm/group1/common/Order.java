@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.orders;
+package nl.tudelft.wdm.group1.common;
 
 import java.util.HashSet;
 import java.util.Set;

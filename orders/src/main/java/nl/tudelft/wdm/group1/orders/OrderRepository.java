@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.orders;
 
+import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -20,6 +22,10 @@ public class OrderRepository {
         orders.put(order.getId(), order);
 
         return order;
+    }
+
+    public boolean contains(UUID id) {
+        return orders.containsKey(id);
     }
 
     public Order find(UUID id) throws ResourceNotFoundException {

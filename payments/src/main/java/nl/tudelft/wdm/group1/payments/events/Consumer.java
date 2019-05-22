@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.payments.Payment;
+import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,15 @@ public class Consumer {
         this.paymentRepository = paymentRepository;
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic}")
+    @KafkaListener(topics = {"paymentCreated"})
     public void consume(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
-
         paymentRepository.addOrReplace(payment);
+    }
+
+    @KafkaListener(topics = {"paymentDeleted"})
+    public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
+        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        paymentRepository.remove(payment.getOrderId());
     }
 }

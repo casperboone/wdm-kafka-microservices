@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.stock;
 
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.StockItem;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -20,6 +22,10 @@ public class StockItemRepository {
         stockItems.put(stockItem.getId(), stockItem);
 
         return stockItem;
+    }
+
+    public boolean contains(UUID id) {
+        return stockItems.containsKey(id);
     }
 
     public StockItem find(UUID id) throws ResourceNotFoundException {

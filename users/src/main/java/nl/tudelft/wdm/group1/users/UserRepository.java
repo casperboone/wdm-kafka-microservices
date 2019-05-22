@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.users;
 
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -20,6 +22,10 @@ public class UserRepository {
         users.put(user.getId(), user);
 
         return user;
+    }
+
+    public boolean contains(UUID id) {
+        return users.containsKey(id);
     }
 
     public User find(UUID id) throws ResourceNotFoundException {

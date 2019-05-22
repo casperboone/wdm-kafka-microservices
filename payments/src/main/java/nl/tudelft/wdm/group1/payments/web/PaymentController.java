@@ -1,15 +1,11 @@
 package nl.tudelft.wdm.group1.payments.web;
 
+import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
-import nl.tudelft.wdm.group1.payments.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.payments.Payment;
 import nl.tudelft.wdm.group1.payments.events.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -26,17 +22,38 @@ public class PaymentController {
         this.paymentRepository = paymentRepository;
     }
 
-    @PostMapping
-    public Payment addPayment() {
-        Payment payment = new Payment();
+    /*
+     * POST /payments/{user_id}/{order_id}
+     * subtracts the amount of the order from the users credit (returns failure if credit is not enough)
+     */
+    @PostMapping("/{userId}/{orderId}/{amount}")
+    public Payment addPayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId, @PathVariable(value = "amount") int amount) {
+        if(!paymentRepository.exists(orderId)) {
+            Payment payment = new Payment(userId, orderId, amount);
+            producer.emitPaymentCreated(payment);
+            return payment;
+        } else {
+            return null;
+        }
+    }
 
-        producer.send(payment);
-
+    /*
+     * DELETE /payments/{user_id}/{order_id}
+     * cancels payment made by a specific user for a specific order.
+     */
+    @DeleteMapping("/{userId}/{orderId}")
+    public Payment deletePayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
+        Payment payment = paymentRepository.find(orderId);
+        producer.emitPaymentDeleted(payment);
         return payment;
     }
 
-    @GetMapping("/{id}")
-    public Payment getPayment(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return paymentRepository.find(id);
+    /*
+     * GET /payments/{order_id}
+     * returns the status of the payment (paid or not)
+     */
+    @GetMapping("/{orderId}")
+    public Payment getPayment(@PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
+        return paymentRepository.find(orderId);
     }
 }
