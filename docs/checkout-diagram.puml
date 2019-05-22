@@ -1,0 +1,13 @@
+@startuml
+Orders --> Stock : OrderReady
+Stock --> Orders : OrderProcessedInStock
+Stock --x Orders : OrderProcessedInStockFailed
+Orders --x Stock : OrderCancelled(Stock)
+Orders --> Payment : OrderCheckout
+Payment --> Users : PaymentCreated
+Users --> Payment : CreditSubtracted
+Users --x Payment : CreditSubtractedForPaymentFailure
+Payment --> Orders : PaymentSuccess
+Payment --x Orders : PaymentFailed
+Orders --x Stock : OrderCancelled(Payment)
+@enduml
