@@ -39,7 +39,6 @@ public class StockConsumerTest {
         stockConsumer.consumeOrderCheckedOut(order);
 
         verify(stockProducer).emitStockItemsSubtractedForOrder(order);
-
     }
 
     @Test
