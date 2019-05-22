@@ -42,6 +42,6 @@ public class Producer {
 
     public void emitOrderReady(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplate.send("orderReady", order);
+        this.kafkaTemplate.send(OrdersTopics.ORDER_READY, order);
     }
 }

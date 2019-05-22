@@ -3,12 +3,11 @@ package nl.tudelft.wdm.group1.orders.events;
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.common.OrdersTopics;
 import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.StockTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,7 +41,7 @@ public class Consumer {
         orderRepository.remove(order.getId());
     }
 
-    @KafkaListener(topics = "orderProcessedInStockSuccessful")
+    @KafkaListener(topics = StockTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL)
     public void consumeOrderProcessedInStockSuccessful(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
