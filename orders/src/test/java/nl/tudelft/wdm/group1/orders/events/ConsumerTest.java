@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.orders.Order;
+import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.junit.Before;
 import org.junit.Test;
