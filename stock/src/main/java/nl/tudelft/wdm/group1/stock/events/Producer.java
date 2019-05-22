@@ -37,7 +37,7 @@ public class Producer {
 
     public void emitStockItemsSubtractedForOrder(final Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
-        this.kafkaTemplateForOrder.send(OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCC, order);
+        this.kafkaTemplateForOrder.send(OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL, order);
     }
 
     public void emitStockItemsSubtractForOrderFailed(final Order order) {
