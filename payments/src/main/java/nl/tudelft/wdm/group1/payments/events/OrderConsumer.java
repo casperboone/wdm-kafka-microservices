@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.payments.events;
 
+import nl.tudelft.wdm.group1.common.OrdersTopics;
 import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
@@ -20,7 +21,7 @@ public class OrderConsumer {
         this.producer = producer;
     }
 
-    @KafkaListener(topics = {"orderCheckout"})
+    @KafkaListener(topics = {OrdersTopics.ORDER_CHECKED_OUT})
     public void consume(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
         // Triggers new payment creation

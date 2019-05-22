@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.payments.events;
 
+import nl.tudelft.wdm.group1.common.UsersTopics;
 import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class UserConsumer {
         this.producer = producer;
     }
 
-    @KafkaListener(topics = {"creditSubstracted"})
+    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED})
     public void consume(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
         // Emit payment successful message
