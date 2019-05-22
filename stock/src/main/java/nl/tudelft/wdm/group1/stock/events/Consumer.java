@@ -1,9 +1,7 @@
 package nl.tudelft.wdm.group1.stock.events;
 
-import nl.tudelft.wdm.group1.orders.Order;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.stock.*;
-import nl.tudelft.wdm.group1.common.StockItem;
-import nl.tudelft.wdm.group1.common.StockTopics;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,7 @@ public class Consumer {
         stockItemRepository.addOrReplace(stockItem);
     }
 
-    @KafkaListener(topics = {"orderCheckedOut"})
+    @KafkaListener(topics = {OrdersTopics.ORDER_CHECKED_OUT})
     public void consumeOrderCheckedOut(final Order order)
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         logger.info(String.format("#### -> Consumed message -> %s", order));

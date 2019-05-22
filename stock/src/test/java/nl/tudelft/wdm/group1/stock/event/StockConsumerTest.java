@@ -1,8 +1,6 @@
 package nl.tudelft.wdm.group1.stock.event;
 
-import nl.tudelft.wdm.group1.orders.Order;
-import nl.tudelft.wdm.group1.stock.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.stock.StockItem;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import nl.tudelft.wdm.group1.stock.events.Consumer;
 import nl.tudelft.wdm.group1.stock.events.Producer;
@@ -29,7 +27,7 @@ public class StockConsumerTest {
 
     @Test
     public void testHandleOrderCheckedOutWithSufficientStock()
-        throws ResourceNotFoundException {
+        throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(10, "Milk", 1);
         StockItem stockItem2 = new StockItem(5, "Coke", 1);
         when(stockItemRepository.find(any(UUID.class))).thenReturn(stockItem1, stockItem2);
@@ -46,7 +44,7 @@ public class StockConsumerTest {
 
     @Test
     public void testHandleOrderCheckedOutWithInsufficientStock()
-        throws ResourceNotFoundException {
+        throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(0, "Milk", 1);
         StockItem stockItem2 = new StockItem(1, "Coke", 1);
         when(stockItemRepository.find(any(UUID.class))).thenReturn(stockItem1, stockItem2);
