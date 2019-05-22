@@ -24,6 +24,10 @@ public class OrderRepository {
         return order;
     }
 
+    public boolean contains(UUID id) {
+        return orders.containsKey(id);
+    }
+
     public Order find(UUID id) throws ResourceNotFoundException {
         if (!orders.containsKey(id)) {
             throw new ResourceNotFoundException("Order with ID " + id + " cannot be found.");
