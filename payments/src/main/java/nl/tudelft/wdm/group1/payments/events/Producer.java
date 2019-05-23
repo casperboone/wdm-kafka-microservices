@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.payments.events;
 
+import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.common.Payment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +20,18 @@ public class Producer {
     private KafkaTemplate<String, Payment> kafkaTemplate;
 
     public void emitPaymentCreated(Payment payment) {
-        // TODO: subtracts the amount of the order from the user's credit (returns failure if credit is not enough)
         logger.info(String.format("#### -> Producing message -> %s", payment));
-        this.kafkaTemplate.send("paymentCreated", payment);
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment);
+    }
+
+    public void emitPaymentSuccessful(Payment payment) {
+        logger.info(String.format("#### -> Producing message -> %s", payment));
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_SUCCESSFUL, payment);
     }
 
     public void emitPaymentDeleted(Payment payment) {
         // TODO: adds the amount of the order to the user's credit
         logger.info(String.format("#### -> Producing message -> %s", payment));
-        this.kafkaTemplate.send("paymentDeleted", payment);
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_DELETED, payment);
     }
 }
