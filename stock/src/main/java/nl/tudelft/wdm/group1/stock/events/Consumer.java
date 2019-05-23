@@ -39,12 +39,10 @@ public class Consumer {
 
         // TODO: lock the stock to prevent multiple checks on same stock
         // check availability of all StockItems
-        Iterator<UUID> stockItemIdIterator = order.getItemIds().iterator();
-
-        while (stockItemIdIterator.hasNext()) {
+        for (UUID stockItemId : order.getItemIds()) {
             StockItem stockItem;
             try {
-                stockItem = stockItemRepository.find(stockItemIdIterator.next());
+                stockItem = stockItemRepository.find(stockItemId);
             } catch (ResourceNotFoundException e) {
                 producer.emitStockItemsSubtractForOrderFailed(order);
                 return;
@@ -58,12 +56,11 @@ public class Consumer {
 
         // all stocks available, proceed and emit a successful event
         int totalPrice = 0;
-        stockItemIdIterator = order.getItemIds().iterator();
 
-        while(stockItemIdIterator.hasNext()) {
+        for (UUID stockItemId : order.getItemIds()) {
             StockItem stockItem;
             try {
-                stockItem = stockItemRepository.find(stockItemIdIterator.next());
+                stockItem = stockItemRepository.find(stockItemId);
             } catch (ResourceNotFoundException e) {
                 // we assume this should not cause any exception
                 throw e;
