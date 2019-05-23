@@ -76,7 +76,7 @@ public class Consumer {
                 throw e;
             }
 
-            totalPrice += stockItem.getPrice() * 1;
+            totalPrice += stockItem.getPrice();
         }
 
         order.setPrice(totalPrice);
