@@ -8,6 +8,7 @@ public class Order {
     private UUID id;
     private UUID userId;
     private Set<UUID> itemIds;
+    private int price;
 
     public Order() {
     }
@@ -16,6 +17,7 @@ public class Order {
         id = UUID.randomUUID();
         this.userId = userId;
         this.itemIds = new HashSet<>();
+        this.price = -1;
     }
 
     public UUID getId() {
@@ -34,6 +36,10 @@ public class Order {
     public Set<UUID> getItemIds() {
         return itemIds;
     }
+
+    public int getPrice() { return price; }
+
+    public void setPrice(int price) { this.price = price; }
 
     public void addItem(UUID itemId) {
         itemIds.add(itemId);
