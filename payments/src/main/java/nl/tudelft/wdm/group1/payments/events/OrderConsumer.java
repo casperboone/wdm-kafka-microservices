@@ -25,7 +25,7 @@ public class OrderConsumer {
     public void consume(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
         // Triggers new payment creation
-        Payment payment = new Payment(order.getUserId(), order.getId(), order.getAmount());
+        Payment payment = new Payment(order.getUserId(), order.getId(), order.getPrice());
         producer.emitPaymentCreated(payment);
     }
 }
