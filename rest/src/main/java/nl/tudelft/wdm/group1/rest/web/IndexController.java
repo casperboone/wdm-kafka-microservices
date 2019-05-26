@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.stock.web;
+package nl.tudelft.wdm.group1.rest.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,4 +16,3 @@ public class IndexController {
         return ResponseEntity.ok().build();
     }
 }
-

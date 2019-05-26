@@ -16,12 +16,16 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     links:
-      - orders
-      - payments
-      - stock
-      - users
+      - rest
     ports:
       - "8080:80"
+  rest:
+    image: wdmk/rest:${IMAGE_VERSION:-latest}
+    build: rest
+    links:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   orders:
     image: wdmk/orders:${IMAGE_VERSION:-latest}
     build: service/orders
