@@ -1,5 +1,8 @@
 package nl.tudelft.wdm.group1.rest.web;
 
+import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.RestException;
 import nl.tudelft.wdm.group1.common.User;
 import nl.tudelft.wdm.group1.common.payload.UserCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.UserDeletePayload;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,29 +29,29 @@ public class UserController {
     }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<User>> addUser(
+    public CompletableFuture<User> addUser(
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
             @RequestParam("street") String street,
             @RequestParam("zip") String zip,
             @RequestParam("city") String city
     ) {
-        return kafka.performAction(new UserCreatePayload(firstName, lastName, street, zip, city))
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        return kafka.performAction(new UserCreatePayload(firstName, lastName, street, zip, city));
     }
 
     @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<User>> getUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new UserGetPayload(id))
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    public CompletableFuture<User> getUser(@PathVariable(value = "id") UUID id) {
+        return kafka.performAction(new UserGetPayload(id));
     }
 
     @DeleteMapping("/{id}")
-    public CompletableFuture<ResponseEntity<User>> removeUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new UserDeletePayload(id))
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    public CompletableFuture<User> removeUser(@PathVariable(value = "id") UUID id) {
+        return kafka.performAction(new UserDeletePayload(id));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(Throwable ex) {
+        return ex.getMessage();
     }
 }

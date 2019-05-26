@@ -1,9 +1,6 @@
 package nl.tudelft.wdm.group1.rest;
 
-import nl.tudelft.wdm.group1.common.KafkaResponse;
-import nl.tudelft.wdm.group1.common.RestStatus;
-import nl.tudelft.wdm.group1.common.RestTopics;
-import nl.tudelft.wdm.group1.common.User;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.common.payload.UserCreatePayload;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -41,7 +38,7 @@ public class RestAddUserTest {
 
     @Test
     public void userCreateSuccess() throws Exception {
-        WdmKafkaTestHelpers.<UserCreatePayload>setupKafkaResponse(
+        WdmKafkaTestHelpers.<UserCreatePayload, KafkaResponse<User>>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
                 record -> record.getFirstName().equals("Jane"),
                 record -> new KafkaResponse<>(record.getRequestId(), new User("Jane", "Da", "Main Street", "90101", "Rome"), RestStatus.Success)
@@ -67,10 +64,10 @@ public class RestAddUserTest {
 
     @Test
     public void userCreateFailure() throws Exception {
-        WdmKafkaTestHelpers.<UserCreatePayload>setupKafkaResponse(
+        WdmKafkaTestHelpers.<UserCreatePayload, KafkaErrorResponse>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
                 record -> record.getFirstName().equals("John"),
-                record -> new KafkaResponse<>(record.getRequestId(), null, RestStatus.Failure)
+                record -> new KafkaErrorResponse(record.getRequestId(), new Exception("Cannot create user"))
         );
 
         MvcResult mvcResult = mockMvc.perform(
@@ -85,6 +82,6 @@ public class RestAddUserTest {
                 .andReturn();
 
         mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 }

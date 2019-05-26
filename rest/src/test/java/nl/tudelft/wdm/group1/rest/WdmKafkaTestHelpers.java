@@ -35,9 +35,9 @@ public class WdmKafkaTestHelpers {
      * @param transformation Function which return the value expected from kafka.
      * @param <T> Type of the input value.
      */
-    public static <T> void setupKafkaResponse(EmbeddedKafkaBroker embeddedKafka, Function<T, Boolean> precondition, Function<T, KafkaResponse> transformation) {
+    public static <T, V> void setupKafkaResponse(EmbeddedKafkaBroker embeddedKafka, Function<T, Boolean> precondition, Function<T, V> transformation) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            Producer<String, KafkaResponse> producer = createProducer(embeddedKafka);
+            Producer<String, V> producer = createProducer(embeddedKafka);
             Consumer<String, T> consumer = createConsumer(embeddedKafka);
             consumer.subscribe(Collections.singletonList(RestTopics.REQUEST));
             logger.info("Listening on topic = {}", RestTopics.REQUEST);

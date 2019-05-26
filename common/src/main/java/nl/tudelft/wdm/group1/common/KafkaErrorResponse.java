@@ -4,21 +4,21 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.UUID;
 
-public class KafkaResponse<T> {
+public class KafkaErrorResponse {
     private UUID id;
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    private T payload;
+    private Throwable payload;
 
-    public KafkaResponse() {
+    public KafkaErrorResponse() {
 
     }
 
-    public KafkaResponse(UUID id, T payload, RestStatus status) {
+    public KafkaErrorResponse(UUID id, Throwable payload) {
         this.id = id;
         this.payload = payload;
     }
 
-    public T getPayload() {
+    public Throwable getPayload() {
         return payload;
     }
 
