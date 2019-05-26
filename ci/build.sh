@@ -4,9 +4,12 @@
 set -e
 
 SUB_PROJECT=$1
-IMAGE_NAME=wdmk/${SUB_PROJECT}:${TRAVIS_BRANCH}_${TRAVIS_BUILD_NUMBER}
-IMAGE_NAME_SHORT=wdmk/${SUB_PROJECT}:${TRAVIS_BRANCH}
-IMAGE_NAME_LATEST=wdmk/${SUB_PROJECT}:latest
+LOCATION=$2
+NAME=$3
+
+IMAGE_NAME=wdmk/${NAME}:${TRAVIS_BRANCH}_${TRAVIS_BUILD_NUMBER}
+IMAGE_NAME_SHORT=wdmk/${NAME}:${TRAVIS_BRANCH}
+IMAGE_NAME_LATEST=wdmk/${NAME}:latest
 
 echo Pushing images to Docker Hub
 
@@ -14,7 +17,7 @@ echo Pushing images to Docker Hub
 ./gradlew :${SUB_PROJECT}:assemble
 
 # Create a docker image for this sub project
-docker build -t ${IMAGE_NAME} -t ${IMAGE_NAME_SHORT} ${SUB_PROJECT}
+docker build -t ${IMAGE_NAME} -t ${IMAGE_NAME_SHORT} ${LOCATION}
 
 # Login into docker hub
 echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
