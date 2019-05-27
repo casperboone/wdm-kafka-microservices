@@ -27,19 +27,19 @@ public class Rest {
     public void consumeUserCreate(UserCreatePayload payload) {
         User user = new User(payload.getFirstName(), payload.getLastName(), payload.getStreet(), payload.getZip(), payload.getCity());
         userRepository.addOrReplace(user);
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user, RestStatus.Success));
+        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
     }
 
     @KafkaHandler
     public void consumeUserDelete(UserDeletePayload payload) throws ResourceNotFoundException {
         userRepository.remove(payload.getUserId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), null, RestStatus.Success));
+        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), null));
     }
 
     @KafkaHandler
     public void consumeUserGet(UserGetPayload payload) throws ResourceNotFoundException {
         User user = userRepository.find(payload.getUserId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user, RestStatus.Success));
+        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
     }
 
     @KafkaHandler
@@ -48,7 +48,7 @@ public class Rest {
             User user = userRepository.find(payload.getUserId());
             user.addCredit(payload.getAmount());
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user, RestStatus.Success));
+            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
         } catch (ResourceNotFoundException | CreditChangeInvalidException e) {
             rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
         }
@@ -60,7 +60,7 @@ public class Rest {
             User user = userRepository.find(payload.getUserId());
             user.subtractCredit(payload.getAmount());
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user, RestStatus.Success));
+            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
         } catch (ResourceNotFoundException | CreditChangeInvalidException | InsufficientCreditException e) {
             rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
         }

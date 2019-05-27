@@ -1,8 +1,5 @@
 package nl.tudelft.wdm.group1.rest.web;
 
-import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
-import nl.tudelft.wdm.group1.common.InsufficientCreditException;
-import nl.tudelft.wdm.group1.common.RestException;
 import nl.tudelft.wdm.group1.common.User;
 import nl.tudelft.wdm.group1.common.payload.UserCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.UserDeletePayload;
@@ -10,9 +7,7 @@ import nl.tudelft.wdm.group1.common.payload.UserGetPayload;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

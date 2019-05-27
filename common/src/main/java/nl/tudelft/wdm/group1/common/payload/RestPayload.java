@@ -7,7 +7,7 @@ public abstract class RestPayload {
         this.requestId = requestId;
     }
 
-    protected UUID requestId;
+    private UUID requestId;
 
     public UUID getRequestId() {
         return requestId;

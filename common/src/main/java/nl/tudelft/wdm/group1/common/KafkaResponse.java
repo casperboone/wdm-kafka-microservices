@@ -13,7 +13,7 @@ public class KafkaResponse<T> {
 
     }
 
-    public KafkaResponse(UUID id, T payload, RestStatus status) {
+    public KafkaResponse(UUID id, T payload) {
         this.id = id;
         this.payload = payload;
     }

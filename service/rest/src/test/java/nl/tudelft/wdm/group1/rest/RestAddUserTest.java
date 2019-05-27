@@ -41,7 +41,7 @@ public class RestAddUserTest {
         WdmKafkaTestHelpers.<UserCreatePayload, KafkaResponse<User>>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
                 record -> record.getFirstName().equals("Jane"),
-                record -> new KafkaResponse<>(record.getRequestId(), new User("Jane", "Da", "Main Street", "90101", "Rome"), RestStatus.Success)
+                record -> new KafkaResponse<>(record.getRequestId(), new User("Jane", "Da", "Main Street", "90101", "Rome"))
         );
 
         MvcResult mvcResult = mockMvc.perform(
