@@ -18,7 +18,7 @@ jobs:
     - name: "Test users service"
       script: ./gradlew :service:users:check
     - name: "Test rest service"
-      script: ./gradlew :rest:check
+      script: ./gradlew :service:rest:check
     - stage: build
       name: "Build orders service"
       script: ./ci/build.sh service:orders service/orders orders
@@ -29,7 +29,7 @@ jobs:
     - name: "Build users service"
       script: ./ci/build.sh service:users service/users users
     - name: "Build rest service"
-      script: ./ci/build.sh rest rest rest
+      script: ./ci/build.sh service:rest service/rest rest
     - stage: end-to-end
       name: "Run end-to-end tests"
       script: ./ci/test.sh
