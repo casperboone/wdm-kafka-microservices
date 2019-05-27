@@ -1,0 +1,14 @@
+@startuml
+title Interaction with the rest server
+actor User
+User --> Rest : POST /users
+activate Rest
+database Kafka
+Rest --> Kafka : Emit on ""request"" topic
+Kafka --> UsersService : Listen on ""request"" topic
+UsersService --> UsersService : Some action
+UsersService --> Kafka : Emit on ""response"" topic
+Kafka --> Rest : Listen on ""response"" topic
+Rest --> User : Return
+deactivate Rest
+@enduml
