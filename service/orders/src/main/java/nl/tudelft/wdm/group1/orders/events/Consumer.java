@@ -70,6 +70,7 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setPaid(true);
+        order.setStatus(OrderStatus.SUCCEEDED);
         orderRepository.addOrReplace(order);
 
         // TODO notify user

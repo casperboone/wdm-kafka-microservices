@@ -31,7 +31,6 @@ public class UserConsumer {
     public void consumePaymentFailed(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
         // Emit payment failed message
-        // TODO: remove payment as well
         producer.emitPaymentFailed(payment);
     }
 }
