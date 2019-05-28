@@ -23,13 +23,13 @@ public class Consumer {
     public void consume(User user) {
         logger.info(String.format("#### -> Consumed message -> %s", user));
 
-        userRepository.addOrReplace(user);
+        userRepository.save(user);
     }
 
     @KafkaListener(topics = UsersTopics.USER_DELETED)
     public void consumeUserDeleted(User user) throws ResourceNotFoundException {
         logger.info(String.format("#### -> Consumed message -> %s", user));
 
-        userRepository.remove(user.getId());
+        userRepository.delete(userRepository.findOrElseThrow(user.getId()));
     }
 }

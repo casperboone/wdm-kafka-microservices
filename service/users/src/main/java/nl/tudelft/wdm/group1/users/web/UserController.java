@@ -39,11 +39,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return userRepository.find(id);
+        return userRepository.findOrElseThrow(id);
     }
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        producer.emitUserDeleted(userRepository.find(id));
+        producer.emitUserDeleted(userRepository.findOrElseThrow(id));
     }
 }

@@ -25,7 +25,7 @@ public class CreditController {
 
     @GetMapping
     public User getCredit(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return userRepository.find(id);
+        return userRepository.findOrElseThrow(id);
     }
 
     @PostMapping("/subtract/{amount}")
@@ -33,7 +33,7 @@ public class CreditController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) throws ResourceNotFoundException, InsufficientCreditException, CreditChangeInvalidException {
-        User user = userRepository.find(id);
+        User user = userRepository.findOrElseThrow(id);
         user.subtractCredit(amount);
         producer.emitCreditSubtracted(user);
         return user;
@@ -44,7 +44,7 @@ public class CreditController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) throws ResourceNotFoundException, CreditChangeInvalidException {
-        User user = userRepository.find(id);
+        User user = userRepository.findOrElseThrow(id);
         user.addCredit(amount);
         producer.emitCreditAdded(user);
         return user;
