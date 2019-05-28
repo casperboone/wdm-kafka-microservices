@@ -13,8 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class EndToEndTest {
     private static final String DEFAULT_BASE_URI = "http://localhost:8080";
@@ -71,7 +69,7 @@ public class EndToEndTest {
 
     private void addCredit(UUID userId, int amount) {
         Response response = given()
-                .when().get("/users/" + userId + "/credit");
+                .when().get("/users/" + userId);
 
         response.then().statusCode(200);
 
@@ -82,7 +80,7 @@ public class EndToEndTest {
                 .then().statusCode(200);
 
         await().until(() -> given()
-                .when().get("/users/" + userId + "/credit")
+                .when().get("/users/" + userId)
                 .jsonPath().get("credit").equals(currentAmount + amount));
     }
 
