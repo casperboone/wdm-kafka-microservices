@@ -84,8 +84,8 @@ public class Consumer {
     @KafkaListener(topics = {OrdersTopics.ORDER_CANCELLED})
     public void consume(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
-        // Only perform action when the order was cancelled due to lack of stock
-        if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFSTOCK){
+        // Only perform action when the order was cancelled due to lack of payment
+        if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFPAYMENT){
             // TODO: Re-add items to stock
         }
     }

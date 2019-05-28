@@ -61,6 +61,8 @@ public class Consumer {
         orderRepository.addOrReplace(order);
 
         producer.emitOrderCancelled(order);
+
+        // TODO notify user
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_SUCCESSFUL})
@@ -69,6 +71,18 @@ public class Consumer {
 
         order.setPaid(true);
         orderRepository.addOrReplace(order);
+
+        // TODO notify user
+    }
+
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
+    public void consumePaymenFailed(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+
+        order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
+        orderRepository.addOrReplace(order);
+
+        producer.emitOrderCancelled(order);
 
         // TODO notify user
     }
