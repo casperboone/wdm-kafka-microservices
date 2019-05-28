@@ -54,8 +54,8 @@ public class OrdersApplicationTest {
     public void setUp() throws Exception {
         defaultOrder = new Order(UUID.randomUUID());
         defaultOrder.addItem(defaultOrderItemId);
-        orderRepository.add(defaultOrder);
-        assertThat(orderRepository.find(defaultOrder.getId())).isNotNull();
+        orderRepository.save(defaultOrder);
+        assertThat(orderRepository.findOrElseThrow(defaultOrder.getId())).isNotNull();
     }
 
     @Test
@@ -66,9 +66,9 @@ public class OrdersApplicationTest {
 
         UUID userUUID = UUID.fromString(getJsonValue(result, "$.id"));
 
-        await().until(() -> orderRepository.contains(userUUID));
+        await().until(() -> orderRepository.existsById(userUUID));
 
-        Order order = orderRepository.find(userUUID);
+        Order order = orderRepository.findOrElseThrow(userUUID);
 
         assertThat(order.getUserId()).isEqualTo(defaultOrder.getUserId());
         assertThat(order.getItemIds()).isEmpty();
@@ -86,7 +86,7 @@ public class OrdersApplicationTest {
         this.mockMvc.perform(delete("/orders/" + defaultOrder.getId()))
                 .andExpect(status().isOk());
 
-        await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.find(defaultOrder.getId()))
+        await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.findOrElseThrow(defaultOrder.getId()))
                 .isInstanceOf(ResourceNotFoundException.class));
     }
 
@@ -98,7 +98,7 @@ public class OrdersApplicationTest {
                         .param("itemId", newItemId.toString())
         ).andExpect(status().isOk());
 
-        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).contains(defaultOrderItemId, newItemId));
+        await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).contains(defaultOrderItemId, newItemId));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class OrdersApplicationTest {
                         .param("itemId", defaultOrderItemId.toString())
         ).andExpect(status().isOk());
 
-        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).isEmpty());
+        await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).isEmpty());
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
