@@ -69,7 +69,7 @@ public class OrderController {
     public Order checkoutOrder(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
         Order order = orderRepository.find(id);
 
-        producer.emitOrderCheckedOut(order);
+        producer.emitOrderReady(order);
 
         return order;
     }
