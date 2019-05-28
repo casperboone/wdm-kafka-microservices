@@ -33,12 +33,12 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public Order getOrder(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return orderRepository.find(id);
+        return orderRepository.findOrElseThrow(id);
     }
 
     @DeleteMapping("/{id}")
     public Order deleteOrder(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        Order order = orderRepository.find(id);
+        Order order = orderRepository.findOrElseThrow(id);
 
         producer.emitOrderDeleted(order);
 
@@ -47,7 +47,7 @@ public class OrderController {
 
     @PostMapping("/{id}/items")
     public Order addOrderItem(@PathVariable(value = "id") UUID id, @RequestParam("itemId") UUID itemId) throws ResourceNotFoundException {
-        Order order = orderRepository.find(id);
+        Order order = orderRepository.findOrElseThrow(id);
         order.addItem(itemId);
 
         producer.emitOrderItemAdded(order);
@@ -57,7 +57,7 @@ public class OrderController {
 
     @DeleteMapping("/{id}/items")
     public Order deleteOrderItem(@PathVariable(value = "id") UUID id, @RequestParam("itemId") UUID itemId) throws ResourceNotFoundException {
-        Order order = orderRepository.find(id);
+        Order order = orderRepository.findOrElseThrow(id);
         order.deleteItem(itemId);
 
         producer.emitOrderItemDeleted(order);
@@ -67,7 +67,7 @@ public class OrderController {
 
     @PostMapping("/{id}/checkout")
     public Order checkoutOrder(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        Order order = orderRepository.find(id);
+        Order order = orderRepository.findOrElseThrow(id);
 
         producer.emitOrderReady(order);
 
