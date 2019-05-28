@@ -178,8 +178,7 @@ public class EndToEndTest {
         for (Map<String, String> stock : stocks) {
 
             Response stockResponse = given().params(stock)
-                    .when().post("/stock").andReturn()
-                    .andReturn();
+                    .when().post("/stock").andReturn();
 
             stockResponse.then().statusCode(200);
 

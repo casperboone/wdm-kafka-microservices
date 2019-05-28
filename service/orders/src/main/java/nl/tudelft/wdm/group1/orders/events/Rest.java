@@ -77,6 +77,17 @@ public class Rest {
         }
     }
 
+    @KafkaHandler
+    public void checkoutOrder(OrderCheckoutPayload payload) {
+        try {
+            Order order = orderRepository.findOrElseThrow(payload.getId());
+            producer.emitOrderReady(order);
+            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), order));
+        } catch (ResourceNotFoundException e) {
+            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+        }
+    }
+
     @KafkaHandler(isDefault = true)
     public void listenDefault(Object object) {
     }
