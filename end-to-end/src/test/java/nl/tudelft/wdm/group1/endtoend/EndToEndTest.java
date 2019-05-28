@@ -81,12 +81,9 @@ public class EndToEndTest {
                 .when().post("/users/" + userId + "/credit/add/" + amount)
                 .then().statusCode(200);
 
-        response = given()
-                .when().get("/users/" + userId + "/credit");
-
-        response.then().statusCode(200);
-
-        assertThat(response.jsonPath().get("credit"), is(currentAmount + amount));
+        await().until(() -> given()
+                .when().get("/users/" + userId + "/credit")
+                .jsonPath().get("credit").equals(currentAmount + amount));
     }
 
     private void checkoutOrder(UUID order) {
