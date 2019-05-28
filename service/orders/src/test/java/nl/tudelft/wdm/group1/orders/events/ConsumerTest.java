@@ -29,7 +29,7 @@ public class ConsumerTest {
         Order order = new Order(UUID.randomUUID());
         consumer.consumeOrderProcessedInStockSuccessful(order);
         assertThat(order.isProcessedInStock()).isTrue();
-        verify(orderRepository).addOrReplace(order);
+        verify(orderRepository).save(order);
         verify(producer).emitOrderCheckedOut(order);
     }
 
@@ -38,7 +38,7 @@ public class ConsumerTest {
         Order order = new Order(UUID.randomUUID());
         consumer.consumePaymentSuccessful(order);
         assertThat(order.isPaid()).isTrue();
-        verify(orderRepository).addOrReplace(order);
+        verify(orderRepository).save(order);
     }
 
     @Test

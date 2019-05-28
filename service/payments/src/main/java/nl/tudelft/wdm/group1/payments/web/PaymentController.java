@@ -28,7 +28,7 @@ public class PaymentController {
      */
     @PostMapping("/{userId}/{orderId}/{amount}")
     public Payment addPayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId, @PathVariable(value = "amount") int amount) {
-        if(!paymentRepository.exists(orderId)) {
+        if(!paymentRepository.existsById(orderId)) {
             Payment payment = new Payment(userId, orderId, amount);
             producer.emitPaymentCreated(payment);
             return payment;
@@ -43,7 +43,7 @@ public class PaymentController {
      */
     @DeleteMapping("/{userId}/{orderId}")
     public Payment deletePayment(@PathVariable(value = "userId") UUID userId, @PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
-        Payment payment = paymentRepository.find(orderId);
+        Payment payment = paymentRepository.findOrElseThrow(orderId);
         producer.emitPaymentDeleted(payment);
         return payment;
     }
@@ -54,6 +54,6 @@ public class PaymentController {
      */
     @GetMapping("/{orderId}")
     public Payment getPayment(@PathVariable(value = "orderId") UUID orderId) throws ResourceNotFoundException {
-        return paymentRepository.find(orderId);
+        return paymentRepository.findOrElseThrow(orderId);
     }
 }

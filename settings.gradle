@@ -6,4 +6,4 @@ pluginManagement {
 
 rootProject.name = 'wdm-kafka-microservices'
 
-include 'service:users', 'service:orders', 'service:stock', 'service:payments', 'end-to-end', 'common'
+include 'service:users', 'service:orders', 'service:stock', 'service:payments', 'service:rest', 'end-to-end', 'common'

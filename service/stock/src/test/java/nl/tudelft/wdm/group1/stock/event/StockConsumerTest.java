@@ -7,7 +7,6 @@ import nl.tudelft.wdm.group1.stock.events.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +30,7 @@ public class StockConsumerTest {
         throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(10, "Milk", 1);
         StockItem stockItem2 = new StockItem(5, "Coke", 1);
-        when(stockItemRepository.find(any(UUID.class))).thenReturn(stockItem1, stockItem2);
+        when(stockItemRepository.findOrElseThrow(any(UUID.class))).thenReturn(stockItem1, stockItem2);
 
         Order order = new Order(UUID.randomUUID());
         order.addItem(stockItem1.getId());
@@ -47,7 +46,7 @@ public class StockConsumerTest {
         throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(0, "Milk", 1);
         StockItem stockItem2 = new StockItem(1, "Coke", 1);
-        when(stockItemRepository.find(any(UUID.class))).thenReturn(stockItem1, stockItem2);
+        when(stockItemRepository.findOrElseThrow(any(UUID.class))).thenReturn(stockItem1, stockItem2);
 
         Order order = new Order(UUID.randomUUID());
         order.addItem(stockItem1.getId());

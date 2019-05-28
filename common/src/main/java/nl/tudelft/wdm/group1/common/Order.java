@@ -1,12 +1,19 @@
 package nl.tudelft.wdm.group1.common;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Entity(name = "order_table")
 public class Order {
+    @Id
     private UUID id;
     private UUID userId;
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<UUID> itemIds;
     private boolean processedInStock;
     private boolean paid;
@@ -46,9 +53,13 @@ public class Order {
         return paid;
     }
 
-    public int getPrice() { return price; }
+    public int getPrice() {
+        return price;
+    }
 
-    public void setPrice(int price) { this.price = price; }
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
     public void addItem(UUID itemId) {
         itemIds.add(itemId);

@@ -3,7 +3,6 @@ package nl.tudelft.wdm.group1.orders.events;
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.common.OrderStatus;
 import nl.tudelft.wdm.group1.common.OrdersTopics;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.common.StockTopics;
 import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
@@ -33,14 +32,14 @@ public class Consumer {
     public void consume(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
-        orderRepository.addOrReplace(order);
+        orderRepository.save(order);
     }
 
-    @KafkaListener(topics = {OrdersTopics.ORDER_DELETED})
-    public void consumeOrderDeleted(Order order) throws ResourceNotFoundException {
+    @KafkaListener(topics = OrdersTopics.ORDER_DELETED)
+    public void consumeOrderDeleted(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
-        orderRepository.remove(order.getId());
+        orderRepository.deleteById(order.getId());
     }
 
     @KafkaListener(topics = {OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL})
@@ -48,7 +47,7 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setProcessedInStock(true);
-        orderRepository.addOrReplace(order);
+        orderRepository.save(order);
 
         producer.emitOrderCheckedOut(order);
     }
@@ -71,7 +70,7 @@ public class Consumer {
 
         order.setPaid(true);
         order.setStatus(OrderStatus.SUCCEEDED);
-        orderRepository.addOrReplace(order);
+        orderRepository.save(order);
 
         // TODO notify user
     }

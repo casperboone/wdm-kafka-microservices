@@ -51,7 +51,7 @@ public class StockApplicationTest {
     @Before
     public void setUp() {
         defaultStockItem = new StockItem(100, "item1", 1000);
-        stockItemRepository.add(defaultStockItem);
+        stockItemRepository.save(defaultStockItem);
     }
 
     @Test
@@ -63,9 +63,9 @@ public class StockApplicationTest {
                         .param("price", "999")
         ).andExpect(status().isOk()).andReturn();
 
-        await().until(() -> stockItemRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
+        await().until(() -> stockItemRepository.existsById(UUID.fromString(getJsonValue(result, "$.id"))));
 
-        StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        StockItem stockItem = stockItemRepository.findOrElseThrow(UUID.fromString(getJsonValue(result, "$.id")));
 
         assertThat(stockItem.getStock()).isEqualTo(99);
         assertThat(stockItem.getName()).isEqualTo("item2");
@@ -87,7 +87,7 @@ public class StockApplicationTest {
         this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/100"))
                 .andExpect(status().isOk());
 
-        assertThat(defaultStockItem.getStock()).isEqualTo(200); //100 + 100 = 200
+        await().until(() -> stockItemRepository.findOrElseThrow(defaultStockItem.getId()).getStock() == 200);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class StockApplicationTest {
         this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/10"))
                 .andExpect(status().isOk());
 
-        assertThat(defaultStockItem.getStock()).isEqualTo(90); //100 - 10 = 90
+        await().until(() -> stockItemRepository.findOrElseThrow(defaultStockItem.getId()).getStock() == 90);
     }
 
     @Test

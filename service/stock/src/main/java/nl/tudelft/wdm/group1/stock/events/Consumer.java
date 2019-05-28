@@ -1,16 +1,12 @@
 package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.common.*;
-import nl.tudelft.wdm.group1.common.OrdersTopics;
 import nl.tudelft.wdm.group1.stock.*;
-import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 @Service
@@ -30,7 +26,7 @@ public class Consumer {
     public void consumeStockItemChange(final StockItem stockItem) {
         logger.info(String.format("#### -> Consumed message -> %s", stockItem));
 
-        stockItemRepository.addOrReplace(stockItem);
+        stockItemRepository.save(stockItem);
     }
 
     @KafkaListener(topics = {OrdersTopics.ORDER_CHECKED_OUT})
@@ -43,7 +39,7 @@ public class Consumer {
         for (UUID stockItemId : order.getItemIds()) {
             StockItem stockItem;
             try {
-                stockItem = stockItemRepository.find(stockItemId);
+                stockItem = stockItemRepository.findOrElseThrow(stockItemId);
             } catch (ResourceNotFoundException e) {
                 producer.emitStockItemsSubtractForOrderFailed(order);
                 return;
@@ -61,7 +57,7 @@ public class Consumer {
         for (UUID stockItemId : order.getItemIds()) {
             StockItem stockItem;
             try {
-                stockItem = stockItemRepository.find(stockItemId);
+                stockItem = stockItemRepository.findOrElseThrow(stockItemId);
             } catch (ResourceNotFoundException e) {
                 // we assume this should not cause any exception
                 throw e;
