@@ -65,8 +65,9 @@ public class StockConsumerTest {
         UUID stockItemId = stockItem.getId();
         order.addItem(stockItem.getId());
         order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
-
+        when(stockItemRepository.find(stockItemId)).thenReturn(stockItem);
         stockConsumer.consumeOrderCancelled(order);
         verify(stockItemRepository).find(stockItemId);
+        assertThat(stockItem.getStock()).isEqualTo(2);
     }
 }
