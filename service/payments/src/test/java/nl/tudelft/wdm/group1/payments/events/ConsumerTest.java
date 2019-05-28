@@ -48,6 +48,5 @@ public class ConsumerTest {
         Payment payment = new Payment(userId, orderId, amount);
         userConsumer.consumePaymentFailed(payment);
         verify(producer).emitPaymentFailed(payment);
-        assertThat(paymentRepository.exists(payment.getOrderId())).isFalse();
     }
 }

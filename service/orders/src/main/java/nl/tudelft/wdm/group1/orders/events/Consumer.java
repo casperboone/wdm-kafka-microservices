@@ -57,7 +57,7 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setStatus(OrderStatus.FAILEDDUETOLACKOFSTOCK);
-        orderRepository.addOrReplace(order);
+        orderRepository.save(order);
 
         producer.emitOrderCancelled(order);
 
@@ -80,7 +80,7 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
-        orderRepository.addOrReplace(order);
+        orderRepository.save(order);
 
         producer.emitOrderCancelled(order);
 

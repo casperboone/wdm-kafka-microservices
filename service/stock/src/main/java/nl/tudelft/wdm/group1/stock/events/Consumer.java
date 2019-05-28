@@ -85,7 +85,7 @@ public class Consumer {
             // TODO: lock the stock while adding
             for (UUID stockItemId : order.getItemIds()) {
                 try {
-                    StockItem stockItem = stockItemRepository.find(stockItemId);
+                    StockItem stockItem = stockItemRepository.findOrElseThrow(stockItemId);
                     stockItem.addStock(1);
                 } catch (ResourceNotFoundException | InvalidStockChangeException e) {
                     // we assume this should not cause any exception
