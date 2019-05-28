@@ -86,7 +86,16 @@ public class Consumer {
         logger.info(String.format("#### -> Consumed message -> %s", order));
         // Only perform action when the order was cancelled due to lack of payment
         if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFPAYMENT){
-            // TODO: Re-add items to stock
+            // TODO: lock the stock while adding
+            for (UUID stockItemId : order.getItemIds()) {
+                try {
+                    StockItem stockItem = stockItemRepository.find(stockItemId);
+                    stockItem.addStock(1);
+                } catch (ResourceNotFoundException | InvalidStockChangeException e) {
+                    // we assume this should not cause any exception
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
