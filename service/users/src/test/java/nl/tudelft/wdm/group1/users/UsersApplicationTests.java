@@ -24,7 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,7 +56,7 @@ public class UsersApplicationTests {
     public void setUp() throws CreditChangeInvalidException {
         defaultUser = new User("John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
         defaultUser.addCredit(2249);
-        userRepository.add(defaultUser);
+        userRepository.save(defaultUser);
     }
 
     @Test
@@ -68,9 +70,9 @@ public class UsersApplicationTests {
                         .param("city", "Rome")
         ).andExpect(status().isOk()).andReturn();
 
-        await().until(() -> userRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
+        await().until(() -> userRepository.existsById(UUID.fromString(getJsonValue(result, "$.id"))));
 
-        User user = userRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        User user = userRepository.findOrElseThrow(UUID.fromString(getJsonValue(result, "$.id")));
 
         assertThat(user.getFirstName()).isEqualTo("Jane");
         assertThat(user.getLastName()).isEqualTo("Da");
@@ -98,7 +100,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(delete("/users/" + defaultUser.getId()))
                 .andExpect(status().isOk());
 
-        await().untilAsserted(() -> assertThatThrownBy(() -> userRepository.find(defaultUser.getId()))
+        await().untilAsserted(() -> assertThatThrownBy(() -> userRepository.findOrElseThrow(defaultUser.getId()))
                 .isInstanceOf(ResourceNotFoundException.class));
     }
 
@@ -114,7 +116,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/add/1500"))
                 .andExpect(status().isOk());
 
-        assertThat(defaultUser.getCredit()).isEqualTo(3749);
+        await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 3749);
     }
 
     @Test
@@ -122,7 +124,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/add/-1500"))
                 .andExpect(status().isUnprocessableEntity());
 
-        assertThat(defaultUser.getCredit()).isEqualTo(2249);
+        await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);
     }
 
     @Test
@@ -130,7 +132,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/1500"))
                 .andExpect(status().isOk());
 
-        assertThat(defaultUser.getCredit()).isEqualTo(749);
+        await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 749);
     }
 
     @Test
@@ -138,7 +140,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/3000"))
                 .andExpect(status().isUnprocessableEntity());
 
-        assertThat(defaultUser.getCredit()).isEqualTo(2249);
+        await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);
     }
 
     @Test
@@ -146,7 +148,7 @@ public class UsersApplicationTests {
         this.mockMvc.perform(post("/users/" + defaultUser.getId() + "/credit/subtract/-1500"))
                 .andExpect(status().isUnprocessableEntity());
 
-        assertThat(defaultUser.getCredit()).isEqualTo(2249);
+        await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);
     }
 
     private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
