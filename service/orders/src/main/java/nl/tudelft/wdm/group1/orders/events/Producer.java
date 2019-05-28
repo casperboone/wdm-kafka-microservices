@@ -40,6 +40,11 @@ public class Producer {
         this.kafkaTemplate.send(OrdersTopics.ORDER_CHECKED_OUT, order);
     }
 
+    public void emitOrderCancelled(Order order) {
+        logger.info(String.format("#### -> Producing message -> %s", order));
+        this.kafkaTemplate.send(OrdersTopics.ORDER_CANCELLED, order);
+    }
+
     public void emitOrderReady(Order order) {
         logger.info(String.format("#### -> Producing message -> %s", order));
         this.kafkaTemplate.send(OrdersTopics.ORDER_READY, order);

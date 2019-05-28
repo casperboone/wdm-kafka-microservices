@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.OrdersTopics;
 import nl.tudelft.wdm.group1.stock.*;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
@@ -78,6 +79,15 @@ public class Consumer {
 
         order.setPrice(totalPrice);
         producer.emitStockItemsSubtractedForOrder(order);
+    }
+
+    @KafkaListener(topics = {OrdersTopics.ORDER_CANCELLED})
+    public void consume(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+        // Only perform action when the order was cancelled due to lack of stock
+        if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFSTOCK){
+            // TODO: Re-add items to stock
+        }
     }
 
 }
