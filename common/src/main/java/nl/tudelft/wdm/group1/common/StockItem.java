@@ -1,8 +1,12 @@
 package nl.tudelft.wdm.group1.common;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.UUID;
 
+@Entity
 public class StockItem {
+    @Id
     private UUID id;
     private int stock;
     private String name;
