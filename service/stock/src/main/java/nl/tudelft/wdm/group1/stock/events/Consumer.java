@@ -27,7 +27,7 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {StockTopics.STOCK_ITEM_CREATED, StockTopics.STOCK_ADDED, StockTopics.STOCK_SUBTRACTED})
-    public void consume(final StockItem stockItem) {
+    public void consumeStockItemChange(final StockItem stockItem) {
         logger.info(String.format("#### -> Consumed message -> %s", stockItem));
 
         stockItemRepository.addOrReplace(stockItem);
@@ -82,7 +82,7 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {OrdersTopics.ORDER_CANCELLED})
-    public void consume(Order order) {
+    public void consumeOrderCancelled(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
         // Only perform action when the order was cancelled due to lack of payment
         if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFPAYMENT){

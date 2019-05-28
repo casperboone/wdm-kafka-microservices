@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.orders.events;
 
 import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.OrderStatus;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,5 +39,21 @@ public class ConsumerTest {
         consumer.consumePaymentSuccessful(order);
         assertThat(order.isPaid()).isTrue();
         verify(orderRepository).addOrReplace(order);
+    }
+
+    @Test
+    public void testHandleOrderProcessedInStockFailed() {
+        Order order = new Order(UUID.randomUUID());
+        consumer.consumeOrderProcessedInStockFailed(order);
+        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILEDDUETOLACKOFSTOCK);
+        verify(producer).emitOrderCancelled(order);
+    }
+
+    @Test
+    public void testHandleOrderProcessedPaymentFailed() {
+        Order order = new Order(UUID.randomUUID());
+        consumer.consumePaymentFailed(order);
+        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
+        verify(producer).emitOrderCancelled(order);
     }
 }

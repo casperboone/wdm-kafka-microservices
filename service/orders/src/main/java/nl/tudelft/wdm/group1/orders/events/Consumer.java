@@ -77,7 +77,7 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
-    public void consumePaymenFailed(Order order) {
+    public void consumePaymentFailed(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
