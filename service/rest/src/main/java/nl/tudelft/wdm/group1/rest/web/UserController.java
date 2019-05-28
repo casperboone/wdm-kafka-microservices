@@ -6,7 +6,6 @@ import nl.tudelft.wdm.group1.common.payload.UserDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.UserGetPayload;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -42,11 +41,5 @@ public class UserController {
     @DeleteMapping("/{id}")
     public CompletableFuture<User> removeUser(@PathVariable(value = "id") UUID id) {
         return kafka.performAction(new UserDeletePayload(id));
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleException(Throwable ex) {
-        return ex.getMessage();
     }
 }

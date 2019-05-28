@@ -31,15 +31,23 @@ public class Rest {
     }
 
     @KafkaHandler
-    public void consumeUserDelete(UserDeletePayload payload) throws ResourceNotFoundException {
-        userRepository.remove(payload.getUserId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), null));
+    public void consumeUserDelete(UserDeletePayload payload) {
+        try {
+            userRepository.remove(payload.getUserId());
+            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), null));
+        } catch (ResourceNotFoundException e) {
+            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+        }
     }
 
     @KafkaHandler
-    public void consumeUserGet(UserGetPayload payload) throws ResourceNotFoundException {
-        User user = userRepository.find(payload.getUserId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+    public void consumeUserGet(UserGetPayload payload) {
+        try {
+            User user = userRepository.find(payload.getUserId());
+            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+        } catch (ResourceNotFoundException e) {
+            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+        }
     }
 
     @KafkaHandler
@@ -64,5 +72,9 @@ public class Rest {
         } catch (ResourceNotFoundException | CreditChangeInvalidException | InsufficientCreditException e) {
             rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
         }
+    }
+
+    @KafkaHandler(isDefault = true)
+    public void listenDefault(Object object) {
     }
 }

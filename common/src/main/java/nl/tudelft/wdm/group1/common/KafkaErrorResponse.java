@@ -1,6 +1,7 @@
 package nl.tudelft.wdm.group1.common;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.http.HttpStatus;
 
 import java.util.UUID;
 

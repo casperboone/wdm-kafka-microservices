@@ -50,6 +50,10 @@ public class Rest {
             rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
+
+    @KafkaHandler(isDefault = true)
+    public void listenDefault(Object object) {
+    }
 }
 
 
