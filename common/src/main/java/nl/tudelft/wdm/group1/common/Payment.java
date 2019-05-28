@@ -1,11 +1,18 @@
 package nl.tudelft.wdm.group1.common;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.UUID;
 
+@Entity
 public class Payment {
     private UUID userId;
+    @Id
     private UUID orderId;
     private int amount;
+
+    public Payment() {
+    }
 
     public Payment(UUID userId, UUID orderId, int amount) {
         this.userId = userId;
