@@ -7,7 +7,6 @@ import nl.tudelft.wdm.group1.stock.events.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -56,4 +55,19 @@ public class StockConsumerTest {
 
         verify(stockProducer).emitStockItemsSubtractForOrderFailed(order);
     }
+
+    @Test
+    public void testHandleOrderCheckedOutWithSufficientStockForMultipleUsers()
+            throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
+        // stock items sufficient to meet all user's need
+
+    }
+
+    @Test
+    public void testHandleOrderCheckedOutWithInsufficientStockForMultipleUsers()
+            throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
+        // stock items sufficient for one user but not for more than one users
+
+    }
+
 }
