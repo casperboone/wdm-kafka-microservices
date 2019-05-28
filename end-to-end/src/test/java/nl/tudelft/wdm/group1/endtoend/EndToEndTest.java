@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.endToEnd;
+package nl.tudelft.wdm.group1.endtoend;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -48,7 +48,7 @@ public class EndToEndTest {
     }
 
     @Test
-    public void createAndDeleteUser() throws InterruptedException {
+    public void createAndDeleteUser() {
         List<UUID> users = createUsers();
         List<UUID> stocks = createStocks();
 
