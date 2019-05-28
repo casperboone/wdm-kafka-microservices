@@ -38,7 +38,7 @@ public class StockController {
 
     @GetMapping("/{id}")
     public StockItem getStockItem(@PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
-        return stockItemRepository.find(id);
+        return stockItemRepository.findOrElseThrow(id);
     }
 
     @PostMapping("/{id}/subtract/{amount}")
@@ -46,7 +46,7 @@ public class StockController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
-        StockItem item = stockItemRepository.find(id);
+        StockItem item = stockItemRepository.findOrElseThrow(id);
         item.subtractStock(amount);
         producer.emitStockItemSubtracted(item);
 
@@ -58,7 +58,7 @@ public class StockController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) throws ResourceNotFoundException, InvalidStockChangeException {
-        StockItem item = stockItemRepository.find(id);
+        StockItem item = stockItemRepository.findOrElseThrow(id);
         item.addStock(amount);
         producer.emitStockItemAdded(item);
 
