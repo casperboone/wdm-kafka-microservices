@@ -52,7 +52,7 @@ public class PaymentsApplicationTest {
     @Before
     public void setUp() throws Exception {
         defaultPayment = new Payment(defaultUserId, defaultOrderId, defaultAmount);
-        paymentRepository.add(defaultPayment);
+        paymentRepository.save(defaultPayment);
     }
 
     @Test
