@@ -1,11 +1,6 @@
 package nl.tudelft.wdm.group1.users;
 
-import com.jayway.jsonpath.JsonPath;
-import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
-import nl.tudelft.wdm.group1.common.KafkaResponse;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.RestTopics;
-import nl.tudelft.wdm.group1.common.User;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.common.payload.*;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -30,10 +25,7 @@ import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -41,10 +33,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -56,9 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         }
 )
 public class UsersApplicationTests {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private UserRepository userRepository;
@@ -142,7 +127,7 @@ public class UsersApplicationTests {
     }
 
     @Test
-    public void addNegativeCreditAmount() throws Exception {
+    public void addNegativeCreditAmount() {
         createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditAddPayload(defaultUser.getId(), -1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
@@ -150,7 +135,7 @@ public class UsersApplicationTests {
     }
 
     @Test
-    public void subtractCreditWhenAvailable() throws Exception {
+    public void subtractCreditWhenAvailable() {
         createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
@@ -158,7 +143,7 @@ public class UsersApplicationTests {
     }
 
     @Test
-    public void subtractCreditWhenNotAvailable() throws Exception {
+    public void subtractCreditWhenNotAvailable() {
         createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 3000)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
@@ -166,7 +151,7 @@ public class UsersApplicationTests {
     }
 
     @Test
-    public void subtractNegativeCreditAmount() throws Exception {
+    public void subtractNegativeCreditAmount() {
         createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), -1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 

@@ -67,7 +67,7 @@ public class RestAddUserTest {
         WdmKafkaTestHelpers.<UserCreatePayload, KafkaErrorResponse>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
                 record -> record.getFirstName().equals("John"),
-                record -> new KafkaErrorResponse(record.getRequestId(), new Exception("Cannot create user"))
+                record -> new KafkaErrorResponse(record.getRequestId(), new ResourceNotFoundException("Cannot create user"))
         );
 
         MvcResult mvcResult = mockMvc.perform(

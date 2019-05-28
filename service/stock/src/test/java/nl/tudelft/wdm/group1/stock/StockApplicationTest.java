@@ -1,30 +1,41 @@
 package nl.tudelft.wdm.group1.stock;
 
-import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
+import nl.tudelft.wdm.group1.common.RestTopics;
 import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemSubtractAmountPayload;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -38,9 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StockApplicationTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private StockItemRepository stockItemRepository;
 
     @ClassRule
@@ -48,24 +56,37 @@ public class StockApplicationTest {
 
     private StockItem defaultStockItem;
 
+    private static Consumer<String, KafkaResponse<StockItem>> defaultConsumer;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("consumer" + UUID.randomUUID().toString(), "false", embeddedKafka.getEmbeddedKafka());
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        JsonDeserializer<KafkaResponse<StockItem>> tJsonDeserializer = new JsonDeserializer<>();
+        tJsonDeserializer.addTrustedPackages("*");
+        defaultConsumer = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), tJsonDeserializer).createConsumer();
+        defaultConsumer.subscribe(Collections.singletonList(RestTopics.RESPONSE));
+    }
+
     @Before
     public void setUp() {
         defaultStockItem = new StockItem(100, "item1", 1000);
         stockItemRepository.add(defaultStockItem);
     }
 
+    private static <V> Producer<String, V> createProducer() {
+        Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafka.getEmbeddedKafka());
+        return new DefaultKafkaProducerFactory<String, V>(senderProps, new StringSerializer(), new JsonSerializer<>()).createProducer();
+    }
+
     @Test
     public void createNewStockItem() throws Exception {
-        MvcResult result = this.mockMvc.perform(
-                post("/stock")
-                        .param("stock", "99")
-                        .param("name", "item2")
-                        .param("price", "999")
-        ).andExpect(status().isOk()).andReturn();
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemCreatePayload(99, "item2", 999)));
+        StockItem result = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
 
-        await().until(() -> stockItemRepository.contains(UUID.fromString(getJsonValue(result, "$.id"))));
+        await().until(() -> stockItemRepository.contains(result.getId()));
 
-        StockItem stockItem = stockItemRepository.find(UUID.fromString(getJsonValue(result, "$.id")));
+        StockItem stockItem = stockItemRepository.find(result.getId());
 
         assertThat(stockItem.getStock()).isEqualTo(99);
         assertThat(stockItem.getName()).isEqualTo("item2");
@@ -73,50 +94,44 @@ public class StockApplicationTest {
     }
 
     @Test
-    public void retrieveAStockItem() throws Exception {
-        this.mockMvc.perform(get("/stock/" + defaultStockItem.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultStockItem.getId().toString())))
-                .andExpect(jsonPath("$.stock", is(100)))
-                .andExpect(jsonPath("$.name", is("item1")))
-                .andExpect(jsonPath("$.price", is(1000)));
+    public void retrieveAStockItem() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemGetPayload(defaultStockItem.getId())));
+        StockItem result = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
+
+        assertThat(result.getStock()).isEqualTo(100);
+        assertThat(result.getName()).isEqualTo("item1");
+        assertThat(result.getPrice()).isEqualTo(1000);
     }
 
     @Test
-    public void addStock() throws Exception {
-        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/100"))
-                .andExpect(status().isOk());
+    public void addStock() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), 100)));
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(200); //100 + 100 = 200
     }
 
     @Test
-    public void addNegativeStockAmount() throws Exception {
-        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/add/-100"))
-                .andExpect(status().isUnprocessableEntity());
+    public void addNegativeStockAmount() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), -100)));
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
     }
 
     @Test
-    public void subtractStock() throws Exception {
-        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/10"))
-                .andExpect(status().isOk());
+    public void subtractStock() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), 10)));
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(90); //100 - 10 = 90
     }
 
     @Test
-    public void subtractNegativeStockAmount() throws Exception {
-        this.mockMvc.perform(post("/stock/" + defaultStockItem.getId() + "/subtract/-10"))
-                .andExpect(status().isUnprocessableEntity());
+    public void subtractNegativeStockAmount() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), -10)));
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
-    }
-
-    private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
-        String response = mvcResult.getResponse().getContentAsString();
-
-        return JsonPath.parse(response).read(path).toString();
     }
 }
