@@ -32,7 +32,7 @@ public class WdmKafkaTestHelpers {
      * Setup Kafka to respond on a specific event.
      * @param embeddedKafka The embedded kafka instance from the tests.
      * @param precondition Function to determine if a given input is relevant for this input.
-     * @param transformation Function which return the value expected from kafka.
+     * @param transformation Function which returns the value expected from kafka.
      * @param <T> Type of the input value.
      */
     public static <T, V> void setupKafkaResponse(EmbeddedKafkaBroker embeddedKafka, Function<T, Boolean> precondition, Function<T, V> transformation) {
