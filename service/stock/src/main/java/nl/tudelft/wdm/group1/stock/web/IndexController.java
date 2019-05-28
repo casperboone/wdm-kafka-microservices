@@ -16,3 +16,4 @@ public class IndexController {
         return ResponseEntity.ok().build();
     }
 }
+
