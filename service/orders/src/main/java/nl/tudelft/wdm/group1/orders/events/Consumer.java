@@ -3,7 +3,6 @@ package nl.tudelft.wdm.group1.orders.events;
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.common.OrderStatus;
 import nl.tudelft.wdm.group1.common.OrdersTopics;
-import nl.tudelft.wdm.group1.common.StockTopics;
 import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class Consumer {
     public void consumeOrderProcessedInStockFailed(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
-        order.setStatus(OrderStatus.FAILEDDUETOLACKOFSTOCK);
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_STOCK);
         orderRepository.save(order);
 
         producer.emitOrderCancelled(order);
@@ -79,7 +78,7 @@ public class Consumer {
     public void consumePaymentFailed(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
-        order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
         orderRepository.save(order);
 
         producer.emitOrderCancelled(order);

@@ -45,7 +45,7 @@ public class ConsumerTest {
     public void testHandleOrderProcessedInStockFailed() {
         Order order = new Order(UUID.randomUUID());
         consumer.consumeOrderProcessedInStockFailed(order);
-        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILEDDUETOLACKOFSTOCK);
+        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILED_DUE_TO_LACK_OF_STOCK);
         verify(producer).emitOrderCancelled(order);
     }
 
@@ -53,7 +53,7 @@ public class ConsumerTest {
     public void testHandleOrderProcessedPaymentFailed() {
         Order order = new Order(UUID.randomUUID());
         consumer.consumePaymentFailed(order);
-        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
+        assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
         verify(producer).emitOrderCancelled(order);
     }
 }

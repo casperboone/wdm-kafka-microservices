@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.common.*;
-import nl.tudelft.wdm.group1.stock.*;
+import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -81,15 +81,14 @@ public class Consumer {
     public void consumeOrderCancelled(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
         // Only perform action when the order was cancelled due to lack of payment
-        if(order.getStatus() == OrderStatus.FAILEDDUETOLACKOFPAYMENT){
+        if (order.getStatus() == OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT) {
             // TODO: lock the stock while adding
             for (UUID stockItemId : order.getItemIds()) {
                 try {
                     StockItem stockItem = stockItemRepository.findOrElseThrow(stockItemId);
                     stockItem.addStock(1);
                 } catch (ResourceNotFoundException | InvalidStockChangeException e) {
-                    // we assume this should not cause any exception
-                    e.printStackTrace();
+                    logger.error("Restocking failed", e);
                 }
             }
         }

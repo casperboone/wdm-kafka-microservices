@@ -63,7 +63,7 @@ public class StockConsumerTest {
         StockItem stockItem = new StockItem(1, "name", 1);
         UUID stockItemId = stockItem.getId();
         order.addItem(stockItem.getId());
-        order.setStatus(OrderStatus.FAILEDDUETOLACKOFPAYMENT);
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
         when(stockItemRepository.findOrElseThrow(stockItemId)).thenReturn(stockItem);
         stockConsumer.consumeOrderCancelled(order);
         verify(stockItemRepository).findOrElseThrow(stockItemId);
