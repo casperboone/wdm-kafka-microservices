@@ -1,6 +1,6 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: wdm-kafka-users
   labels:
@@ -12,6 +12,7 @@ spec:
     matchLabels:
       app: wdm-kafka
       service: users
+  serviceName: wdm-kafka-users
   template:
     metadata:
       labels:
@@ -33,6 +34,10 @@ spec:
               value: INFO
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: wdm-kafka-kafka:9092
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 ---
 apiVersion: v1
 kind: Service
