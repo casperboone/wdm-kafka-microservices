@@ -3,6 +3,7 @@ package nl.tudelft.wdm.group1.endToEnd;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
+import org.junit.Assert;
 import org.junit.Before;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -209,7 +210,7 @@ public abstract class EndToEndBase {
 
         response.then().statusCode(200);
 
-        System.out.println(response.jsonPath());
+        Assert.assertEquals(response.jsonPath(), "blah");
 
         int amount = Integer.parseInt(response.jsonPath().get("stock"));
         return amount;
