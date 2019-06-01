@@ -1,8 +1,7 @@
 package nl.tudelft.wdm.group1.endToEnd;
+import org.junit.Assert;
 import org.junit.Test;
 import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class EndToEndTest extends EndToEndBase {
 
@@ -55,7 +54,7 @@ public class EndToEndTest extends EndToEndBase {
 
         int newCredit = getUserCredit(user0) - stockItemPrice0 - stockItemPrice2;
         int actualNewCredit = getUserCredit(user0);
-        assertThat(actualNewCredit).isEqualTo(newCredit);
+        Assert.assertEquals(newCredit, actualNewCredit);
     }
 
 }
