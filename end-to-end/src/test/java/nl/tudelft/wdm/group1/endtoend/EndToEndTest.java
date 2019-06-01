@@ -35,13 +35,15 @@ public class EndToEndTest extends EndToEndBase {
         UUID user0 = users.get(0);
         UUID stockItem0 = stocks.get(0);
         int stockItemPrice0 = getStockPrice(stockItem0);
+        int stockItemAmount0 = getStockAmount(stockItem0);
         UUID stockItem1 = stocks.get(1);
         int stockItemPrice1 = getStockPrice(stockItem1);
+        int stockItemAmount1 = getStockAmount(stockItem1);
         UUID stockItem2 = stocks.get(2);
         int stockItemPrice2 = getStockPrice(stockItem2);
+        int stockItemAmount2 = getStockAmount(stockItem2);
 
         int startCredit = 3000;
-
         addCredit(users.get(0), startCredit);
         UUID order = createOrder(user0);
 
@@ -54,7 +56,12 @@ public class EndToEndTest extends EndToEndBase {
 
         int newCredit = getUserCredit(user0) - stockItemPrice0 - stockItemPrice2;
         int actualNewCredit = getUserCredit(user0);
-        Assert.assertEquals(newCredit, actualNewCredit);
+
+        // check values in the system
+        Assert.assertEquals(actualNewCredit, newCredit);
+        Assert.assertEquals(stockItemAmount0 - 1, getStockAmount(stockItem0));
+        Assert.assertEquals(stockItemAmount1, getStockAmount(stockItem1));
+        Assert.assertEquals(stockItemAmount2 - 1, getStockAmount(stockItem2));
     }
 
 }

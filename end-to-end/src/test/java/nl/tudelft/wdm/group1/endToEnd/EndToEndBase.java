@@ -199,4 +199,15 @@ public abstract class EndToEndBase {
         int price = Integer.parseInt(response.jsonPath().get("price"));
         return price;
     }
+
+    protected int getStockAmount(UUID stockId) {
+        Response response = given()
+                .when().get("/stock/" + stockId)
+                .andReturn();
+
+        response.then().statusCode(200);
+
+        int amount = Integer.parseInt(response.jsonPath().get("stock"));
+        return amount;
+    }
 }
