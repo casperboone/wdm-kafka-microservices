@@ -92,6 +92,18 @@ public abstract class EndToEndBase {
         return id;
     }
 
+    protected ArrayList<UUID> getOrderItemIds(UUID orderId) {
+        Response response = given()
+                .when().post("/orders/" + orderId)
+                .andReturn();
+
+        response.then().statusCode(200);
+
+        ArrayList<UUID> itemIds = response.jsonPath().get("itemIds");
+
+        return itemIds;
+    }
+
     protected int getUserCredit(UUID userId) {
         Response response = given()
                 .when().get("/users/" + userId)

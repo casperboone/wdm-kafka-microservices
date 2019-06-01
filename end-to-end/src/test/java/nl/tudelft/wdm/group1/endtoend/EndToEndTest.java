@@ -60,10 +60,26 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(startCredit * 2, getUserCredit(user0));
 
         UUID order = createOrder(user0);
+        ArrayList<UUID> itemIds;
+
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(0, itemIds.size());
+
+        // add 2 items
         addOrderItem(order, stockItem0);
         addOrderItem(order, stockItem1);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(2, itemIds.size());
+
+        // remove 1 item
         deleteOrderItem(order, stockItem1);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(1, itemIds.size());
+
+        // add 1 item
         addOrderItem(order, stockItem2);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(2, itemIds.size());
 
         // make the transaction
         checkoutOrder(order);
