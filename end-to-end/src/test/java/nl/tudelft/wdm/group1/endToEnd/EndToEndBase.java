@@ -3,7 +3,6 @@ package nl.tudelft.wdm.group1.endToEnd;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
-import org.junit.Assert;
 import org.junit.Before;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -95,12 +94,12 @@ public abstract class EndToEndBase {
 
     protected int getUserCredit(UUID userId) {
         Response response = given()
-                .when().get("/user/" + userId)
+                .when().get("/users/" + userId)
                 .andReturn();
 
         response.then().statusCode(200);
 
-        int credit = Integer.parseInt(response.jsonPath().get("credit"));
+        int credit = response.jsonPath().get("credit");
         return credit;
     }
 
@@ -197,9 +196,7 @@ public abstract class EndToEndBase {
 
         response.then().statusCode(200);
 
-        System.out.println(response.jsonPath());
-
-        int price = Integer.parseInt(response.jsonPath().get("price"));
+        int price = response.jsonPath().get("price");
         return price;
     }
 
@@ -210,9 +207,7 @@ public abstract class EndToEndBase {
 
         response.then().statusCode(200);
 
-        Assert.assertEquals(response.jsonPath(), "blah");
-
-        int amount = Integer.parseInt(response.jsonPath().get("stock"));
+        int amount = response.jsonPath().get("stock");
         return amount;
     }
 }
