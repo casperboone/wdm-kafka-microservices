@@ -196,6 +196,8 @@ public abstract class EndToEndBase {
 
         response.then().statusCode(200);
 
+        System.out.println(response.jsonPath());
+
         int price = Integer.parseInt(response.jsonPath().get("price"));
         return price;
     }
@@ -206,6 +208,8 @@ public abstract class EndToEndBase {
                 .andReturn();
 
         response.then().statusCode(200);
+
+        System.out.println(response.jsonPath());
 
         int amount = Integer.parseInt(response.jsonPath().get("stock"));
         return amount;
