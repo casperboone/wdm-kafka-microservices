@@ -78,7 +78,7 @@ public class Rest {
     }
 
     @KafkaHandler
-    public void checkoutOrder(OrderCheckoutPayload payload) {
+    public void readyOrder(OrderReadyPayload payload) {
         try {
             Order order = orderRepository.findOrElseThrow(payload.getId());
             producer.emitOrderReady(order);
