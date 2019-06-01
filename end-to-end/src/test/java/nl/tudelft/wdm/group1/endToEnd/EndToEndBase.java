@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.Before;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -93,6 +92,17 @@ public abstract class EndToEndBase {
         return id;
     }
 
+    protected int getUserCredit(UUID userId) {
+        Response response = given()
+                .when().get("/user/" + userId)
+                .andReturn();
+
+        response.then().statusCode(200);
+
+        int credit = Integer.parseInt(response.jsonPath().get("credit"));
+        return credit;
+    }
+
     protected List<UUID> createUsers() {
         List<Map<String, String>> users = new ArrayList<Map<String, String>>() {{
             add(new HashMap<String, String>() {{
@@ -177,5 +187,16 @@ public abstract class EndToEndBase {
 
             await().untilAsserted(() -> given().when().get("/users/" + user).then().statusCode(404));
         }
+    }
+
+    protected int getStockPrice(UUID stockId) {
+        Response response = given()
+                .when().get("/stock/" + stockId)
+                .andReturn();
+
+        response.then().statusCode(200);
+
+        int price = Integer.parseInt(response.jsonPath().get("price"));
+        return price;
     }
 }
