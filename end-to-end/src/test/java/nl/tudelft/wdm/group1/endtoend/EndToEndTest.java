@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.endToEnd;
+package nl.tudelft.wdm.group1.endtoend;
 import org.junit.Assert;
 import org.junit.Test;
 import java.util.*;
@@ -77,7 +77,6 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(stockItemAmount0 - 1, getStockAmount(stockItem0));
         Assert.assertEquals(stockItemAmount2 - 1, getStockAmount(stockItem2));
         Assert.assertEquals(actualNewCredit, newCredit);
-    }
     }
 
 }

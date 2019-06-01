@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.endToEnd;
+package nl.tudelft.wdm.group1.endtoend;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
