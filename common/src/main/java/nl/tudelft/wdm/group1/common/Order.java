@@ -18,6 +18,7 @@ public class Order {
     private boolean processedInStock;
     private boolean paid;
     private int price;
+    private OrderStatus status;
 
     public Order() {
     }
@@ -29,6 +30,7 @@ public class Order {
         this.price = -1;
         this.processedInStock = false;
         this.paid = false;
+        this.status = OrderStatus.PROCESSING;
     }
 
     public UUID getId() {
@@ -75,6 +77,14 @@ public class Order {
         this.paid = paid;
     }
 
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -84,6 +94,7 @@ public class Order {
                 ", processedInStock=" + processedInStock +
                 ", paid=" + paid +
                 ", price=" + price +
+                ", status=" + status +
                 '}';
     }
 }

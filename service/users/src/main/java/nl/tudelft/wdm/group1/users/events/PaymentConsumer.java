@@ -3,6 +3,7 @@ package nl.tudelft.wdm.group1.users.events;
 import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
 import nl.tudelft.wdm.group1.common.InsufficientCreditException;
 import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class PaymentConsumer {
         this.paymentProducer = paymentProducer;
     }
 
-    @KafkaListener(topics = "paymentCreated")
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_CREATED})
     public void consumePaymentCreated(Payment payment) throws ResourceNotFoundException, CreditChangeInvalidException {
         try {
             userRepository.findOrElseThrow(payment.getUserId()).subtractCredit(payment.getAmount());

@@ -23,7 +23,7 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {StockTopics.STOCK_ITEM_CREATED, StockTopics.STOCK_ADDED, StockTopics.STOCK_SUBTRACTED})
-    public void consume(final StockItem stockItem) {
+    public void consumeStockItemChange(final StockItem stockItem) {
         logger.info(String.format("#### -> Consumed message -> %s", stockItem));
 
         stockItemRepository.save(stockItem);
@@ -75,6 +75,23 @@ public class Consumer {
 
         order.setPrice(totalPrice);
         producer.emitStockItemsSubtractedForOrder(order);
+    }
+
+    @KafkaListener(topics = {OrdersTopics.ORDER_CANCELLED})
+    public void consumeOrderCancelled(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+        // Only perform action when the order was cancelled due to lack of payment
+        if (order.getStatus() == OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT) {
+            // TODO: lock the stock while adding
+            for (UUID stockItemId : order.getItemIds()) {
+                try {
+                    StockItem stockItem = stockItemRepository.findOrElseThrow(stockItemId);
+                    stockItem.addStock(1);
+                } catch (ResourceNotFoundException | InvalidStockChangeException e) {
+                    logger.error("Restocking failed", e);
+                }
+            }
+        }
     }
 
 }

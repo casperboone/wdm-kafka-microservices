@@ -1,8 +1,9 @@
 package nl.tudelft.wdm.group1.orders.events;
 
 import nl.tudelft.wdm.group1.common.Order;
+import nl.tudelft.wdm.group1.common.OrderStatus;
 import nl.tudelft.wdm.group1.common.OrdersTopics;
-import nl.tudelft.wdm.group1.common.StockTopics;
+import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class Consumer {
         orderRepository.deleteById(order.getId());
     }
 
-    @KafkaListener(topics = StockTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL)
+    @KafkaListener(topics = {OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL})
     public void consumeOrderProcessedInStockSuccessful(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
@@ -50,12 +51,37 @@ public class Consumer {
         producer.emitOrderCheckedOut(order);
     }
 
-    @KafkaListener(topics = "paymentSuccessful")
+    @KafkaListener(topics = {OrdersTopics.ORDER_PROCESSED_IN_STOCK_FAILED})
+    public void consumeOrderProcessedInStockFailed(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_STOCK);
+        orderRepository.save(order);
+
+        producer.emitOrderCancelled(order);
+
+        // TODO notify user
+    }
+
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_SUCCESSFUL})
     public void consumePaymentSuccessful(Order order) {
         logger.info(String.format("#### -> Consumed message -> %s", order));
 
         order.setPaid(true);
+        order.setStatus(OrderStatus.SUCCEEDED);
         orderRepository.save(order);
+
+        // TODO notify user
+    }
+
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
+    public void consumePaymentFailed(Order order) {
+        logger.info(String.format("#### -> Consumed message -> %s", order));
+
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
+        orderRepository.save(order);
+
+        producer.emitOrderCancelled(order);
 
         // TODO notify user
     }

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,5 +55,18 @@ public class StockConsumerTest {
         stockConsumer.consumeOrderCheckedOut(order);
 
         verify(stockProducer).emitStockItemsSubtractForOrderFailed(order);
+    }
+
+    @Test
+    public void testHandleOutOfStock() throws ResourceNotFoundException {
+        Order order = new Order(UUID.randomUUID());
+        StockItem stockItem = new StockItem(1, "name", 1);
+        UUID stockItemId = stockItem.getId();
+        order.addItem(stockItem.getId());
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
+        when(stockItemRepository.findOrElseThrow(stockItemId)).thenReturn(stockItem);
+        stockConsumer.consumeOrderCancelled(order);
+        verify(stockItemRepository).findOrElseThrow(stockItemId);
+        assertThat(stockItem.getStock()).isEqualTo(2);
     }
 }
