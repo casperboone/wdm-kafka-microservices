@@ -11,7 +11,7 @@ pip install locust
 
 Run
 ```
-locust --host=http://localhost:8080/
+locust --host=http://localhost:8080
 ```
 
 Go to `http://localhost:8089/` and start the load test.
