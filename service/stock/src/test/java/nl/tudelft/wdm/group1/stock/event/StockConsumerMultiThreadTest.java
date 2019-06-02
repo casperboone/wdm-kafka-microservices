@@ -43,8 +43,8 @@ public class StockConsumerMultiThreadTest {
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         // stock items sufficient to meet all user's need
 
-        when(stockItemRepository.find(stockItemMilk.getId())).thenReturn(stockItemMilk);
-        when(stockItemRepository.find(stockItemJuice.getId())).thenReturn(stockItemJuice);
+        when(stockItemRepository.findOrElseThrow(stockItemMilk.getId())).thenReturn(stockItemMilk);
+        when(stockItemRepository.findOrElseThrow(stockItemJuice.getId())).thenReturn(stockItemJuice);
 
         Order order = new Order(UUID.randomUUID());
         order.addItem(stockItemMilk.getId());
