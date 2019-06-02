@@ -65,6 +65,7 @@ public class Consumer {
 
             try {
                 stockItem.subtractStock(1);
+                stockItemRepository.save(stockItem);
             } catch (InsufficientStockException | InvalidStockChangeException e) {
                 // we assume the subtraction should not cause any exception
                 throw e;
@@ -87,6 +88,7 @@ public class Consumer {
                 try {
                     StockItem stockItem = stockItemRepository.findOrElseThrow(stockItemId);
                     stockItem.addStock(1);
+                    stockItemRepository.save(stockItem);
                 } catch (ResourceNotFoundException | InvalidStockChangeException e) {
                     logger.error("Restocking failed", e);
                 }

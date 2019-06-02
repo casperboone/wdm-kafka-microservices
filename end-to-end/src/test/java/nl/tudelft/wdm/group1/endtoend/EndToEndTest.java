@@ -68,6 +68,7 @@ public class EndToEndTest extends EndToEndBase {
         // add 2 items
         addOrderItem(order, stockItem0);
         addOrderItem(order, stockItem1);
+        Thread.sleep(1000);
         itemIds = getOrderItemIds(order);
         Assert.assertEquals(2, itemIds.size());
 
@@ -85,7 +86,7 @@ public class EndToEndTest extends EndToEndBase {
         checkoutOrder(order);
         Thread.sleep(2000);
 
-        int newCredit = getUserCredit(user0) - stockItemPrice0 - stockItemPrice2;
+        int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
         int actualNewCredit = getUserCredit(user0);
 
         // check values in the system
