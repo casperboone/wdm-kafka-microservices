@@ -29,6 +29,11 @@ public class Producer {
         this.kafkaTemplate.send(PaymentsTopics.PAYMENT_SUCCESSFUL, payment);
     }
 
+    public void emitPaymentFailed(Payment payment) {
+        logger.info(String.format("#### -> Producing message -> %s", payment));
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_FAILED, payment);
+    }
+
     public void emitPaymentDeleted(Payment payment) {
         // TODO: adds the amount of the order to the user's credit
         logger.info(String.format("#### -> Producing message -> %s", payment));

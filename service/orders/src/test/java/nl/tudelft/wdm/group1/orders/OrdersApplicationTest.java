@@ -1,8 +1,20 @@
 package nl.tudelft.wdm.group1.orders;
 
-import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.RestTopics;
+import nl.tudelft.wdm.group1.common.payload.OrderAddPayload;
+import nl.tudelft.wdm.group1.common.payload.OrderDeletePayload;
+import nl.tudelft.wdm.group1.common.payload.OrderItemAddPayload;
+import nl.tudelft.wdm.group1.common.payload.OrderItemDeletePayload;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -10,22 +22,22 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,9 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         }
 )
 public class OrdersApplicationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -54,66 +63,59 @@ public class OrdersApplicationTest {
     public void setUp() throws Exception {
         defaultOrder = new Order(UUID.randomUUID());
         defaultOrder.addItem(defaultOrderItemId);
-        orderRepository.add(defaultOrder);
-        assertThat(orderRepository.find(defaultOrder.getId())).isNotNull();
+        orderRepository.save(defaultOrder);
+        assertThat(orderRepository.findOrElseThrow(defaultOrder.getId())).isNotNull();
+    }
+
+    private static <V> Producer<String, V> createProducer() {
+        Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafka.getEmbeddedKafka());
+        return new DefaultKafkaProducerFactory<String, V>(senderProps, new StringSerializer(), new JsonSerializer<>()).createProducer();
+    }
+
+    private static <T> org.apache.kafka.clients.consumer.Consumer<String, T> createConsumer() {
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("consumer" + UUID.randomUUID().toString(), "false", embeddedKafka.getEmbeddedKafka());
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        JsonDeserializer<T> tJsonDeserializer = new JsonDeserializer<>();
+        tJsonDeserializer.addTrustedPackages("*");
+        return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), tJsonDeserializer).createConsumer();
     }
 
     @Test
-    public void createNewOrder() throws Exception {
-        MvcResult result = this.mockMvc.perform(
-                post("/orders/" + defaultOrder.getUserId())
-        ).andExpect(status().isOk()).andReturn();
+    public void createNewOrder() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderAddPayload(defaultOrder.getUserId())));
+        Consumer<String, KafkaResponse<Order>> consumer = createConsumer();
+        consumer.subscribe(Collections.singleton(RestTopics.RESPONSE));
+        ConsumerRecord<String, KafkaResponse<Order>> orderRecord = KafkaTestUtils.getSingleRecord(consumer, RestTopics.RESPONSE);
 
-        UUID userUUID = UUID.fromString(getJsonValue(result, "$.id"));
+        Order order = orderRecord.value().getPayload();
 
-        await().until(() -> orderRepository.contains(userUUID));
-
-        Order order = orderRepository.find(userUUID);
+        await().until(() -> orderRepository.existsById(order.getId()));
 
         assertThat(order.getUserId()).isEqualTo(defaultOrder.getUserId());
         assertThat(order.getItemIds()).isEmpty();
     }
 
     @Test
-    public void retrieveAOrder() throws Exception {
-        this.mockMvc.perform(get("/orders/" + defaultOrder.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(defaultOrder.getId().toString())));
-    }
+    public void removeAnOrder() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderDeletePayload(defaultOrder.getId())));
 
-    @Test
-    public void removeAnOrder() throws Exception {
-        this.mockMvc.perform(delete("/orders/" + defaultOrder.getId()))
-                .andExpect(status().isOk());
-
-        await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.find(defaultOrder.getId()))
+        await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.findOrElseThrow(defaultOrder.getId()))
                 .isInstanceOf(ResourceNotFoundException.class));
     }
 
     @Test
-    public void addAnItemToAnOrder() throws Exception {
+    public void addAnItemToAnOrder() {
         UUID newItemId = UUID.randomUUID();
-        this.mockMvc.perform(
-                post("/orders/" + defaultOrder.getId() + "/items")
-                        .param("itemId", newItemId.toString())
-        ).andExpect(status().isOk());
 
-        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).contains(defaultOrderItemId, newItemId));
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderItemAddPayload(defaultOrder.getId(), newItemId)));
+
+        await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).contains(defaultOrderItemId, newItemId));
     }
 
     @Test
-    public void removeAnItemFromAnOrder() throws Exception {
-        this.mockMvc.perform(
-                delete("/orders/" + defaultOrder.getId() + "/items")
-                        .param("itemId", defaultOrderItemId.toString())
-        ).andExpect(status().isOk());
+    public void removeAnItemFromAnOrder() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderItemDeletePayload(defaultOrder.getId(), defaultOrderItemId)));
 
-        await().untilAsserted(() -> assertThat(defaultOrder.getItemIds()).isEmpty());
-    }
-
-    private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
-        String response = mvcResult.getResponse().getContentAsString();
-
-        return JsonPath.parse(response).read(path).toString();
+        await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).isEmpty());
     }
 }

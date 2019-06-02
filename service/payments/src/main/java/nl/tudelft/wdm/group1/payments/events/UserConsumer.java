@@ -20,10 +20,17 @@ public class UserConsumer {
         this.producer = producer;
     }
 
-    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED})
-    public void consume(Payment payment) {
+    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL})
+    public void consumePaymentSuccessful(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
         // Emit payment successful message
         producer.emitPaymentSuccessful(payment);
+    }
+
+    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
+    public void consumePaymentFailed(Payment payment) {
+        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        // Emit payment failed message
+        producer.emitPaymentFailed(payment);
     }
 }

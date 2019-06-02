@@ -1,28 +1,40 @@
 package nl.tudelft.wdm.group1.payments;
 
-import com.jayway.jsonpath.JsonPath;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
 import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.RestTopics;
+import nl.tudelft.wdm.group1.common.payload.PaymentAddPayload;
+import nl.tudelft.wdm.group1.common.payload.PaymentDeletePayload;
+import nl.tudelft.wdm.group1.common.payload.PaymentGetPayload;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.awaitility.Awaitility.await;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,23 +48,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PaymentsApplicationTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private PaymentRepository paymentRepository;
 
     @ClassRule
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, false, 5, "payments");
 
-    private Payment defaultPayment;
     private UUID defaultUserId = UUID.randomUUID();
     private UUID defaultOrderId = UUID.randomUUID();
     private int defaultAmount = 100;
 
+    private static Consumer<String, KafkaResponse<Payment>> defaultConsumer;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("consumer" + UUID.randomUUID().toString(), "false", embeddedKafka.getEmbeddedKafka());
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        JsonDeserializer<KafkaResponse<Payment>> tJsonDeserializer = new JsonDeserializer<>();
+        tJsonDeserializer.addTrustedPackages("*");
+        defaultConsumer = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), tJsonDeserializer).createConsumer();
+        defaultConsumer.subscribe(Collections.singletonList(RestTopics.RESPONSE));
+    }
     @Before
-    public void setUp() throws Exception {
-        defaultPayment = new Payment(defaultUserId, defaultOrderId, defaultAmount);
-        paymentRepository.add(defaultPayment);
+    public void setUp() {
+        Payment defaultPayment = new Payment(defaultUserId, defaultOrderId, defaultAmount);
+        paymentRepository.save(defaultPayment);
+    }
+
+    private static <V> Producer<String, V> createProducer() {
+        Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafka.getEmbeddedKafka());
+        return new DefaultKafkaProducerFactory<String, V>(senderProps, new StringSerializer(), new JsonSerializer<>()).createProducer();
     }
 
     @Test
@@ -60,36 +84,31 @@ public class PaymentsApplicationTest {
         UUID userId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
 
-        MvcResult result = this.mockMvc.perform(
-                post("/payments/" + userId + "/" + orderId + "/" + defaultAmount)
-        ).andExpect(status().isOk()).andReturn();
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentAddPayload(userId, orderId, defaultAmount))).get();
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
-        UUID newUserId = UUID.fromString(getJsonValue(result, "$.userId"));
-        UUID newOrderId = UUID.fromString(getJsonValue(result, "$.orderId"));
-        int newAmount = Integer.parseInt(getJsonValue(result, "$.amount"));
+        await().until(() -> paymentRepository.existsById(orderId));
 
-        assertThat(newUserId).isEqualTo(userId);
-        assertThat(newOrderId).isEqualTo(orderId);
-        assertThat(newAmount).isEqualTo(defaultAmount);
+        Payment payment = paymentRepository.findOrElseThrow(orderId);
+
+        assertThat(payment.getUserId()).isEqualTo(userId);
+        assertThat(payment.getOrderId()).isEqualTo(orderId);
+        assertThat(payment.getAmount()).isEqualTo(defaultAmount);
     }
 
     @Test
-    public void deleteAPayment() throws Exception {
-        this.mockMvc.perform(delete("/payments/" + defaultUserId + "/" + defaultOrderId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
+    public void deleteAPayment() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentDeletePayload(defaultUserId, defaultOrderId)));
+        KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
+
+        await().until(() -> !paymentRepository.existsById(defaultOrderId));
     }
 
     @Test
-    public void retrieveAPayment() throws Exception {
-        this.mockMvc.perform(get("/payments/" + defaultOrderId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId", is(defaultPayment.getOrderId().toString())));
-    }
+    public void retrieveAPayment() {
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentGetPayload(defaultOrderId)));
+        Payment payment = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
 
-    private String getJsonValue(MvcResult mvcResult, String path) throws UnsupportedEncodingException {
-        String response = mvcResult.getResponse().getContentAsString();
-
-        return JsonPath.parse(response).read(path).toString();
+        assertThat(payment.getOrderId()).isEqualTo(defaultOrderId);
     }
 }

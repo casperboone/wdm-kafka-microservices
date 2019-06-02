@@ -7,6 +7,7 @@ public class OrdersTopics {
     public static final String ORDER_ITEM_ADDED = "orderItemAdded";
     public static final String ORDER_ITEM_DELETED = "orderItemDeleted";
     public static final String ORDER_READY = "orderReady";
+    public static final String ORDER_CANCELLED = "orderCancelled";
     public static final String ORDER_PROCESSED_IN_STOCK_SUCCESSFUL = "orderProcessedInStockSuccessful";
     public static final String ORDER_PROCESSED_IN_STOCK_FAILED = "orderProcessedInStockFailed";
 
@@ -18,8 +19,9 @@ public class OrdersTopics {
                 ORDER_ITEM_ADDED,
                 ORDER_ITEM_DELETED,
                 ORDER_READY,
+                ORDER_CANCELLED,
                 ORDER_PROCESSED_IN_STOCK_SUCCESSFUL,
-                ORDER_PROCESSED_IN_STOCK_FAILED,
+                ORDER_PROCESSED_IN_STOCK_FAILED
         };
     }
 }

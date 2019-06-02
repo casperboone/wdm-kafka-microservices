@@ -1,16 +1,24 @@
 package nl.tudelft.wdm.group1.common;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Entity(name = "order_table")
 public class Order {
+    @Id
     private UUID id;
     private UUID userId;
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<UUID> itemIds;
     private boolean processedInStock;
     private boolean paid;
     private int price;
+    private OrderStatus status;
 
     public Order() {
     }
@@ -22,6 +30,7 @@ public class Order {
         this.price = -1;
         this.processedInStock = false;
         this.paid = false;
+        this.status = OrderStatus.PROCESSING;
     }
 
     public UUID getId() {
@@ -44,9 +53,13 @@ public class Order {
         return paid;
     }
 
-    public int getPrice() { return price; }
+    public int getPrice() {
+        return price;
+    }
 
-    public void setPrice(int price) { this.price = price; }
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
     public void addItem(UUID itemId) {
         itemIds.add(itemId);
@@ -64,6 +77,14 @@ public class Order {
         this.paid = paid;
     }
 
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -73,6 +94,7 @@ public class Order {
                 ", processedInStock=" + processedInStock +
                 ", paid=" + paid +
                 ", price=" + price +
+                ", status=" + status +
                 '}';
     }
 }

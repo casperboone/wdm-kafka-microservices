@@ -1,13 +1,13 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -36,7 +36,17 @@ public class ConsumerTest {
     @Test
     public void testHandleCreditSuccessful() {
         Payment payment = new Payment(UUID.randomUUID(), UUID.randomUUID(), 42);
-        userConsumer.consume(payment);
+        userConsumer.consumePaymentSuccessful(payment);
         verify(producer).emitPaymentSuccessful(payment);
+    }
+
+    @Test
+    public void testHandlePaymentFailed() {
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        int amount = 42;
+        Payment payment = new Payment(userId, orderId, amount);
+        userConsumer.consumePaymentFailed(payment);
+        verify(producer).emitPaymentFailed(payment);
     }
 }

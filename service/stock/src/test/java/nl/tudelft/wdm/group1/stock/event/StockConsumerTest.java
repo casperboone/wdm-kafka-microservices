@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -32,8 +31,8 @@ public class StockConsumerTest {
         StockItem stockItem1 = new StockItem(10, "Milk", 1);
         StockItem stockItem2 = new StockItem(5, "Coke", 2);
 
-        when(stockItemRepository.find(stockItem1.getId())).thenReturn(stockItem1);
-        when(stockItemRepository.find(stockItem2.getId())).thenReturn(stockItem2);
+        when(stockItemRepository.findOrElseThrow(stockItem1.getId())).thenReturn(stockItem1);
+        when(stockItemRepository.findOrElseThrow(stockItem2.getId())).thenReturn(stockItem2);
 
         Order order = new Order(UUID.randomUUID());
         order.addItem(stockItem1.getId());
@@ -53,8 +52,8 @@ public class StockConsumerTest {
         StockItem stockItem1 = new StockItem(0, "Milk", 1);
         StockItem stockItem2 = new StockItem(1, "Coke", 1);
 
-        when(stockItemRepository.find(stockItem1.getId())).thenReturn(stockItem1);
-        when(stockItemRepository.find(stockItem2.getId())).thenReturn(stockItem2);
+        when(stockItemRepository.findOrElseThrow(stockItem1.getId())).thenReturn(stockItem1);
+        when(stockItemRepository.findOrElseThrow(stockItem2.getId())).thenReturn(stockItem2);
 
         Order order = new Order(UUID.randomUUID());
         order.addItem(stockItem1.getId());
@@ -66,5 +65,18 @@ public class StockConsumerTest {
         assertThat(stockItem1.getStock()).isEqualTo(0);
         assertThat(stockItem2.getStock()).isEqualTo(1);
         assertThat(order.getPrice()).isEqualTo(-1); // default value
+    }
+
+    @Test
+    public void testHandleOutOfStock() throws ResourceNotFoundException {
+        Order order = new Order(UUID.randomUUID());
+        StockItem stockItem = new StockItem(1, "name", 1);
+        UUID stockItemId = stockItem.getId();
+        order.addItem(stockItem.getId());
+        order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
+        when(stockItemRepository.findOrElseThrow(stockItemId)).thenReturn(stockItem);
+        stockConsumer.consumeOrderCancelled(order);
+        verify(stockItemRepository).findOrElseThrow(stockItemId);
+        assertThat(stockItem.getStock()).isEqualTo(2);
     }
 }

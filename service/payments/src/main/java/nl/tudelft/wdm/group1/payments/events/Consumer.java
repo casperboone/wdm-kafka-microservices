@@ -3,6 +3,7 @@ package nl.tudelft.wdm.group1.payments.events;
 import nl.tudelft.wdm.group1.common.PaymentsTopics;
 import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.UsersTopics;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,12 @@ public class Consumer {
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_CREATED})
     public void consume(Payment payment) {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
-        paymentRepository.addOrReplace(payment);
+        paymentRepository.save(payment);
     }
 
-    @KafkaListener(topics = {PaymentsTopics.PAYMENT_DELETED})
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_DELETED, UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
     public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
         logger.info(String.format("#### -> Consumed message -> %s", payment));
-        paymentRepository.remove(payment.getOrderId());
+        paymentRepository.delete(paymentRepository.findOrElseThrow(payment.getOrderId()));
     }
 }
