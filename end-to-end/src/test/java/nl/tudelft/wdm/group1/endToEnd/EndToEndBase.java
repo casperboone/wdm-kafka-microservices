@@ -94,7 +94,7 @@ public abstract class EndToEndBase {
 
     protected ArrayList<UUID> getOrderItemIds(UUID orderId) {
         Response response = given()
-                .when().post("/orders/" + orderId)
+                .when().get("/orders/" + orderId)
                 .andReturn();
 
         response.then().statusCode(200);
