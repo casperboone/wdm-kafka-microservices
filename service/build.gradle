@@ -8,6 +8,7 @@ subprojects {
         implementation project(':common')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.kafka:spring-kafka-test'
+        testCompile 'com.vmlens:concurrent-junit:1.0.2'
         testCompile 'org.awaitility:awaitility:3.1.6'
     }
 }
