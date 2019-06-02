@@ -16,13 +16,13 @@ def create_stock_items(l):
         stock_items.append(response.json()['id'])
 
 
-class MyTaskSequence(TaskSequence):
+class OrderTaskSequence(TaskSequence):
     @seq_task(1)
     def create_user(self):
         response = self.client.post("/users", {
-            "firstName": "Casper",
-            "lastName": "Boone",
-            "street": "Mekelpark",
+            "firstName": "Tom",
+            "lastName": "de Vries",
+            "street": "Mekelpark 12",
             "zip": "2142AB",
             "city": "Delft"
         })
@@ -45,8 +45,8 @@ class MyTaskSequence(TaskSequence):
         self.client.post("/orders/" + self.order_id + "/checkout")
 
 
-class WebsiteUser(HttpLocust):
-    task_set = MyTaskSequence
+class User(HttpLocust):
+    task_set = OrderTaskSequence
     min_wait = 5000
     max_wait = 9000
 
