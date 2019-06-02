@@ -49,7 +49,7 @@ public class StockItem {
         }
 
         if (amount > this.stock) {
-            throw new InsufficientStockException("Insufficient stock");
+            throw new InsufficientStockException("Insufficient stock. " + this.name + " - available stock: " + this.stock);
         }
 
         this.stock -= amount;
