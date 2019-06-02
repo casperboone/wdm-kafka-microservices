@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,11 +73,7 @@ public class StockConsumerMultiThreadTest {
 
     @Test
     public void testMultiThreadInStock() throws ResourceNotFoundException, InterruptedException {
-        AtomicInteger failureCount = new AtomicInteger(0);
-        executeCheckoutInParallel(failureCount);
-
-        // Everything should run fine.
-        assertThat(failureCount.get()).isEqualTo(0);
+        executeCheckoutInParallel();
 
         // Every stock should be empty.
         assertThat(stockItemRepository.findOrElseThrow(stockItem1.getId()).getStock()).isEqualTo(0);
@@ -94,11 +89,7 @@ public class StockConsumerMultiThreadTest {
         stockItem1.subtractStock(1);
         stockItemRepository.save(stockItem1);
 
-        AtomicInteger failureCount = new AtomicInteger(0);
-        executeCheckoutInParallel(failureCount);
-
-        // Exactly one thread should fail because there is no stock.
-        assertThat(failureCount.get()).isEqualTo(1);
+        executeCheckoutInParallel();
 
         // Only the first stock should be empty.
         assertThat(stockItemRepository.findOrElseThrow(stockItem1.getId()).getStock()).isEqualTo(0);
@@ -108,7 +99,7 @@ public class StockConsumerMultiThreadTest {
         assertThat(stockItemRepository.findOrElseThrow(stockItem5.getId()).getStock()).isEqualTo(1);
     }
 
-    private void executeCheckoutInParallel(AtomicInteger failureCount) throws InterruptedException {
+    private void executeCheckoutInParallel() throws InterruptedException {
         // Creates an order and triggers checkout.
         Runnable checkoutOrderRunnable = () -> {
             Order order2 = new Order(UUID.randomUUID());
@@ -120,9 +111,7 @@ public class StockConsumerMultiThreadTest {
 
             try {
                 stockConsumer.consumeOrderCheckedOut(order2);
-            } catch (InsufficientStockException e) {
-                failureCount.incrementAndGet();
-            } catch (ResourceNotFoundException | InvalidStockChangeException e) {
+            } catch (ResourceNotFoundException | InvalidStockChangeException | InsufficientStockException e) {
                 // This case should not be possible.
                 Assert.fail();
             }

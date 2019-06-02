@@ -8,8 +8,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Service
 public class Consumer {
@@ -19,7 +17,7 @@ public class Consumer {
 
     private Producer producer;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Object lock = new Object();
 
     public Consumer(final StockItemRepository stockItemRepository, final Producer producer) {
         this.stockItemRepository = stockItemRepository;
@@ -37,10 +35,10 @@ public class Consumer {
     public void consumeOrderCheckedOut(final Order order)
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         logger.info(String.format("#### -> Consumed message -> %s", order));
+        int totalPrice = 0;
 
         // lock all stock items
-        lock.readLock().lock();
-        try {
+        synchronized (lock) {
             // check availability of all StockItems
             for (UUID stockItemId : order.getItemIds()) {
                 StockItem stockItem;
@@ -56,15 +54,8 @@ public class Consumer {
                     return;
                 }
             }
-        } finally {
-            lock.readLock().unlock();
-        }
 
-        // all stock items available, proceed and emit a successful event
-        int totalPrice = 0;
-
-        lock.writeLock().lock();
-        try {
+            // all stock items available, proceed and emit a successful event
             for (UUID stockItemId : order.getItemIds()) {
                 StockItem stockItem;
                 try {
@@ -84,8 +75,6 @@ public class Consumer {
 
                 totalPrice += stockItem.getPrice();
             }
-        } finally {
-            lock.writeLock().unlock();
         }
 
         order.setPrice(totalPrice);
