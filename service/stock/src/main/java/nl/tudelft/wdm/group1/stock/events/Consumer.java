@@ -79,6 +79,7 @@ public class Consumer {
 
                 try {
                     stockItem.subtractStock(1);
+                    stockItemRepository.save(stockItem);
                 } catch (InsufficientStockException | InvalidStockChangeException e) {
                     // we assume the subtraction should not cause any exception
                     throw e;
