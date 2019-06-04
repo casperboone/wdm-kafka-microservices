@@ -21,4 +21,11 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
+    test {
+        testLogging {
+            events "passed", "skipped", "failed"
+            exceptionFormat "full"
+        }
+    }
 }
