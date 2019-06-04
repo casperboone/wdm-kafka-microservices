@@ -1,7 +1,9 @@
 package nl.tudelft.wdm.group1.endtoend;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Test;
-import java.util.*;
+
+import static org.awaitility.Awaitility.await;
 
 public class EndToEndTest extends EndToEndBase {
 
@@ -88,12 +90,7 @@ public class EndToEndTest extends EndToEndBase {
         // make the transaction
         checkoutOrder(order);
         String status = getOrderStatus(order);
-        int counter = 0;
-        while(status.equals("PROCESSING") && counter < 60){
-            status = getOrderStatus(order);
-            counter++;
-            Thread.sleep(1000);
-        }
+        await().until(() -> !getOrderStatus(order).equals("PROCESSING"));
 
         int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
         int actualNewCredit = getUserCredit(user0);
@@ -133,12 +130,7 @@ public class EndToEndTest extends EndToEndBase {
         // make the transaction
         checkoutOrder(order0);
         String status0 = getOrderStatus(order0);
-        int counter0 = 0;
-        while(status0.equals("PROCESSING") && counter0 < 20){
-            status0 = getOrderStatus(order0);
-            counter0++;
-            Thread.sleep(1000);
-        }
+        await().until(() -> !getOrderStatus(order0).equals("PROCESSING"));
 
         // check that the item is sold out
         Assert.assertEquals("SUCCEEDED", status0);
@@ -157,12 +149,7 @@ public class EndToEndTest extends EndToEndBase {
         // make the transaction
         checkoutOrder(order1);
         String status1 = getOrderStatus(order1);
-        int counter1 = 0;
-        while(status1.equals("PROCESSING") && counter1 < 20){
-            status1 = getOrderStatus(order1);
-            counter1++;
-            Thread.sleep(1000);
-        }
+        await().until(() -> !getOrderStatus(order1).equals("PROCESSING"));
 
         // check that the item is sold out
         Assert.assertEquals("FAILED_DUE_TO_LACK_OF_STOCK", status1);
@@ -206,12 +193,7 @@ public class EndToEndTest extends EndToEndBase {
         // make the transaction
         checkoutOrder(order0);
         String status0 = getOrderStatus(order0);
-        int counter0 = 0;
-        while(status0.equals("PROCESSING") && counter0 < 20){
-            status0 = getOrderStatus(order0);
-            counter0++;
-            Thread.sleep(1000);
-        }
+        await().until(() -> !getOrderStatus(order0).equals("PROCESSING"));
 
         // check that the order is rejected due to lack of credit
         Assert.assertEquals("FAILED_DUE_TO_LACK_OF_PAYMENT", status0);
