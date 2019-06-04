@@ -1,7 +1,6 @@
 package nl.tudelft.wdm.group1.rest.web;
 
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.payload.*;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;

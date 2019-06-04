@@ -1,7 +1,13 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.common.*;
-import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.KafkaErrorResponse;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.payload.PaymentAddPayload;
+import nl.tudelft.wdm.group1.common.payload.PaymentDeletePayload;
+import nl.tudelft.wdm.group1.common.payload.PaymentGetPayload;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

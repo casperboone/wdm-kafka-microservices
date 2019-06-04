@@ -1,9 +1,9 @@
 package nl.tudelft.wdm.group1.users.events;
 
-import nl.tudelft.wdm.group1.common.CreditChangeInvalidException;
-import nl.tudelft.wdm.group1.common.Payment;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.User;
+import nl.tudelft.wdm.group1.common.exception.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,12 @@
 package nl.tudelft.wdm.group1.users.events;
 
 import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

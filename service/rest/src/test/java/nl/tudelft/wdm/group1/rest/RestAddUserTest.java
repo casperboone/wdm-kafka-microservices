@@ -1,7 +1,10 @@
 package nl.tudelft.wdm.group1.rest;
 
 import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.UserCreatePayload;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

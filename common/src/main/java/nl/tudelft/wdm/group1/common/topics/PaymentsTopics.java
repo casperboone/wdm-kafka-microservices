@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.topics;
 
 public class PaymentsTopics {
     public static final String PAYMENT_CREATED = "paymentCreated";

@@ -1,7 +1,6 @@
 package nl.tudelft.wdm.group1.rest;
 
-import nl.tudelft.wdm.group1.common.KafkaResponse;
-import nl.tudelft.wdm.group1.common.RestTopics;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;

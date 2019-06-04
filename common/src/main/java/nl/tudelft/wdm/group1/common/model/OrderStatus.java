@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.model;
 
 public enum OrderStatus {
     PROCESSING,

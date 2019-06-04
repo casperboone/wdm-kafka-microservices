@@ -1,12 +1,12 @@
 package nl.tudelft.wdm.group1.stock;
 
 import nl.tudelft.wdm.group1.common.KafkaResponse;
-import nl.tudelft.wdm.group1.common.RestTopics;
-import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemSubtractAmountPayload;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;

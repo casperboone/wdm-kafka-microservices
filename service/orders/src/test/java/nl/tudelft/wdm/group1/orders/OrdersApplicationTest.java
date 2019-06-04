@@ -1,13 +1,13 @@
 package nl.tudelft.wdm.group1.orders;
 
 import nl.tudelft.wdm.group1.common.KafkaResponse;
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.RestTopics;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.payload.OrderAddPayload;
 import nl.tudelft.wdm.group1.common.payload.OrderDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.OrderItemAddPayload;
 import nl.tudelft.wdm.group1.common.payload.OrderItemDeletePayload;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

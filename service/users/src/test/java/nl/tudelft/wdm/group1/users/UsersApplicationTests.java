@@ -1,7 +1,11 @@
 package nl.tudelft.wdm.group1.users;
 
 import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.topics.RestTopics;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

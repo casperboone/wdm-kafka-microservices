@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.topics;
 
 public class RestTopics {
     public static final String REQUEST = "request";

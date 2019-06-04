@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.stock;
 
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
