@@ -27,6 +27,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -46,6 +47,7 @@ import static org.awaitility.Awaitility.await;
                 "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
         }
 )
+@DirtiesContext
 public class StockApplicationTest {
 
     @Autowired
