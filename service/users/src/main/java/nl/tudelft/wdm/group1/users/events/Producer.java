@@ -16,22 +16,22 @@ public class Producer {
     private KafkaTemplate<String, User> kafkaTemplate;
 
     public void emitUserCreated(User user) {
-        logger.info(String.format("#### -> Producing message -> %s", user));
+        logger.info("Producing [{}] -> {}", UsersTopics.USER_CREATED, user);
         this.kafkaTemplate.send(UsersTopics.USER_CREATED, user);
     }
 
     public void emitUserDeleted(User user) {
-        logger.info(String.format("#### -> Producing message -> %s", user));
+        logger.info("Producing [{}] -> {}", UsersTopics.USER_DELETED, user);
         this.kafkaTemplate.send(UsersTopics.USER_DELETED, user);
     }
 
     public void emitCreditSubtracted(User user) {
-        logger.info(String.format("#### -> Producing message -> %s", user));
+        logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED, user);
         this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED, user);
     }
 
     public void emitCreditAdded(User user) {
-        logger.info(String.format("#### -> Producing message -> %s", user));
+        logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_ADDED, user);
         this.kafkaTemplate.send(UsersTopics.CREDIT_ADDED, user);
     }
 }

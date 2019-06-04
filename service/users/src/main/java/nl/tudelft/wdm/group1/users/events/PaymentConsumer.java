@@ -21,6 +21,7 @@ public class PaymentConsumer {
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_CREATED})
     public void consumePaymentCreated(Payment payment) throws ResourceNotFoundException, CreditChangeInvalidException {
+        logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
         try {
             User user = userRepository.findOrElseThrow(payment.getUserId());
             user.subtractCredit(payment.getAmount());

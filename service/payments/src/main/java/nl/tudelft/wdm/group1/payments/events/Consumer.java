@@ -22,13 +22,13 @@ public class Consumer {
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_CREATED})
     public void consume(Payment payment) {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
         paymentRepository.save(payment);
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_DELETED, UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
     public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{},{}] -> {}", PaymentsTopics.PAYMENT_DELETED, UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
         paymentRepository.delete(paymentRepository.findOrElseThrow(payment.getOrderId()));
     }
 }

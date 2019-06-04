@@ -21,27 +21,27 @@ public class Producer {
     private KafkaTemplate<String, Order> kafkaTemplateForOrder;
 
     public void emitStockItemCreated(final StockItem stockItem) {
-        logger.info(String.format("#### -> Producing message -> %s", stockItem));
+        logger.info("Producing [{}] -> {}", StockTopics.STOCK_ITEM_CREATED, stockItem);
         this.kafkaTemplateForStock.send(StockTopics.STOCK_ITEM_CREATED, stockItem);
     }
 
     public void emitStockItemAdded(final StockItem stockItem) {
-        logger.info(String.format("#### -> Producing message -> %s", stockItem));
+        logger.info("Producing [{}] -> {}", StockTopics.STOCK_ADDED, stockItem);
         this.kafkaTemplateForStock.send(StockTopics.STOCK_ADDED, stockItem);
     }
 
     public void emitStockItemSubtracted(final StockItem stockItem) {
-        logger.info(String.format("#### -> Producing message -> %s", stockItem));
+        logger.info("Producing [{}] -> {}", StockTopics.STOCK_SUBTRACTED, stockItem);
         this.kafkaTemplateForStock.send(StockTopics.STOCK_SUBTRACTED, stockItem);
     }
 
     public void emitStockItemsSubtractedForOrder(final Order order) {
-        logger.info(String.format("#### -> Producing message -> %s", order));
+        logger.info("Producing [{}] -> {}", OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL, order);
         this.kafkaTemplateForOrder.send(OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL, order);
     }
 
     public void emitStockItemsSubtractForOrderFailed(final Order order) {
-        logger.info(String.format("#### -> Producing message -> %s", order));
+        logger.info("Producing [{}] -> {}", OrdersTopics.ORDER_PROCESSED_IN_STOCK_FAILED, order);
         this.kafkaTemplateForOrder.send(OrdersTopics.ORDER_PROCESSED_IN_STOCK_FAILED, order);
     }
 

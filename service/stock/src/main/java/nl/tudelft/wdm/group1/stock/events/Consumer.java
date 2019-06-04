@@ -26,7 +26,8 @@ public class Consumer {
 
     @KafkaListener(topics = {StockTopics.STOCK_ITEM_CREATED, StockTopics.STOCK_ADDED, StockTopics.STOCK_SUBTRACTED})
     public void consumeStockItemChange(final StockItem stockItem) {
-        logger.info(String.format("#### -> Consumed message -> %s", stockItem));
+        logger.info("Consuming [{},{},{}] -> {}",
+                StockTopics.STOCK_ITEM_CREATED, StockTopics.STOCK_ADDED, StockTopics.STOCK_SUBTRACTED, stockItem);
 
         stockItemRepository.save(stockItem);
     }
@@ -34,7 +35,7 @@ public class Consumer {
     @KafkaListener(topics = {OrdersTopics.ORDER_READY})
     public void consumeOrderCheckedOut(final Order order)
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_READY, order);
         int totalPrice = 0;
 
         // lock all stock items
@@ -83,7 +84,7 @@ public class Consumer {
 
     @KafkaListener(topics = {OrdersTopics.ORDER_CANCELLED})
     public void consumeOrderCancelled(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_CANCELLED, order);
         // Only perform action when the order was cancelled due to lack of payment
         if (order.getStatus() == OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT) {
             // TODO: lock the stock while adding
