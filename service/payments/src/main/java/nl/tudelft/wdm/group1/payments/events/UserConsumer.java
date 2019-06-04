@@ -22,14 +22,14 @@ public class UserConsumer {
 
     @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL})
     public void consumePaymentSuccessful(Payment payment) {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, payment);
         // Emit payment successful message
         producer.emitPaymentSuccessful(payment);
     }
 
     @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
     public void consumePaymentFailed(Payment payment) {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
         // Emit payment failed message
         producer.emitPaymentFailed(payment);
     }

@@ -26,21 +26,23 @@ public class Consumer {
             OrdersTopics.ORDER_CHECKED_OUT
     })
     public void consume(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{},{},{},{}] -> {}",
+                OrdersTopics.ORDER_CREATED, OrdersTopics.ORDER_ITEM_ADDED,
+                OrdersTopics.ORDER_ITEM_DELETED, OrdersTopics.ORDER_CHECKED_OUT, order);
 
         orderRepository.save(order);
     }
 
     @KafkaListener(topics = OrdersTopics.ORDER_DELETED)
     public void consumeOrderDeleted(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_DELETED, order);
 
         orderRepository.deleteById(order.getId());
     }
 
     @KafkaListener(topics = {OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL})
     public void consumeOrderProcessedInStockSuccessful(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_PROCESSED_IN_STOCK_SUCCESSFUL, order);
 
         order.setProcessedInStock(true);
         orderRepository.save(order);
@@ -50,7 +52,7 @@ public class Consumer {
 
     @KafkaListener(topics = {OrdersTopics.ORDER_PROCESSED_IN_STOCK_FAILED})
     public void consumeOrderProcessedInStockFailed(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_PROCESSED_IN_STOCK_FAILED, order);
 
         order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_STOCK);
         orderRepository.save(order);
@@ -62,7 +64,7 @@ public class Consumer {
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_SUCCESSFUL})
     public void consumePaymentSuccessful(Payment payment) throws ResourceNotFoundException {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_SUCCESSFUL, payment);
 
         Order order = orderRepository.findOrElseThrow(payment.getOrderId());
 
@@ -75,7 +77,7 @@ public class Consumer {
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
     public void consumePaymentFailed(Payment payment) throws ResourceNotFoundException {
-        logger.info(String.format("#### -> Consumed message -> %s", payment));
+        logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_FAILED, payment);
 
         Order order = orderRepository.findOrElseThrow(payment.getOrderId());
 
