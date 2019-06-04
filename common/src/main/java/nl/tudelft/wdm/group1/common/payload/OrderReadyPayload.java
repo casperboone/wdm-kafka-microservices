@@ -2,13 +2,13 @@ package nl.tudelft.wdm.group1.common.payload;
 
 import java.util.UUID;
 
-public class OrderCheckoutPayload extends RestPayload {
+public class OrderReadyPayload extends RestPayload {
     private UUID id;
 
-    public OrderCheckoutPayload() {
+    public OrderReadyPayload() {
     }
 
-    public OrderCheckoutPayload(UUID id) {
+    public OrderReadyPayload(UUID id) {
         this.id = id;
     }
 
