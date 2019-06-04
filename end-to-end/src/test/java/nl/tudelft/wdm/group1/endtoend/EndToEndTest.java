@@ -67,8 +67,11 @@ public class EndToEndTest extends EndToEndBase {
 
         // add 2 items
         addOrderItem(order, stockItem0);
+        Thread.sleep(2000);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(1, itemIds.size());
         addOrderItem(order, stockItem1);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         itemIds = getOrderItemIds(order);
         Assert.assertEquals(2, itemIds.size());
 
@@ -84,7 +87,13 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order);
-        Thread.sleep(2000);
+        String status = getOrderStatus(order);
+        int counter = 0;
+        while(status.equals("PROCESSING") && counter < 60){
+            status = getOrderStatus(order);
+            counter++;
+            Thread.sleep(1000);
+        }
 
         int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
         int actualNewCredit = getUserCredit(user0);
@@ -96,4 +105,68 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(actualNewCredit, newCredit);
     }
 
+    @Test
+    public void checkoutOrderInsufficientStock() throws InterruptedException {
+        List<UUID> users = createUsers();
+        // get the two users
+        UUID user0 = users.get(0);
+        UUID user1 = users.get(1);
+
+        List<UUID> stocks = createStocksSingleItems();
+        UUID stockItem0 = stocks.get(0);
+
+        int startCredit = 1000;
+        addCredit(user0, startCredit);
+        Assert.assertEquals(startCredit, getUserCredit(user0));
+        addCredit(user1, startCredit);
+        Assert.assertEquals(startCredit, getUserCredit(user1));
+
+        // FIRST ORDER
+        UUID order0= createOrder(user0);
+
+        // add item 0
+        addOrderItem(order0, stockItem0);
+        Thread.sleep(1000);
+        ArrayList<UUID> itemIds0 = getOrderItemIds(order0);
+        Assert.assertEquals(1, itemIds0.size());
+
+        // make the transaction
+        checkoutOrder(order0);
+        String status0 = getOrderStatus(order0);
+        int counter0 = 0;
+        while(status0.equals("PROCESSING") && counter0 < 20){
+            status0 = getOrderStatus(order0);
+            counter0++;
+            Thread.sleep(1000);
+        }
+
+        // check that the item is sold out
+        Assert.assertEquals("SUCCEEDED", status0);
+        Assert.assertEquals(0, getStockAmount(stockItem0));
+        Assert.assertNotEquals(startCredit, getUserCredit(user0));
+
+        // SECOND ORDER
+        UUID order1 = createOrder(user0);
+
+        // add item 0
+        addOrderItem(order1, stockItem0);
+        Thread.sleep(1000);
+        ArrayList<UUID> itemIds1 = getOrderItemIds(order1);
+        Assert.assertEquals(1, itemIds1.size());
+
+        // make the transaction
+        checkoutOrder(order1);
+        String status1 = getOrderStatus(order1);
+        int counter1 = 0;
+        while(status1.equals("PROCESSING") && counter1 < 20){
+            status1 = getOrderStatus(order1);
+            counter1++;
+            Thread.sleep(1000);
+        }
+
+        // check that the item is sold out
+        Assert.assertEquals("FAILED_DUE_TO_LACK_OF_STOCK", status1);
+        Assert.assertEquals(0, getStockAmount(stockItem0));
+        Assert.assertEquals(startCredit, getUserCredit(user1));
+    }
 }
