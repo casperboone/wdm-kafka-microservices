@@ -1,7 +1,17 @@
+apply plugin: 'io.spring.dependency-management'
+//apply plugin: "org.springframework.boot"
+
 dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'io.rest-assured:rest-assured:4.0.0'
     testCompile 'org.awaitility:awaitility:3.1.6'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation project(':common')
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }
 
 // By default tests and build are disabled so they are not run when the project builds.

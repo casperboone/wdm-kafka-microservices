@@ -2,6 +2,7 @@ package nl.tudelft.wdm.group1.endtoend;
 import org.junit.Assert;
 import org.junit.Test;
 import java.util.*;
+import nl.tudelft.wdm.group1.common.OrderStatus;
 
 public class EndToEndTest extends EndToEndBase {
 
@@ -214,7 +215,7 @@ public class EndToEndTest extends EndToEndBase {
         }
 
         // check that the order is rejected due to lack of credit
-        Assert.assertEquals("FAILED_DUE_TO_LACK_OF_PAYMENT", status0);
+        Assert.assertEquals(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT, status0);
         Assert.assertEquals(stockItemAmount0, getStockAmount(stockItem0));
         Assert.assertEquals(stockItemAmount1, getStockAmount(stockItem1));
         Assert.assertEquals(stockItemAmount2, getStockAmount(stockItem2));
