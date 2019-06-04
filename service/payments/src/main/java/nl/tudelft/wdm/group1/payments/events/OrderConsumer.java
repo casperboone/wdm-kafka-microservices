@@ -23,7 +23,7 @@ public class OrderConsumer {
 
     @KafkaListener(topics = {OrdersTopics.ORDER_CHECKED_OUT})
     public void consume(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+        logger.info("Consuming [{}] -> {}", OrdersTopics.ORDER_CHECKED_OUT, order);
         // Triggers new payment creation
         Payment payment = new Payment(order.getUserId(), order.getId(), order.getPrice());
         producer.emitPaymentCreated(payment);

@@ -20,23 +20,23 @@ public class Producer {
     private KafkaTemplate<String, Payment> kafkaTemplate;
 
     public void emitPaymentCreated(Payment payment) {
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
         this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment);
     }
 
     public void emitPaymentSuccessful(Payment payment) {
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_SUCCESSFUL, payment);
         this.kafkaTemplate.send(PaymentsTopics.PAYMENT_SUCCESSFUL, payment);
     }
 
     public void emitPaymentFailed(Payment payment) {
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_FAILED, payment);
         this.kafkaTemplate.send(PaymentsTopics.PAYMENT_FAILED, payment);
     }
 
     public void emitPaymentDeleted(Payment payment) {
         // TODO: adds the amount of the order to the user's credit
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_DELETED, payment);
         this.kafkaTemplate.send(PaymentsTopics.PAYMENT_DELETED, payment);
     }
 }

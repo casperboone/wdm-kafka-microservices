@@ -16,12 +16,12 @@ public class PaymentProducer {
     private KafkaTemplate<String, Payment> kafkaTemplate;
 
     public void emitCreditSubtractedForPayment(Payment payment) {
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, payment);
         this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, payment);
     }
 
     public void emitCreditSubtractionForPaymentFailed(Payment payment) {
-        logger.info(String.format("#### -> Producing message -> %s", payment));
+        logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
         this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
     }
 }

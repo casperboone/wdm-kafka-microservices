@@ -21,14 +21,15 @@ public class Consumer {
 
     @KafkaListener(topics = {UsersTopics.USER_CREATED, UsersTopics.CREDIT_ADDED, UsersTopics.CREDIT_SUBTRACTED})
     public void consume(User user) {
-        logger.info(String.format("#### -> Consumed message -> %s", user));
+        logger.info("Consuming [{},{},{}] -> {}",
+                UsersTopics.USER_CREATED, UsersTopics.CREDIT_ADDED, UsersTopics.CREDIT_SUBTRACTED, user);
 
         userRepository.save(user);
     }
 
     @KafkaListener(topics = UsersTopics.USER_DELETED)
     public void consumeUserDeleted(User user) throws ResourceNotFoundException {
-        logger.info(String.format("#### -> Consumed message -> %s", user));
+        logger.info("Consuming [{}] -> {}", UsersTopics.USER_DELETED, user);
 
         userRepository.delete(userRepository.findOrElseThrow(user.getId()));
     }
