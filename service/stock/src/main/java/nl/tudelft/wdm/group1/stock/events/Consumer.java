@@ -17,6 +17,8 @@ public class Consumer {
 
     private Producer producer;
 
+    private final Object lock = new Object();
+
     public Consumer(final StockItemRepository stockItemRepository, final Producer producer) {
         this.stockItemRepository = stockItemRepository;
         this.producer = producer;
@@ -33,45 +35,46 @@ public class Consumer {
     public void consumeOrderCheckedOut(final Order order)
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         logger.info(String.format("#### -> Consumed message -> %s", order));
-
-        // TODO: lock the stock to prevent multiple checks on same stock
-        // check availability of all StockItems
-        for (UUID stockItemId : order.getItemIds()) {
-            StockItem stockItem;
-            try {
-                stockItem = stockItemRepository.findOrElseThrow(stockItemId);
-            } catch (ResourceNotFoundException e) {
-                producer.emitStockItemsSubtractForOrderFailed(order);
-                return;
-            }
-
-            if (stockItem.getStock() < 1) { // amount per order item is 1
-                producer.emitStockItemsSubtractForOrderFailed(order);
-                return;
-            }
-        }
-
-        // all stocks available, proceed and emit a successful event
         int totalPrice = 0;
 
-        for (UUID stockItemId : order.getItemIds()) {
-            StockItem stockItem;
-            try {
-                stockItem = stockItemRepository.findOrElseThrow(stockItemId);
-            } catch (ResourceNotFoundException e) {
-                // we assume this should not cause any exception
-                throw e;
+        // lock all stock items
+        synchronized (lock) {
+            // check availability of all StockItems
+            for (UUID stockItemId : order.getItemIds()) {
+                StockItem stockItem;
+                try {
+                    stockItem = stockItemRepository.findOrElseThrow(stockItemId);
+                } catch (ResourceNotFoundException e) {
+                    producer.emitStockItemsSubtractForOrderFailed(order);
+                    return;
+                }
+
+                if (stockItem.getStock() < 1) { // amount per order item is 1
+                    producer.emitStockItemsSubtractForOrderFailed(order);
+                    return;
+                }
             }
 
-            try {
-                stockItem.subtractStock(1);
-                stockItemRepository.save(stockItem);
-            } catch (InsufficientStockException | InvalidStockChangeException e) {
-                // we assume the subtraction should not cause any exception
-                throw e;
-            }
+            // all stock items available, proceed and emit a successful event
+            for (UUID stockItemId : order.getItemIds()) {
+                StockItem stockItem;
+                try {
+                    stockItem = stockItemRepository.findOrElseThrow(stockItemId);
+                } catch (ResourceNotFoundException e) {
+                    // we assume this should not cause any exception
+                    throw e;
+                }
 
-            totalPrice += stockItem.getPrice();
+                try {
+                    stockItem.subtractStock(1);
+                    stockItemRepository.save(stockItem);
+                } catch (InsufficientStockException | InvalidStockChangeException e) {
+                    // we assume the subtraction should not cause any exception
+                    throw e;
+                }
+
+                totalPrice += stockItem.getPrice();
+            }
         }
 
         order.setPrice(totalPrice);

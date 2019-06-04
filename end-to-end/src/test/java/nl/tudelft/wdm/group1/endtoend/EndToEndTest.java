@@ -67,6 +67,7 @@ public class EndToEndTest extends EndToEndBase {
 
         // add 2 items
         addOrderItem(order, stockItem0);
+        Thread.sleep(1000);
         addOrderItem(order, stockItem1);
         Thread.sleep(1000);
         itemIds = getOrderItemIds(order);
