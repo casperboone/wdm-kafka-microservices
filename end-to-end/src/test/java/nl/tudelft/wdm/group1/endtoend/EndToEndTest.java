@@ -169,4 +169,55 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(0, getStockAmount(stockItem0));
         Assert.assertEquals(startCredit, getUserCredit(user1));
     }
+
+    @Test
+    public void checkoutOrderInsufficientMoneys() throws InterruptedException {
+        List<UUID> users = createUsers();
+        // get the user
+        UUID user0 = users.get(0);
+
+        List<UUID> stocks = createStocks();
+        UUID stockItem0 = stocks.get(0);
+        int stockItemAmount0 = getStockAmount(stockItem0);
+        UUID stockItem1 = stocks.get(1);
+        int stockItemAmount1 = getStockAmount(stockItem1);
+        UUID stockItem2 = stocks.get(2);
+        int stockItemAmount2 = getStockAmount(stockItem2);
+
+        // Assert that the user is broke
+        Assert.assertEquals(0, getUserCredit(user0));
+        int startCredit = 2;
+        addCredit(users.get(0), startCredit);
+        Assert.assertEquals(startCredit, getUserCredit(user0));
+
+        // make order
+        UUID order0= createOrder(user0);
+
+        // add items 0,1 and 2
+        addOrderItem(order0, stockItem0);
+        Thread.sleep(1000);
+        addOrderItem(order0, stockItem1);
+        Thread.sleep(1000);
+        addOrderItem(order0, stockItem2);
+        Thread.sleep(1000);
+        ArrayList<UUID> itemIds0 = getOrderItemIds(order0);
+        Assert.assertEquals(3, itemIds0.size());
+
+        // make the transaction
+        checkoutOrder(order0);
+        String status0 = getOrderStatus(order0);
+        int counter0 = 0;
+        while(status0.equals("PROCESSING") && counter0 < 20){
+            status0 = getOrderStatus(order0);
+            counter0++;
+            Thread.sleep(1000);
+        }
+
+        // check that the order is rejected due to lack of credit
+        Assert.assertEquals("FAILED_DUE_TO_LACK_OF_PAYMENT", status0);
+        Assert.assertEquals(stockItemAmount0, getStockAmount(stockItem0));
+        Assert.assertEquals(stockItemAmount1, getStockAmount(stockItem1));
+        Assert.assertEquals(stockItemAmount2, getStockAmount(stockItem2));
+        Assert.assertEquals(startCredit, getUserCredit(user0));
+    }
 }
