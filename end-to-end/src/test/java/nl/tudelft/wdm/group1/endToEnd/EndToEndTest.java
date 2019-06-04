@@ -2,7 +2,6 @@ package nl.tudelft.wdm.group1.endtoend;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import nl.tudelft.wdm.group1.common.OrdersTopics;
 import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;

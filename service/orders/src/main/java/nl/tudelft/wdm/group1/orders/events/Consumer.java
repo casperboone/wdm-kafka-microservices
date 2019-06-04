@@ -19,6 +19,11 @@ public class Consumer {
         this.producer = producer;
     }
 
+
+    //    @KafkaListener(topicPartitions =
+//            { @TopicPartition(topic = OrdersTopics.ORDER_CREATED, partitions = {PartitionManager.}),
+//                    @TopicPartition(topic = "topic2", partitions = { "0", "1" })
+//            })
     @KafkaListener(topics = {
             OrdersTopics.ORDER_CREATED,
             OrdersTopics.ORDER_ITEM_ADDED,
