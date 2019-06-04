@@ -30,19 +30,19 @@ class OrderTaskSequence(TaskSequence):
 
     @seq_task(2)
     def create_order(self):
-        response = self.client.post("/orders/" + self.user_id)
+        response = self.client.post("/orders/%s" % self.user_id, name="/orders/[id]")
         self.order_id = response.json()['id']
 
     @seq_task(3)
     @task(4)  # add four items
     def add_order_item(self):
-        self.client.post("/orders/" + self.order_id + "/items", {
+        self.client.post("/orders/%s/items" % self.order_id, name="/orders/[id]/items", data={
             "itemId": random.choice(stock_items)
         })
 
     @seq_task(4)
     def checkout_order(self):
-        self.client.post("/orders/" + self.order_id + "/checkout")
+        self.client.post("/orders/%s/checkout" % self.order_id, name="/orders/[id]/checkout")
 
 
 class User(HttpLocust):
