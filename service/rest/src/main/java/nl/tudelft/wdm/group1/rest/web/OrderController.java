@@ -47,7 +47,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/checkout")
-    public CompletableFuture<Order> checkoutOrder(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new OrderCheckoutPayload(id));
+    public CompletableFuture<Order> readyOrder(@PathVariable(value = "id") UUID id) {
+        return kafka.performAction(new OrderReadyPayload(id));
     }
 }

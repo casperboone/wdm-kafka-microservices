@@ -2,6 +2,8 @@ package nl.tudelft.wdm.group1.orders.events;
 
 import nl.tudelft.wdm.group1.common.Order;
 import nl.tudelft.wdm.group1.common.OrderStatus;
+import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,8 +11,7 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ConsumerTest {
     private Consumer consumer;
@@ -34,10 +35,13 @@ public class ConsumerTest {
     }
 
     @Test
-    public void testHandlePaymentSuccessful() {
+    public void testHandlePaymentSuccessful() throws ResourceNotFoundException {
         Order order = new Order(UUID.randomUUID());
-        consumer.consumePaymentSuccessful(order);
+        Payment payment = new Payment(order.getUserId(), order.getId(), 42);
+        when(orderRepository.findOrElseThrow(order.getId())).thenReturn(order);
+        consumer.consumePaymentSuccessful(payment);
         assertThat(order.isPaid()).isTrue();
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCEEDED);
         verify(orderRepository).save(order);
     }
 
@@ -50,9 +54,11 @@ public class ConsumerTest {
     }
 
     @Test
-    public void testHandleOrderProcessedPaymentFailed() {
+    public void testHandleOrderProcessedPaymentFailed() throws ResourceNotFoundException {
         Order order = new Order(UUID.randomUUID());
-        consumer.consumePaymentFailed(order);
+        Payment payment = new Payment(order.getUserId(), order.getId(), 42);
+        when(orderRepository.findOrElseThrow(order.getId())).thenReturn(order);
+        consumer.consumePaymentFailed(payment);
         assertThat(order.getStatus()).isEqualByComparingTo(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
         verify(producer).emitOrderCancelled(order);
     }

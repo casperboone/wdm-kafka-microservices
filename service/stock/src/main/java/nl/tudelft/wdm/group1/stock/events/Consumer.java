@@ -31,7 +31,7 @@ public class Consumer {
         stockItemRepository.save(stockItem);
     }
 
-    @KafkaListener(topics = {OrdersTopics.ORDER_CHECKED_OUT})
+    @KafkaListener(topics = {OrdersTopics.ORDER_READY})
     public void consumeOrderCheckedOut(final Order order)
             throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         logger.info(String.format("#### -> Consumed message -> %s", order));
@@ -91,6 +91,7 @@ public class Consumer {
                 try {
                     StockItem stockItem = stockItemRepository.findOrElseThrow(stockItemId);
                     stockItem.addStock(1);
+                    stockItemRepository.save(stockItem);
                 } catch (ResourceNotFoundException | InvalidStockChangeException e) {
                     logger.error("Restocking failed", e);
                 }

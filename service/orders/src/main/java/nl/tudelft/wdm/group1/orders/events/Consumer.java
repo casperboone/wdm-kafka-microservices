@@ -1,9 +1,6 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.OrderStatus;
-import nl.tudelft.wdm.group1.common.OrdersTopics;
-import nl.tudelft.wdm.group1.common.PaymentsTopics;
+import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +61,10 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_SUCCESSFUL})
-    public void consumePaymentSuccessful(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+    public void consumePaymentSuccessful(Payment payment) throws ResourceNotFoundException {
+        logger.info(String.format("#### -> Consumed message -> %s", payment));
+
+        Order order = orderRepository.findOrElseThrow(payment.getOrderId());
 
         order.setPaid(true);
         order.setStatus(OrderStatus.SUCCEEDED);
@@ -75,8 +74,10 @@ public class Consumer {
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
-    public void consumePaymentFailed(Order order) {
-        logger.info(String.format("#### -> Consumed message -> %s", order));
+    public void consumePaymentFailed(Payment payment) throws ResourceNotFoundException {
+        logger.info(String.format("#### -> Consumed message -> %s", payment));
+
+        Order order = orderRepository.findOrElseThrow(payment.getOrderId());
 
         order.setStatus(OrderStatus.FAILED_DUE_TO_LACK_OF_PAYMENT);
         orderRepository.save(order);

@@ -1,49 +1,9 @@
 package nl.tudelft.wdm.group1.endtoend;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import org.awaitility.Awaitility;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-import static io.restassured.RestAssured.given;
-import static org.awaitility.Awaitility.await;
-
-public class EndToEndTest {
-    private static final String DEFAULT_BASE_URI = "http://localhost:8080";
-    private static final String ENVIRONMENT_VARIABLE_BASE_URI = "END_TO_END_HOST";
-    private static final String PROTOCOL_HTTP = "http";
-    private static final String PROTOCOL_HTTPS = "https";
-
-    @Before
-    public void setUp() throws MalformedURLException {
-        String baseURI = System.getenv(ENVIRONMENT_VARIABLE_BASE_URI);
-        if (baseURI == null) {
-            baseURI = DEFAULT_BASE_URI;
-        }
-
-        URL baseURL = new URL(baseURI);
-
-        if (baseURL.getPort() == -1) {
-            if (PROTOCOL_HTTP.equals(baseURL.getProtocol())) {
-                RestAssured.port = 80;
-            } else if (PROTOCOL_HTTPS.equals(baseURL.getProtocol())) {
-                RestAssured.port = 443;
-            } else {
-                RestAssured.port = baseURL.getPort();
-            }
-        }
-
-        RestAssured.baseURI = baseURL.getProtocol() + "://" + baseURL.getHost();
-
-        Awaitility.setDefaultPollInterval(500, TimeUnit.MILLISECONDS);
-        Awaitility.setDefaultPollDelay(100, TimeUnit.MILLISECONDS);
-    }
+public class EndToEndTest extends EndToEndBase {
 
     @Test
     public void createAndDeleteUser() {
@@ -67,138 +27,73 @@ public class EndToEndTest {
         deleteUsers(users);
     }
 
-    private void addCredit(UUID userId, int amount) {
-        Response response = given()
-                .when().get("/users/" + userId);
+    @Test
+    public void createAndCheckoutOrder() throws InterruptedException {
+        List<UUID> users = createUsers();
+        UUID user0 = users.get(0);
+        int credit0 = getUserCredit(user0);
+        Assert.assertEquals(0, credit0);
 
-        response.then().statusCode(200);
+        List<UUID> stocks = createStocks();
+        UUID stockItem0 = stocks.get(0);
+        int stockItemPrice0 = getStockPrice(stockItem0);
+        int stockItemAmount0 = getStockAmount(stockItem0);
+        Assert.assertEquals(20, stockItemPrice0);
+        Assert.assertEquals(30, stockItemAmount0);
 
-        int currentAmount = response.jsonPath().get("credit");
+        UUID stockItem1 = stocks.get(1);
+        int stockItemPrice1 = getStockPrice(stockItem1);
+        int stockItemAmount1 = getStockAmount(stockItem1);
+        Assert.assertEquals(21, stockItemPrice1);
+        Assert.assertEquals(40, stockItemAmount1);
 
-        given()
-                .when().post("/users/" + userId + "/credit/add/" + amount)
-                .then().statusCode(200);
+        UUID stockItem2 = stocks.get(2);
+        int stockItemPrice2 = getStockPrice(stockItem2);
+        int stockItemAmount2 = getStockAmount(stockItem2);
+        Assert.assertEquals(22, stockItemPrice2);
+        Assert.assertEquals(50, stockItemAmount2);
 
-        await().until(() -> given()
-                .when().get("/users/" + userId)
-                .jsonPath().get("credit").equals(currentAmount + amount));
+        int startCredit = 1000;
+        addCredit(users.get(0), startCredit);
+        Assert.assertEquals(startCredit, getUserCredit(user0));
+        addCredit(users.get(0), startCredit);
+        Assert.assertEquals(startCredit * 2, getUserCredit(user0));
+
+        UUID order = createOrder(user0);
+        ArrayList<UUID> itemIds;
+
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(0, itemIds.size());
+
+        // add 2 items
+        addOrderItem(order, stockItem0);
+        addOrderItem(order, stockItem1);
+        Thread.sleep(1000);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(2, itemIds.size());
+
+        // remove 1 item
+        deleteOrderItem(order, stockItem1);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(1, itemIds.size());
+
+        // add 1 item
+        addOrderItem(order, stockItem2);
+        itemIds = getOrderItemIds(order);
+        Assert.assertEquals(2, itemIds.size());
+
+        // make the transaction
+        checkoutOrder(order);
+        Thread.sleep(2000);
+
+        int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
+        int actualNewCredit = getUserCredit(user0);
+
+        // check values in the system
+        Assert.assertEquals(stockItemAmount1, getStockAmount(stockItem1));
+        Assert.assertEquals(stockItemAmount0 - 1, getStockAmount(stockItem0));
+        Assert.assertEquals(stockItemAmount2 - 1, getStockAmount(stockItem2));
+        Assert.assertEquals(actualNewCredit, newCredit);
     }
 
-    private void checkoutOrder(UUID order) {
-        given()
-                .when().post("/orders/" + order + "/checkout")
-                .then().statusCode(200);
-    }
-
-    private void deleteOrderItem(UUID order, UUID itemId) {
-        given().param("itemId", itemId)
-                .when().delete("/orders/" + order + "/items")
-                .then().statusCode(200);
-    }
-
-    private void addOrderItem(UUID order, UUID itemId) {
-        given().param("itemId", itemId)
-                .when().post("/orders/" + order + "/items")
-                .then().statusCode(200);
-    }
-
-    private UUID createOrder(UUID userId) {
-        Response response = given()
-                .when().post("/orders/" + userId)
-                .andReturn();
-
-        response.then().statusCode(200);
-
-        UUID id = UUID.fromString(response.jsonPath().get("id"));
-
-        await().untilAsserted(() -> given().when().get("/orders/" + id).then().statusCode(200));
-
-        return id;
-    }
-
-    private List<UUID> createUsers() {
-        List<Map<String, String>> users = new ArrayList<Map<String, String>>() {{
-            add(new HashMap<String, String>() {{
-                put("firstName", "Jane");
-                put("lastName", "Da");
-                put("street", "Main Street");
-                put("zip", "90101");
-                put("city", "Rome");
-            }});
-            add(new HashMap<String, String>() {{
-                put("firstName", "John");
-                put("lastName", "Doe");
-                put("street", "Second Street");
-                put("zip", "90102");
-                put("city", "Pisa");
-            }});
-        }};
-
-        List<UUID> userIds = new ArrayList<>();
-
-        for (Map<String, String> user : users) {
-            Response response = given()
-                    .params(user)
-                    .when().post("/users")
-                    .andReturn();
-
-            response.then().statusCode(200);
-
-            UUID id = UUID.fromString(response.jsonPath().get("id"));
-
-            await().untilAsserted(() -> given().when().get("/users/" + id).then().statusCode(200));
-
-            userIds.add(id);
-        }
-
-        return userIds;
-    }
-
-    private List<UUID> createStocks() {
-        List<Map<String, String>> stocks = new ArrayList<Map<String, String>>() {{
-            add(new HashMap<String, String>() {{
-                put("stock", "30");
-                put("name", "stock_1");
-                put("price", "20");
-            }});
-            add(new HashMap<String, String>() {{
-                put("stock", "40");
-                put("name", "stock_2");
-                put("price", "21");
-            }});
-            add(new HashMap<String, String>() {{
-                put("stock", "50");
-                put("name", "stock_2");
-                put("price", "22");
-            }});
-        }};
-
-        List<UUID> stockIds = new ArrayList<>();
-
-        for (Map<String, String> stock : stocks) {
-
-            Response stockResponse = given().params(stock)
-                    .when().post("/stock").andReturn();
-
-            stockResponse.then().statusCode(200);
-
-            UUID id = UUID.fromString(stockResponse.jsonPath().get("id"));
-
-            await().untilAsserted(() -> given().when().get("/stock/" + id).then().statusCode(200));
-
-            stockIds.add(id);
-        }
-
-        return stockIds;
-    }
-
-    private void deleteUsers(List<UUID> users) {
-        for (UUID user : users) {
-            given()
-                    .when().delete("/users/" + user)
-                    .then().statusCode(200);
-
-            await().untilAsserted(() -> given().when().get("/users/" + user).then().statusCode(404));
-        }
-    }
 }
