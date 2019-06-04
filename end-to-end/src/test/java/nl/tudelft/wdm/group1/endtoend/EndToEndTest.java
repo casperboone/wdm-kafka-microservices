@@ -89,17 +89,17 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order);
-        String status = getOrderStatus(order);
         await().until(() -> !getOrderStatus(order).equals("PROCESSING"));
-
-        int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
-        int actualNewCredit = getUserCredit(user0);
+        String status = getOrderStatus(order);
 
         // check values in the system
+        Assert.assertEquals("SUCCEEDED", status);
         Assert.assertEquals(stockItemAmount1, getStockAmount(stockItem1));
         Assert.assertEquals(stockItemAmount0 - 1, getStockAmount(stockItem0));
         Assert.assertEquals(stockItemAmount2 - 1, getStockAmount(stockItem2));
-        Assert.assertEquals(actualNewCredit, newCredit);
+        
+        int newCredit = startCredit * 2 - stockItemPrice0 - stockItemPrice2;
+        Assert.assertEquals(newCredit, getUserCredit(user0));
     }
 
     @Test
@@ -129,8 +129,8 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order0);
-        String status0 = getOrderStatus(order0);
         await().until(() -> !getOrderStatus(order0).equals("PROCESSING"));
+        String status0 = getOrderStatus(order0);
 
         // check that the item is sold out
         Assert.assertEquals("SUCCEEDED", status0);
@@ -148,8 +148,8 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order1);
-        String status1 = getOrderStatus(order1);
         await().until(() -> !getOrderStatus(order1).equals("PROCESSING"));
+        String status1 = getOrderStatus(order1);
 
         // check that the item is sold out
         Assert.assertEquals("FAILED_DUE_TO_LACK_OF_STOCK", status1);
@@ -192,8 +192,8 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order0);
+        await().until(() -> !(getOrderStatus(order0).equals("PROCESSING")));
         String status0 = getOrderStatus(order0);
-        await().until(() -> !getOrderStatus(order0).equals("PROCESSING"));
 
         // check that the order is rejected due to lack of credit
         Assert.assertEquals("FAILED_DUE_TO_LACK_OF_PAYMENT", status0);
