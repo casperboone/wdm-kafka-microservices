@@ -1,14 +1,18 @@
 package nl.tudelft.wdm.group1.endtoend;
-import java.util.*;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
 
 public class EndToEndTest extends EndToEndBase {
 
     @Test
-    public void createAndDeleteUser() {
+    public void createAndDeleteUser() throws InterruptedException {
         List<UUID> users = createUsers();
         List<UUID> stocks = createStocks();
 

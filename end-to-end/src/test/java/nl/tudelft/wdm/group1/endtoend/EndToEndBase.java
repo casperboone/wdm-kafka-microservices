@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.Before;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -171,7 +172,7 @@ public abstract class EndToEndBase {
         return userIds;
     }
 
-    protected List<UUID> createStocks() {
+    protected List<UUID> createStocks() throws InterruptedException {
         List<Map<String, String>> stocks = new ArrayList<Map<String, String>>() {{
             add(new HashMap<String, String>() {{
                 put("stock", "30");
@@ -200,6 +201,8 @@ public abstract class EndToEndBase {
             stockResponse.then().statusCode(200);
 
             UUID id = UUID.fromString(stockResponse.jsonPath().get("id"));
+
+            Thread.sleep(5000);
 
             await().untilAsserted(() -> given().when().get("/stock/" + id).then().statusCode(200));
 
