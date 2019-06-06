@@ -1,8 +1,8 @@
 package nl.tudelft.wdm.group1.stock;
 
+import nl.tudelft.wdm.group1.common.StockTopics;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.internals.AbstractPartitionAssignor;
-import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableKafka
@@ -27,33 +25,28 @@ public class KafkaConfig {
         props.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, PartitionAssignmentStrategy.class);
         return props;
     }
-}
 
-class PartitionAssignmentStrategy extends AbstractPartitionAssignor {
-    private final Logger logger = LoggerFactory.getLogger(PartitionAssignmentStrategy.class);
-
-    @Override
-    public Map<String, List<TopicPartition>> assign(Map<String, Integer> partitionsPerTopic, Map<String, Subscription> subscriptions) {
-        int candidatePartition = 0;
-        String podName = System.getenv("POD_NAME");
-        if (podName != null) {
-            String[] splitName = podName.split("-");
-            candidatePartition = Integer.parseInt(splitName[splitName.length - 1]);
-        }
-
-        final int finalPartition = candidatePartition;
-
-        logger.info("Application chose partition " + finalPartition);
-
-        return subscriptions.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        e -> e.getValue().topics().stream().map(
-                                t -> new TopicPartition(t, finalPartition)
-                        ).collect(Collectors.toList())));
+    @Bean
+    public NewTopic stockCreated() {
+        return new NewTopic(StockTopics.STOCK_ITEM_CREATED, getNumPartitions(), (short) 1);
     }
 
-    @Override
-    public String name() {
-        return "WDM";
+    @Bean
+    public NewTopic stockAdded() {
+        return new NewTopic(StockTopics.STOCK_ADDED, getNumPartitions(), (short) 1);
+    }
+
+    @Bean
+    public NewTopic stockSubtracted() {
+        return new NewTopic(StockTopics.STOCK_SUBTRACTED, getNumPartitions(), (short) 1);
+    }
+
+    private int getNumPartitions() {
+        int num = 1;
+        String environmentValue = System.getenv("NUM_PARTITIONS");
+        if (environmentValue != null) {
+            num = Integer.parseInt(environmentValue);
+        }
+        return num;
     }
 }
