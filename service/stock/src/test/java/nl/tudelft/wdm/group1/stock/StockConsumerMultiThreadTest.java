@@ -1,10 +1,10 @@
 package nl.tudelft.wdm.group1.stock;
 
-import nl.tudelft.wdm.group1.common.InsufficientStockException;
-import nl.tudelft.wdm.group1.common.InvalidStockChangeException;
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import nl.tudelft.wdm.group1.stock.events.Consumer;
 import org.junit.Assert;
 import org.junit.Before;

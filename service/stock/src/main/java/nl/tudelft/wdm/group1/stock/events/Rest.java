@@ -1,7 +1,16 @@
 package nl.tudelft.wdm.group1.stock.events;
 
-import nl.tudelft.wdm.group1.common.*;
-import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.KafkaErrorResponse;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.StockItem;
+import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;
+import nl.tudelft.wdm.group1.common.payload.StockItemSubtractAmountPayload;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

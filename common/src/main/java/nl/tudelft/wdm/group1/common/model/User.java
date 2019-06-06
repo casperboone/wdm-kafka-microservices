@@ -1,4 +1,7 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.model;
+
+import nl.tudelft.wdm.group1.common.exception.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

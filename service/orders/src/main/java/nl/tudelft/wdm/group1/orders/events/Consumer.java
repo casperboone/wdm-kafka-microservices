@@ -1,6 +1,13 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.OrderStatus;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.topic.OrdersTopics;
+import nl.tudelft.wdm.group1.common.topic.PaymentsTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

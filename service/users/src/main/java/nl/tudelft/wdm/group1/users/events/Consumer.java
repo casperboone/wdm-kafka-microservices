@@ -1,8 +1,8 @@
 package nl.tudelft.wdm.group1.users.events;
 
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.User;
-import nl.tudelft.wdm.group1.common.UsersTopics;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.User;
+import nl.tudelft.wdm.group1.common.topic.UsersTopics;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

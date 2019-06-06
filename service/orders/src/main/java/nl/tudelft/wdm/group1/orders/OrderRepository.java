@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.orders;
 
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;

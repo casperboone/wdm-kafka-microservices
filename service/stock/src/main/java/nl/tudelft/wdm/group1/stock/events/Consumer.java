@@ -1,6 +1,13 @@
 package nl.tudelft.wdm.group1.stock.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.OrderStatus;
+import nl.tudelft.wdm.group1.common.model.StockItem;
+import nl.tudelft.wdm.group1.common.topic.OrdersTopics;
+import nl.tudelft.wdm.group1.common.topic.StockTopics;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

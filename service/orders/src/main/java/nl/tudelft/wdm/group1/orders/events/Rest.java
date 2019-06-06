@@ -1,7 +1,11 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.KafkaErrorResponse;
+import nl.tudelft.wdm.group1.common.KafkaResponse;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import nl.tudelft.wdm.group1.common.QueueMap;
 import org.springframework.beans.factory.annotation.Autowired;

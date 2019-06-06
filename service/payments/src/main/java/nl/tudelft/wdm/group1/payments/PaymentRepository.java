@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.payments;
 
-import nl.tudelft.wdm.group1.common.Payment;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Payment;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
