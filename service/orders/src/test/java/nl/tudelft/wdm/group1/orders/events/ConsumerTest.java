@@ -1,9 +1,9 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.common.Order;
-import nl.tudelft.wdm.group1.common.OrderStatus;
-import nl.tudelft.wdm.group1.common.Payment;
-import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.OrderStatus;
+import nl.tudelft.wdm.group1.common.model.Payment;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,8 @@ public class ConsumerTest {
     public void setUp() {
         producer = mock(Producer.class);
         orderRepository = mock(OrderRepository.class);
-        consumer = new Consumer(orderRepository, producer);
+        Rest rest = mock(Rest.class);
+        consumer = new Consumer(orderRepository, producer, rest);
     }
 
     @Test

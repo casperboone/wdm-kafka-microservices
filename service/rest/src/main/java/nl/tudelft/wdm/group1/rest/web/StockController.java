@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.rest.web;
 
-import nl.tudelft.wdm.group1.common.StockItem;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;

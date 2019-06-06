@@ -1,7 +1,12 @@
 package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -28,7 +33,7 @@ public class Rest {
     @KafkaHandler
     public void consumeStockItemCreate(StockItemCreatePayload payload) {
         StockItem stockItem = new StockItem(payload.getStock(), payload.getName(), payload.getPrice());
-        stockItemRepository.save(stockItem);
+        producer.emitStockItemAdded(stockItem);
         rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), stockItem));
     }
 

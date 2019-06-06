@@ -1,13 +1,14 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.Payment;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,7 +42,7 @@ public class ConsumerTest {
     }
 
     @Test
-    public void testHandlePaymentFailed() {
+    public void testHandlePaymentFailed() throws ResourceNotFoundException {
         UUID userId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
         int amount = 42;

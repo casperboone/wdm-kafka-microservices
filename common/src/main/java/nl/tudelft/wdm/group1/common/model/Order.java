@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.model;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;

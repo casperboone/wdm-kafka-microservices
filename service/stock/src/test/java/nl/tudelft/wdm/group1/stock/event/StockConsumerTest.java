@@ -1,6 +1,11 @@
 package nl.tudelft.wdm.group1.stock.event;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.OrderStatus;
+import nl.tudelft.wdm.group1.common.model.StockItem;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import nl.tudelft.wdm.group1.stock.events.Consumer;
 import nl.tudelft.wdm.group1.stock.events.Producer;
@@ -10,7 +15,6 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class StockConsumerTest {
@@ -27,7 +31,7 @@ public class StockConsumerTest {
 
     @Test
     public void testHandleOrderCheckedOutWithSufficientStock()
-        throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
+            throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(10, "Milk", 1);
         StockItem stockItem2 = new StockItem(5, "Coke", 2);
 
@@ -48,7 +52,7 @@ public class StockConsumerTest {
 
     @Test
     public void testHandleOrderCheckedOutWithInsufficientStock()
-        throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
+            throws ResourceNotFoundException, InsufficientStockException, InvalidStockChangeException {
         StockItem stockItem1 = new StockItem(0, "Milk", 1);
         StockItem stockItem2 = new StockItem(1, "Coke", 1);
 

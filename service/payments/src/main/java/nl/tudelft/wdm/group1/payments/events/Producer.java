@@ -1,7 +1,7 @@
 package nl.tudelft.wdm.group1.payments.events;
 
-import nl.tudelft.wdm.group1.common.PaymentsTopics;
-import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.topic.PaymentsTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

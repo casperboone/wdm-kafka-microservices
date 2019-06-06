@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.topic;
 
 public class OrdersTopics {
     public static final String ORDER_CHECKED_OUT = "orderCheckedOut";

@@ -1,6 +1,11 @@
 package nl.tudelft.wdm.group1.users.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.CreditChangeInvalidException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.model.User;
+import nl.tudelft.wdm.group1.common.topic.PaymentsTopics;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.rest.web;
 
-import nl.tudelft.wdm.group1.common.User;
+import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.*;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;

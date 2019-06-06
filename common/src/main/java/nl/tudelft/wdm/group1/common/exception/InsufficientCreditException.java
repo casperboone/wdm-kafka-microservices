@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

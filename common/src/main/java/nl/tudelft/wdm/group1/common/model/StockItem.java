@@ -1,4 +1,7 @@
-package nl.tudelft.wdm.group1.common;
+package nl.tudelft.wdm.group1.common.model;
+
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.InvalidStockChangeException;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

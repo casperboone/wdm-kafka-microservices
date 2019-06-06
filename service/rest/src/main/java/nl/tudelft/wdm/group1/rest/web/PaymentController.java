@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.rest.web;
 
-import nl.tudelft.wdm.group1.common.Payment;
+import nl.tudelft.wdm.group1.common.model.Payment;
 import nl.tudelft.wdm.group1.common.payload.PaymentAddPayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentGetPayload;

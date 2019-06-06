@@ -1,6 +1,13 @@
 package nl.tudelft.wdm.group1.orders.events;
 
-import nl.tudelft.wdm.group1.common.*;
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
+import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
+import nl.tudelft.wdm.group1.common.model.Order;
+import nl.tudelft.wdm.group1.common.model.OrderStatus;
+import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.topic.OrdersTopics;
+import nl.tudelft.wdm.group1.common.topic.PaymentsTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +18,14 @@ import org.springframework.stereotype.Service;
 public class Consumer {
     private final OrderRepository orderRepository;
     private final Producer producer;
+    private Rest rest;
 
     private final Logger logger = LoggerFactory.getLogger(Consumer.class);
 
-    public Consumer(OrderRepository orderRepository, Producer producer) {
+    public Consumer(OrderRepository orderRepository, Producer producer, Rest rest) {
         this.orderRepository = orderRepository;
         this.producer = producer;
+        this.rest = rest;
     }
 
     @KafkaListener(topics = {
@@ -59,7 +68,7 @@ public class Consumer {
 
         producer.emitOrderCancelled(order);
 
-        // TODO notify user
+        rest.checkoutFailed(order, new InsufficientStockException("FAILED_DUE_TO_LACK_OF_STOCK"));
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_SUCCESSFUL})
@@ -72,7 +81,7 @@ public class Consumer {
         order.setStatus(OrderStatus.SUCCEEDED);
         orderRepository.save(order);
 
-        // TODO notify user
+        rest.checkoutFinished(order);
     }
 
     @KafkaListener(topics = {PaymentsTopics.PAYMENT_FAILED})
@@ -86,6 +95,6 @@ public class Consumer {
 
         producer.emitOrderCancelled(order);
 
-        // TODO notify user
+        rest.checkoutFailed(order, new InsufficientCreditException("FAILED_DUE_TO_LACK_OF_PAYMENT"));
     }
 }

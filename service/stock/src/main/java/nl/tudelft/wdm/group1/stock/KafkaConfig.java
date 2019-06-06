@@ -1,6 +1,6 @@
 package nl.tudelft.wdm.group1.stock;
 
-import nl.tudelft.wdm.group1.common.StockTopics;
+import nl.tudelft.wdm.group1.common.topic.StockTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;

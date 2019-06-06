@@ -29,18 +29,22 @@ class OrderTaskSequence(TaskSequence):
         self.user_id = response.json()['id']
 
     @seq_task(2)
+    def add_credit_to_user(self):
+        self.client.post("/users/%s/credit/add/133700" % self.user_id, name="/users/[id]/credit/add/133700")
+
+    @seq_task(3)
     def create_order(self):
         response = self.client.post("/orders/%s" % self.user_id, name="/orders/[id]")
         self.order_id = response.json()['id']
 
-    @seq_task(3)
+    @seq_task(4)
     @task(4)  # add four items
     def add_order_item(self):
         self.client.post("/orders/%s/items" % self.order_id, name="/orders/[id]/items", data={
             "itemId": random.choice(stock_items)
         })
 
-    @seq_task(4)
+    @seq_task(5)
     def checkout_order(self):
         self.client.post("/orders/%s/checkout" % self.order_id, name="/orders/[id]/checkout")
 
