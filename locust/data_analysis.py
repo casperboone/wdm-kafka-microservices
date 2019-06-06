@@ -46,4 +46,8 @@ if __name__ == "__main__":
 
     sns.lineplot(x, y, data=df, hue='Name', style='Name', markers=True)
 
+    # Set base axis at 0,0
+    plt.ylim(0, None)
+    plt.xlim(0, None)
+
     plt.show()
