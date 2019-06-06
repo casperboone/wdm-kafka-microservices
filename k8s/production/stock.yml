@@ -7,7 +7,7 @@ metadata:
     app: wdm-kafka
     service: stock
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: wdm-kafka
@@ -35,25 +35,8 @@ spec:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: wdm-kafka-kafka:9092
             - name: NUM_PARTITIONS
-              value: "2"
+              value: "3"
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wdm-kafka-stock
-  labels:
-    app: wdm-kafka
-    service: stock
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30003
-  selector:
-    app: wdm-kafka
-    service: stock
