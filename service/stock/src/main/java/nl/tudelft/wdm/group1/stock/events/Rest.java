@@ -10,7 +10,7 @@ import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemSubtractAmountPayload;
-import nl.tudelft.wdm.group1.common.topics.RestTopics;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.stock.StockItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

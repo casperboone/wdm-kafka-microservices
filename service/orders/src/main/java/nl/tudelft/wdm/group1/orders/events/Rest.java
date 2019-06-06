@@ -5,7 +5,7 @@ import nl.tudelft.wdm.group1.common.KafkaResponse;
 import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.payload.*;
-import nl.tudelft.wdm.group1.common.topics.RestTopics;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

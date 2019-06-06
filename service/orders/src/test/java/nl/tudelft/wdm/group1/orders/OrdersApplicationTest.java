@@ -7,7 +7,7 @@ import nl.tudelft.wdm.group1.common.payload.OrderAddPayload;
 import nl.tudelft.wdm.group1.common.payload.OrderDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.OrderItemAddPayload;
 import nl.tudelft.wdm.group1.common.payload.OrderItemDeletePayload;
-import nl.tudelft.wdm.group1.common.topics.RestTopics;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

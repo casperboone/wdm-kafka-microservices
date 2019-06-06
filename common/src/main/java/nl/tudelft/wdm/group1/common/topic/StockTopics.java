@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common.topics;
+package nl.tudelft.wdm.group1.common.topic;
 
 public class StockTopics {
     public static final String STOCK_ITEM_CREATED = "stockItemCreated";

@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.common.topics;
+package nl.tudelft.wdm.group1.common.topic;
 
 public class UsersTopics {
     public static final String USER_CREATED = "userCreated";

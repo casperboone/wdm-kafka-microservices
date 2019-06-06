@@ -2,7 +2,7 @@ package nl.tudelft.wdm.group1.payments.events;
 
 import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.model.Payment;
-import nl.tudelft.wdm.group1.common.topics.OrdersTopics;
+import nl.tudelft.wdm.group1.common.topic.OrdersTopics;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

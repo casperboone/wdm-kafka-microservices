@@ -7,7 +7,7 @@ import nl.tudelft.wdm.group1.common.model.Payment;
 import nl.tudelft.wdm.group1.common.payload.PaymentAddPayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentGetPayload;
-import nl.tudelft.wdm.group1.common.topics.RestTopics;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;

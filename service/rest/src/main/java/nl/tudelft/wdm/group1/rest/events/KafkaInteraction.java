@@ -3,7 +3,7 @@ package nl.tudelft.wdm.group1.rest.events;
 import nl.tudelft.wdm.group1.common.KafkaErrorResponse;
 import nl.tudelft.wdm.group1.common.KafkaResponse;
 import nl.tudelft.wdm.group1.common.payload.RestPayload;
-import nl.tudelft.wdm.group1.common.topics.RestTopics;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,8 +2,8 @@ package nl.tudelft.wdm.group1.stock.events;
 
 import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.model.StockItem;
-import nl.tudelft.wdm.group1.common.topics.OrdersTopics;
-import nl.tudelft.wdm.group1.common.topics.StockTopics;
+import nl.tudelft.wdm.group1.common.topic.OrdersTopics;
+import nl.tudelft.wdm.group1.common.topic.StockTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
