@@ -5,8 +5,7 @@ import org.apache.kafka.clients.consumer.internals.AbstractPartitionAssignor;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.annotation.EnableKafka;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +13,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Configuration
+@EnableKafka
 public class KafkaConfig {
-    @Bean
-    public ConsumerFactory<Integer, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
+//    @Bean
+//    public ConsumerFactory<Integer, String> consumerFactory() {
+//        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+//    }
 
     @Bean
     public Map<String, Object> consumerConfigs() {
