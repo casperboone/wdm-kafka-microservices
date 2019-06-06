@@ -1,5 +1,7 @@
 package nl.tudelft.wdm.group1.orders.events;
 
+import nl.tudelft.wdm.group1.common.exception.InsufficientCreditException;
+import nl.tudelft.wdm.group1.common.exception.InsufficientStockException;
 import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.common.model.Order;
 import nl.tudelft.wdm.group1.common.model.OrderStatus;
