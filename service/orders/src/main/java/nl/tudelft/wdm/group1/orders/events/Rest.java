@@ -3,11 +3,14 @@ package nl.tudelft.wdm.group1.orders.events;
 import nl.tudelft.wdm.group1.common.*;
 import nl.tudelft.wdm.group1.common.payload.*;
 import nl.tudelft.wdm.group1.orders.OrderRepository;
+import nl.tudelft.wdm.group1.common.QueueMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @KafkaListener(topics = RestTopics.REQUEST)
@@ -82,10 +85,20 @@ public class Rest {
         try {
             Order order = orderRepository.findOrElseThrow(payload.getId());
             producer.emitOrderReady(order);
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), order));
+            mapOrderToRequest.put(order.getId(), payload.getRequestId());
         } catch (ResourceNotFoundException e) {
             rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
         }
+    }
+
+    private QueueMap<UUID, UUID> mapOrderToRequest = new QueueMap<>();
+
+    public void checkoutFailed(Order order, Throwable reason) {
+        rest.sendDefault(new KafkaErrorResponse(mapOrderToRequest.poll(order.getId()), reason));
+    }
+
+    public void checkoutFinished(Order order) {
+        rest.sendDefault(new KafkaResponse<>(mapOrderToRequest.poll(order.getId()), order));
     }
 
     @KafkaHandler(isDefault = true)

@@ -66,6 +66,12 @@ public abstract class EndToEndBase {
                 .then().statusCode(200);
     }
 
+    protected void checkoutOrderFailure(UUID order, int status) {
+        given()
+                .when().post("/orders/" + order + "/checkout")
+                .then().statusCode(status);
+    }
+
     protected void deleteOrderItem(UUID order, UUID itemId) {
         given().param("itemId", itemId)
                 .when().delete("/orders/" + order + "/items")
