@@ -92,6 +92,18 @@ public abstract class EndToEndBase {
         return id;
     }
 
+    protected String getOrderStatus(UUID orderId) {
+        Response response = given()
+                .when().get("/orders/" + orderId)
+                .andReturn();
+
+        response.then().statusCode(200);
+
+        String status = response.jsonPath().get("status");
+
+        return status;
+    }
+
     protected ArrayList<UUID> getOrderItemIds(UUID orderId) {
         Response response = given()
                 .when().get("/orders/" + orderId)
@@ -167,7 +179,45 @@ public abstract class EndToEndBase {
             }});
             add(new HashMap<String, String>() {{
                 put("stock", "50");
-                put("name", "stock_2");
+                put("name", "stock_3");
+                put("price", "22");
+            }});
+        }};
+
+        List<UUID> stockIds = new ArrayList<>();
+
+        for (Map<String, String> stock : stocks) {
+
+            Response stockResponse = given().params(stock)
+                    .when().post("/stock").andReturn();
+
+            stockResponse.then().statusCode(200);
+
+            UUID id = UUID.fromString(stockResponse.jsonPath().get("id"));
+
+            await().untilAsserted(() -> given().when().get("/stock/" + id).then().statusCode(200));
+
+            stockIds.add(id);
+        }
+
+        return stockIds;
+    }
+
+    protected List<UUID> createStocksSingleItems() {
+        List<Map<String, String>> stocks = new ArrayList<Map<String, String>>() {{
+            add(new HashMap<String, String>() {{
+                put("stock", "1");
+                put("name", "stock_4");
+                put("price", "20");
+            }});
+            add(new HashMap<String, String>() {{
+                put("stock", "1");
+                put("name", "stock_5");
+                put("price", "21");
+            }});
+            add(new HashMap<String, String>() {{
+                put("stock", "1");
+                put("name", "stock_6");
                 put("price", "22");
             }});
         }};

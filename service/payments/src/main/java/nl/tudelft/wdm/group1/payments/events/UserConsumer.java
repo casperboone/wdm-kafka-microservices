@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.payments.events;
 
+import nl.tudelft.wdm.group1.common.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.common.UsersTopics;
 import nl.tudelft.wdm.group1.common.Payment;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
@@ -28,9 +29,10 @@ public class UserConsumer {
     }
 
     @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
-    public void consumePaymentFailed(Payment payment) {
+    public void consumePaymentFailed(Payment payment) throws ResourceNotFoundException {
         logger.info("Consuming [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
         // Emit payment failed message
         producer.emitPaymentFailed(payment);
+        paymentRepository.delete(paymentRepository.findOrElseThrow(payment.getOrderId()));
     }
 }

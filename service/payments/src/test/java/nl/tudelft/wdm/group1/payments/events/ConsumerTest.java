@@ -41,7 +41,7 @@ public class ConsumerTest {
     }
 
     @Test
-    public void testHandlePaymentFailed() {
+    public void testHandlePaymentFailed() throws ResourceNotFoundException {
         UUID userId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
         int amount = 42;

@@ -26,9 +26,9 @@ public class Consumer {
         paymentRepository.save(payment);
     }
 
-    @KafkaListener(topics = {PaymentsTopics.PAYMENT_DELETED, UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
+    @KafkaListener(topics = {PaymentsTopics.PAYMENT_DELETED})
     public void consumePaymentDeleted(Payment payment) throws ResourceNotFoundException {
-        logger.info("Consuming [{},{}] -> {}", PaymentsTopics.PAYMENT_DELETED, UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
+        logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_DELETED, payment);
         paymentRepository.delete(paymentRepository.findOrElseThrow(payment.getOrderId()));
     }
 }
