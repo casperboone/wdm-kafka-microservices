@@ -22,7 +22,8 @@ public class ConsumerTest {
     public void setUp() {
         producer = mock(Producer.class);
         orderRepository = mock(OrderRepository.class);
-        consumer = new Consumer(orderRepository, producer);
+        Rest rest = mock(Rest.class);
+        consumer = new Consumer(orderRepository, producer, rest);
     }
 
     @Test

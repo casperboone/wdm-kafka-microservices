@@ -89,7 +89,6 @@ public class EndToEndTest extends EndToEndBase {
 
         // make the transaction
         checkoutOrder(order);
-        await().until(() -> !getOrderStatus(order).equals("PROCESSING"));
         String status = getOrderStatus(order);
 
         // check values in the system
@@ -147,8 +146,7 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(1, itemIds1.size());
 
         // make the transaction
-        checkoutOrder(order1);
-        await().until(() -> !getOrderStatus(order1).equals("PROCESSING"));
+        checkoutOrderFailure(order1, 404);
         String status1 = getOrderStatus(order1);
 
         // check that the item is sold out
@@ -191,8 +189,7 @@ public class EndToEndTest extends EndToEndBase {
         Assert.assertEquals(3, itemIds0.size());
 
         // make the transaction
-        checkoutOrder(order0);
-        await().until(() -> !(getOrderStatus(order0).equals("PROCESSING")));
+        checkoutOrderFailure(order0, 422);
         String status0 = getOrderStatus(order0);
 
         // check that the order is rejected due to lack of credit
