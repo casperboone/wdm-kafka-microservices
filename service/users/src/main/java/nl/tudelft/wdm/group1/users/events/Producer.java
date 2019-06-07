@@ -17,21 +17,21 @@ public class Producer {
 
     public void emitUserCreated(User user) {
         logger.info("Producing [{}] -> {}", UsersTopics.USER_CREATED, user);
-        this.kafkaTemplate.send(UsersTopics.USER_CREATED, user);
+        this.kafkaTemplate.send(UsersTopics.USER_CREATED, user.getId().toString(), user);
     }
 
     public void emitUserDeleted(User user) {
         logger.info("Producing [{}] -> {}", UsersTopics.USER_DELETED, user);
-        this.kafkaTemplate.send(UsersTopics.USER_DELETED, user);
+        this.kafkaTemplate.send(UsersTopics.USER_DELETED, user.getId().toString(), user);
     }
 
     public void emitCreditSubtracted(User user) {
         logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED, user);
-        this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED, user);
+        this.kafkaTemplate.send(UsersTopics.CREDIT_SUBTRACTED, user.getId().toString(), user);
     }
 
     public void emitCreditAdded(User user) {
         logger.info("Producing [{}] -> {}", UsersTopics.CREDIT_ADDED, user);
-        this.kafkaTemplate.send(UsersTopics.CREDIT_ADDED, user);
+        this.kafkaTemplate.send(UsersTopics.CREDIT_ADDED, user.getId().toString(), user);
     }
 }

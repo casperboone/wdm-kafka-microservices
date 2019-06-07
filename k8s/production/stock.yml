@@ -7,7 +7,7 @@ metadata:
     app: wdm-kafka
     service: stock
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: wdm-kafka
@@ -35,7 +35,7 @@ spec:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: wdm-kafka-kafka:9092
             - name: NUM_PARTITIONS
-              value: "3"
+              value: "1"
             - name: POD_NAME
               valueFrom:
                 fieldRef:

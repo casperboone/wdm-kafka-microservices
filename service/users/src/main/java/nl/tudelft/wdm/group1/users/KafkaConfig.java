@@ -1,6 +1,6 @@
-package nl.tudelft.wdm.group1.stock;
+package nl.tudelft.wdm.group1.users;
 
-import nl.tudelft.wdm.group1.common.topic.StockTopics;
+import nl.tudelft.wdm.group1.common.topic.UsersTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
@@ -27,18 +27,33 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic stockCreated() {
-        return new NewTopic(StockTopics.STOCK_ITEM_CREATED, getNumPartitions(), (short) 1);
+    public NewTopic userCreated() {
+        return new NewTopic(UsersTopics.USER_CREATED, getNumPartitions(), (short) 1);
     }
 
     @Bean
-    public NewTopic stockAdded() {
-        return new NewTopic(StockTopics.STOCK_ADDED, getNumPartitions(), (short) 1);
+    public NewTopic userDeleted() {
+        return new NewTopic(UsersTopics.USER_DELETED, getNumPartitions(), (short) 1);
     }
 
     @Bean
-    public NewTopic stockSubtracted() {
-        return new NewTopic(StockTopics.STOCK_SUBTRACTED, getNumPartitions(), (short) 1);
+    public NewTopic creditAdded() {
+        return new NewTopic(UsersTopics.CREDIT_ADDED, getNumPartitions(), (short) 1);
+    }
+
+    @Bean
+    public NewTopic creditSubtracted() {
+        return new NewTopic(UsersTopics.CREDIT_SUBTRACTED, getNumPartitions(), (short) 1);
+    }
+
+    @Bean
+    public NewTopic creditSubtractedForPaymentSuccessful() {
+        return new NewTopic(UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, getNumPartitions(), (short) 1);
+    }
+
+    @Bean
+    public NewTopic creditSubtractedForPaymentFailed() {
+        return new NewTopic(UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, getNumPartitions(), (short) 1);
     }
 
     private int getNumPartitions() {

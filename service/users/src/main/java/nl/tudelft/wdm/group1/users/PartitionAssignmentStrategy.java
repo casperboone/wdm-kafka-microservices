@@ -1,4 +1,4 @@
-package nl.tudelft.wdm.group1.stock;
+package nl.tudelft.wdm.group1.users;
 
 import org.apache.kafka.clients.consumer.internals.AbstractPartitionAssignor;
 import org.apache.kafka.common.TopicPartition;

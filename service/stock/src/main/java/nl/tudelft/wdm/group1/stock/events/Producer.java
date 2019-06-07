@@ -22,17 +22,17 @@ public class Producer {
 
     public void emitStockItemCreated(final StockItem stockItem) {
         logger.info("Producing [{}] -> {}", StockTopics.STOCK_ITEM_CREATED, stockItem);
-        this.kafkaTemplateForStock.send(StockTopics.STOCK_ITEM_CREATED, stockItem.getId().toString(), stockItem);
+        this.kafkaTemplateForStock.send(StockTopics.STOCK_ITEM_CREATED, stockItem);
     }
 
     public void emitStockItemAdded(final StockItem stockItem) {
         logger.info("Producing [{}] -> {}", StockTopics.STOCK_ADDED, stockItem);
-        this.kafkaTemplateForStock.send(StockTopics.STOCK_ADDED, stockItem.getId().toString(), stockItem);
+        this.kafkaTemplateForStock.send(StockTopics.STOCK_ADDED, stockItem);
     }
 
     public void emitStockItemSubtracted(final StockItem stockItem) {
         logger.info("Producing [{}] -> {}", StockTopics.STOCK_SUBTRACTED, stockItem);
-        this.kafkaTemplateForStock.send(StockTopics.STOCK_SUBTRACTED, stockItem.getId().toString(), stockItem);
+        this.kafkaTemplateForStock.send(StockTopics.STOCK_SUBTRACTED, stockItem);
     }
 
     public void emitStockItemsSubtractedForOrder(final Order order) {
