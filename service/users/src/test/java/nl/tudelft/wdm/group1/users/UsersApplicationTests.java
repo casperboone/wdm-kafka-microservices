@@ -83,7 +83,7 @@ public class UsersApplicationTests {
 
     @Test
     public void createNewUser() throws Exception {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreatePayload("Jane", "Da", "Main Street", "90101", "Rome")));
+        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreatePayload(UUID.randomUUID(), "Jane", "Da", "Main Street", "90101", "Rome")));
         ConsumerRecord<String, KafkaResponse<User>> userRecord = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
         User result = userRecord.value().getPayload();
 

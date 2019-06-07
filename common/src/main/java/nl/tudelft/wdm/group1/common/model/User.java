@@ -21,8 +21,8 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String street, String zip, String city) {
-        this.id = UUID.randomUUID();
+    public User(UUID id, String firstName, String lastName, String street, String zip, String city) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.street = street;

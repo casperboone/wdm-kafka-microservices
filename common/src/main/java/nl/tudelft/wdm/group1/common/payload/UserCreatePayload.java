@@ -1,6 +1,9 @@
 package nl.tudelft.wdm.group1.common.payload;
 
+import java.util.UUID;
+
 public class UserCreatePayload extends RestPayload {
+    private UUID id;
     private String firstName;
     private String lastName;
     private String street;
@@ -11,12 +14,17 @@ public class UserCreatePayload extends RestPayload {
 
     }
 
-    public UserCreatePayload(String firstName, String lastName, String street, String zip, String city) {
+    public UserCreatePayload(UUID id, String firstName, String lastName, String street, String zip, String city) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.street = street;
         this.zip = zip;
         this.city = city;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getFirstName() {

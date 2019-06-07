@@ -15,7 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@KafkaListener(topics = RestTopics.REQUEST)
+@KafkaListener(topics = RestTopics.USERS_REQUEST)
 public class Rest {
 
     private final UserRepository userRepository;
@@ -30,7 +30,14 @@ public class Rest {
 
     @KafkaHandler
     public void consumeUserCreate(UserCreatePayload payload) {
-        User user = new User(payload.getFirstName(), payload.getLastName(), payload.getStreet(), payload.getZip(), payload.getCity());
+        User user = new User(
+                payload.getId(),
+                payload.getFirstName(),
+                payload.getLastName(),
+                payload.getStreet(),
+                payload.getZip(),
+                payload.getCity()
+        );
         userRepository.save(user);
         rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
     }
