@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,10 +43,12 @@ public class RestAddUserTest {
 
     @Test
     public void userCreateSuccess() throws Exception {
+        UUID userId = UUID.randomUUID();
         WdmKafkaTestHelpers.<UserCreatePayload, KafkaResponse<User>>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
+                RestTopics.USERS_REQUEST,
                 record -> record.getFirstName().equals("Jane"),
-                record -> new KafkaResponse<>(record.getRequestId(), new User("Jane", "Da", "Main Street", "90101", "Rome"))
+                record -> new KafkaResponse<>(record.getRequestId(), new User(userId, "Jane", "Da", "Main Street", "90101", "Rome"))
         );
 
         MvcResult mvcResult = mockMvc.perform(
@@ -59,6 +63,7 @@ public class RestAddUserTest {
                 .andReturn();
 
         mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(jsonPath("$.id", is(userId.toString())))
                 .andExpect(jsonPath("$.firstName", is("Jane")))
                 .andExpect(jsonPath("$.lastName", is("Da")))
                 .andExpect(jsonPath("$.zip", is("90101")))
@@ -69,6 +74,7 @@ public class RestAddUserTest {
     public void userCreateFailure() throws Exception {
         WdmKafkaTestHelpers.<UserCreatePayload, KafkaErrorResponse>setupKafkaResponse(
                 embeddedKafka.getEmbeddedKafka(),
+                RestTopics.USERS_REQUEST,
                 record -> record.getFirstName().equals("John"),
                 record -> new KafkaErrorResponse(record.getRequestId(), new ResourceNotFoundException("Cannot create user"))
         );

@@ -29,7 +29,7 @@ public class PaymentConsumerTest {
 
     @Test
     public void testHandlePaymentCreatedWithSufficientBalance() throws ResourceNotFoundException, CreditChangeInvalidException {
-        User user = new User("John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
+        User user = new User(UUID.randomUUID(),"John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
         user.addCredit(3000);
         when(userRepository.findOrElseThrow(any(UUID.class))).thenReturn(user);
 
@@ -42,7 +42,7 @@ public class PaymentConsumerTest {
 
     @Test
     public void testHandlePaymentCreatedWithInsufficientBalance() throws ResourceNotFoundException, CreditChangeInvalidException {
-        User user = new User("John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
+        User user = new User(UUID.randomUUID(), "John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
         user.addCredit(3000);
         when(userRepository.findOrElseThrow(any(UUID.class))).thenReturn(user);
 
