@@ -21,7 +21,7 @@ public class Producer {
 
     public void emitPaymentCreated(Payment payment) {
         logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
-        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment);
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment.getUserId().toString(), payment);
     }
 
     public void emitPaymentSuccessful(Payment payment) {
