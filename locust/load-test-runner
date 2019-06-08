@@ -2,8 +2,9 @@
 
 USERS_MAX=10000
 USERS_INTERVAL=250
+HOST="http://localhost:8080"
 
 for ((i=0;i<=USERS_MAX;i+=USERS_INTERVAL)); do
     echo $i
-    locust --host=http://localhost:8080 --no-web -c $i -r 100 --run-time 5m --csv=output/u${i}
+    locust --host=${HOST} --no-web -c $i -r 100 --run-time 5m --csv=output/u${i}
 done
