@@ -1,5 +1,6 @@
 package nl.tudelft.wdm.group1.users;
 
+import nl.tudelft.wdm.group1.common.topic.PaymentsTopics;
 import nl.tudelft.wdm.group1.common.topic.UsersTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -54,6 +55,11 @@ public class KafkaConfig {
     @Bean
     public NewTopic creditSubtractedForPaymentFailed() {
         return new NewTopic(UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, getNumPartitions(), (short) 1);
+    }
+
+    @Bean
+    public NewTopic paymentCreatedFailed() {
+        return new NewTopic(PaymentsTopics.PAYMENT_CREATED, getNumPartitions(), (short) 1);
     }
 
     private int getNumPartitions() {
