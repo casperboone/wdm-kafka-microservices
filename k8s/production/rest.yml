@@ -28,6 +28,11 @@ spec:
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 20
+          resources:
+            limits:
+              memory: "2.5Gi"
+            requests:
+              memory: "2Gi"
           env:
             - name: LOG_LEVEL
               value: INFO
