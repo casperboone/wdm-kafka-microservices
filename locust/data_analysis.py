@@ -17,37 +17,54 @@ if __name__ == "__main__":
 
     data = []
     experiment_output_files = os.listdir(data_csv_folder_path)
-    for number_of_users in experiment_output_files:
-        experiment_path = os.path.join(data_csv_folder_path, number_of_users)
-        experiment_output_files = os.listdir(experiment_path)
-        for experiment_output_file in experiment_output_files:
-            if experiment_output_file.startswith('requests'):
-                experiment_output_path = os.path.join(experiment_path, experiment_output_file)
-                with open(experiment_output_path, 'r') as f:
-                    reader = csv.DictReader(f)
-                    for r in reader:
-                        data.append({
-                            'Total_users': int(number_of_users),
-                            'Method': r['Method'],
-                            'Name': r['Name'],
-                            '# requests': int(r['# requests']),
-                            '# failures': int(r['# failures']),
-                            'Median response time': int(r['Median response time']),
-                            'Average response time': int(r['Average response time']),
-                            'Min response time': int(r['Min response time']),
-                            'Max response time': int(r['Max response time']),
-                            'Average Content Size': int( r['Average Content Size']),
-                            'Requests/s': float(r['Requests/s'])
-                        })
+    for experiment_output_file in experiment_output_files:
+        experiment_output_file_parts = experiment_output_file.split('_')
+        number_of_users = int(experiment_output_file_parts[0][1:])
+        type_experiment = experiment_output_file_parts[1]
+        if type_experiment == 'requests.csv':
+            experiment_output_path = os.path.join(data_csv_folder_path, experiment_output_file)
+            with open(experiment_output_path, 'r') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    fraction_failures = 0
+                    if int(r['# requests']) > 0:
+                        fraction_failures = int(r['# failures'])/int(r['# requests'])
+                    data.append({
+                        'Total_users': number_of_users,
+                        'Method': r['Method'],
+                        'Name': r['Name'],
+                        '# requests': int(r['# requests']),
+                        '# failures': int(r['# failures']),
+                        'Fraction_failures': fraction_failures,
+                        'Median response time': int(r['Median response time']),
+                        'Average response time': int(r['Average response time']),
+                        'Min response time': int(r['Min response time']),
+                        'Max response time': int(r['Max response time']),
+                        'Average Content Size': int( r['Average Content Size']),
+                        'Requests/s': float(r['Requests/s'])
+                    })
 
     df = pd.DataFrame(data)
+
+    category = 'Name'
     x = 'Total_users'
-    y = 'Average response time'
 
-    sns.lineplot(x, y, data=df, hue='Name', style='Name', markers=True)
+    ys = [
+        'Fraction_failures',
+        'Median response time',
+        'Average response time',
+        'Requests/s'
+    ]
 
-    # Set base axis at 0,0
-    plt.ylim(0, None)
-    plt.xlim(0, None)
+    for y in ys:
+        title = 'Effect of ' + x + ' on ' + y
 
-    plt.show()
+        sns.lineplot(x, y, data=df, hue=category, style=category, markers=True, ci="sd")
+
+        # Set base axis at 0,0
+        plt.ylim(0, None)
+        plt.xlim(0, None)
+
+        plt.title(title)
+
+        plt.show()
