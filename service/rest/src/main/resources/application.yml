@@ -1,6 +1,5 @@
 spring:
   kafka:
-    topic: rest
     consumer:
       bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
       group-id: rest_group

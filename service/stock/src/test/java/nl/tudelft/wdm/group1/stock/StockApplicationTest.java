@@ -83,7 +83,7 @@ public class StockApplicationTest {
 
     @Test
     public void createNewStockItem() throws Exception {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemCreatePayload(99, "item2", 999)));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemCreatePayload(99, "item2", 999)));
         StockItem result = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
 
         await().until(() -> stockItemRepository.existsById(result.getId()));
@@ -97,7 +97,7 @@ public class StockApplicationTest {
 
     @Test
     public void retrieveAStockItem() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemGetPayload(defaultStockItem.getId())));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemGetPayload(defaultStockItem.getId())));
         StockItem result = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
 
         assertThat(result.getStock()).isEqualTo(100);
@@ -107,7 +107,7 @@ public class StockApplicationTest {
 
     @Test
     public void addStock() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), 100)));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), 100)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> stockItemRepository.findOrElseThrow(defaultStockItem.getId()).getStock() == 200);
@@ -115,7 +115,7 @@ public class StockApplicationTest {
 
     @Test
     public void addNegativeStockAmount() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), -100)));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemAddAmountPayload(defaultStockItem.getId(), -100)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged
@@ -123,7 +123,7 @@ public class StockApplicationTest {
 
     @Test
     public void subtractStock() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), 10)));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), 10)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> stockItemRepository.findOrElseThrow(defaultStockItem.getId()).getStock() == 90);
@@ -131,7 +131,7 @@ public class StockApplicationTest {
 
     @Test
     public void subtractNegativeStockAmount() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), -10)));
+        createProducer().send(new ProducerRecord<>(RestTopics.STOCK_REQUEST, "", new StockItemSubtractAmountPayload(defaultStockItem.getId(), -10)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         assertThat(defaultStockItem.getStock()).isEqualTo(100); //100 remains unchanged

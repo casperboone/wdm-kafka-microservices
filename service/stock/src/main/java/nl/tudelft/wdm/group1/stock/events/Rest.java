@@ -15,7 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@KafkaListener(topics = RestTopics.REQUEST)
+@KafkaListener(topics = RestTopics.STOCK_REQUEST)
 public class Rest {
 
     private final StockItemRepository stockItemRepository;
@@ -34,13 +34,13 @@ public class Rest {
     public void consumeStockItemCreate(StockItemCreatePayload payload) {
         StockItem stockItem = new StockItem(payload.getStock(), payload.getName(), payload.getPrice());
         producer.emitStockItemAdded(stockItem);
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), stockItem));
+        rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), stockItem));
     }
 
     @KafkaHandler
     public void consumeStockItemGet(StockItemGetPayload payload) throws ResourceNotFoundException {
         StockItem stockItem = stockItemRepository.findOrElseThrow(payload.getId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), stockItem));
+        rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), stockItem));
     }
 
     @KafkaHandler
@@ -50,9 +50,9 @@ public class Rest {
             stockItem.addStock(payload.getAmount());
             producer.emitStockItemAdded(stockItem);
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), stockItem));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), stockItem));
         } catch (ResourceNotFoundException | InvalidStockChangeException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 
@@ -63,9 +63,9 @@ public class Rest {
             stockItem.subtractStock(payload.getAmount());
             producer.emitStockItemSubtracted(stockItem);
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), stockItem));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), stockItem));
         } catch (ResourceNotFoundException | InsufficientStockException | InvalidStockChangeException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 

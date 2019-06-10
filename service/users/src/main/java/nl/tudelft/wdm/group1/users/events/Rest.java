@@ -8,7 +8,6 @@ import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
 import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.*;
 import nl.tudelft.wdm.group1.common.topic.RestTopics;
-import nl.tudelft.wdm.group1.users.KafkaConfig;
 import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,24 +46,24 @@ public class Rest {
                 payload.getZip(),
                 payload.getCity()
         );
-        logger.info("Creating user {}", payload.getId());
+        logger.info("Creating user {} response to {}", payload.getId(), payload.getPartition());
         userRepository.save(user);
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+        rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), user));
     }
 
     @KafkaHandler
     public void consumeUserDelete(UserDeletePayload payload) {
         userRepository.deleteById(payload.getUserId());
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), null));
+        rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), null));
     }
 
     @KafkaHandler
     public void consumeUserGet(UserGetPayload payload) {
         try {
             User user = userRepository.findOrElseThrow(payload.getUserId());
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), user));
         } catch (ResourceNotFoundException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 
@@ -76,9 +75,9 @@ public class Rest {
             user.addCredit(payload.getAmount());
             userRepository.save(user);
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), user));
         } catch (ResourceNotFoundException | CreditChangeInvalidException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 
@@ -89,9 +88,9 @@ public class Rest {
             user.subtractCredit(payload.getAmount());
             userRepository.save(user);
 
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), user));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), user));
         } catch (ResourceNotFoundException | CreditChangeInvalidException | InsufficientCreditException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 
