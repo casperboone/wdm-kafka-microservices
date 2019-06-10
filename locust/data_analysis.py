@@ -35,7 +35,7 @@ if __name__ == "__main__":
                     data.append({
                         'Total users': number_of_users,
                         'Method': r['Method'],
-                        'Name': r['Name'],
+                        'Call': r['Name'],
                         '# requests': int(r['# requests']),
                         '# failures': int(r['# failures']),
                         'Fraction of failures': fraction_failures,
@@ -47,9 +47,9 @@ if __name__ == "__main__":
                         'Requests/s': float(r['Requests/s'])
                     })
 
-    df = pd.DataFrame(data)
+    category = 'Call'
+    df = pd.DataFrame(data).sort_values(by=[category])
 
-    category = 'Name'
     x = 'Total users'
 
     ys = [
