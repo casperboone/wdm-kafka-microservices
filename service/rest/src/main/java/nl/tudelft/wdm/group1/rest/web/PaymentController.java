@@ -4,6 +4,7 @@ import nl.tudelft.wdm.group1.common.model.Payment;
 import nl.tudelft.wdm.group1.common.payload.PaymentAddPayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentDeletePayload;
 import nl.tudelft.wdm.group1.common.payload.PaymentGetPayload;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class PaymentController {
             @PathVariable(value = "orderId") UUID orderId,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(new PaymentAddPayload(userId, orderId, amount));
+        return kafka.performAction(RestTopics.PAYMENTS_REQUEST, userId.toString(), new PaymentAddPayload(userId, orderId, amount));
     }
 
     /*
@@ -44,15 +45,18 @@ public class PaymentController {
             @PathVariable(value = "userId") UUID userId,
             @PathVariable(value = "orderId") UUID orderId
     ) {
-        return kafka.performAction(new PaymentDeletePayload(userId, orderId));
+        return kafka.performAction(RestTopics.PAYMENTS_REQUEST, userId.toString(), new PaymentDeletePayload(userId, orderId));
     }
 
     /*
      * GET /payments/{order_id}
      * returns the status of the payment (paid or not)
      */
-    @GetMapping("/{orderId}")
-    public CompletableFuture<Payment> getPayment(@PathVariable(value = "orderId") UUID orderId) {
-        return kafka.performAction(new PaymentGetPayload(orderId));
+    @GetMapping("/{userId}/{orderId}")
+    public CompletableFuture<Payment> getPayment(
+            @PathVariable(value = "userId") UUID userId,
+            @PathVariable(value = "orderId") UUID orderId
+    ) {
+        return kafka.performAction(RestTopics.PAYMENTS_REQUEST, userId.toString(), new PaymentGetPayload(userId, orderId));
     }
 }
