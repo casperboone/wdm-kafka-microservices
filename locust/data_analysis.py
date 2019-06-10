@@ -14,7 +14,8 @@ if __name__ == "__main__":
     # path of the csv
     args = parser.parse_args()
     data_csv_folder_path = args.experimentsFolder
-    # data_csv_folder_path = os.path.join(".", "experiments", "output_partitioned")
+    type = "unpartitioned"
+    data_csv_folder_path = os.path.join(".", "experiments", "output_" + type)
 
     data = []
     experiment_output_files = os.listdir(data_csv_folder_path)
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
     for y in ys:
         title = 'Effect of ' + x + ' on ' + y
-        title += ' (partitioned)'
+        title += ' (' + type + ')'
 
         sns.set(rc={'figure.figsize': (7.5, 5)})
 
