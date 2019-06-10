@@ -51,15 +51,19 @@ if __name__ == "__main__":
     df = pd.DataFrame(data).sort_values(by=[category])
 
     x = 'Total users'
+    max_x = 10000
 
-    ys = [
-        'Fraction of failures',
-        'Median response time (ms)',
-        'Average response time (ms)',
-        'Requests/s'
+    y_tuples = [
+        ('Fraction of failures', 1.0),
+        ('Median response time (ms)', 50000),
+        ('Average response time (ms)', 50000),
+        ('Requests/s', 350),
     ]
 
-    for y in ys:
+    for y_tuple in y_tuples:
+        y = y_tuple[0]
+        max_y = y_tuple[1]
+
         title = 'Effect of ' + x + ' on ' + y
         title += ' (' + type + ')'
 
