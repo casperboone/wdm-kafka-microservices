@@ -1,12 +1,13 @@
 package nl.tudelft.wdm.group1.payments.events;
 
 import nl.tudelft.wdm.group1.common.exception.ResourceNotFoundException;
-import nl.tudelft.wdm.group1.common.topic.UsersTopics;
 import nl.tudelft.wdm.group1.common.model.Payment;
+import nl.tudelft.wdm.group1.common.topic.UsersTopics;
 import nl.tudelft.wdm.group1.payments.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,14 +22,18 @@ public class UserConsumer {
         this.producer = producer;
     }
 
-    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL})
+    @KafkaListener(topicPartitions = {
+            @TopicPartition(topic = UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, partitions = "#{instance_id}")
+    })
     public void consumePaymentSuccessful(Payment payment) {
         logger.info("Consuming [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_SUCCESSFUL, payment);
         // Emit payment successful message
         producer.emitPaymentSuccessful(payment);
     }
 
-    @KafkaListener(topics = {UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED})
+    @KafkaListener(topicPartitions = {
+            @TopicPartition(topic = UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, partitions = "#{instance_id}")
+    })
     public void consumePaymentFailed(Payment payment) throws ResourceNotFoundException {
         logger.info("Consuming [{}] -> {}", UsersTopics.CREDIT_SUBTRACTED_FOR_PAYMENT_FAILED, payment);
         // Emit payment failed message
