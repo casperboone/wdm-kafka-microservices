@@ -74,8 +74,8 @@ if __name__ == "__main__":
         g.legend(loc='upper left')
 
         # Set base axis at 0,0
-        plt.ylim(0, None)
-        plt.xlim(0, None)
+        plt.ylim(0, max_y * 1.1)
+        plt.xlim(0, max_x * 1.05)
 
         plt.title(title)
 
