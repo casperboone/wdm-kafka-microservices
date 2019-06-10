@@ -19,8 +19,11 @@ if __name__ == "__main__":
     experiment_output_files = os.listdir(data_csv_folder_path)
     for experiment_output_file in experiment_output_files:
         experiment_output_file_parts = experiment_output_file.split('_')
+        exp = experiment_output_file_parts[0][:1]
         number_of_users = int(experiment_output_file_parts[0][1:])
         type_experiment = experiment_output_file_parts[1]
+        if exp == 'u' or number_of_users >= 3000:
+            continue
         if type_experiment == 'requests.csv':
             experiment_output_path = os.path.join(data_csv_folder_path, experiment_output_file)
             with open(experiment_output_path, 'r') as f:
