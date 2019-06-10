@@ -14,6 +14,7 @@ if __name__ == "__main__":
     # path of the csv
     args = parser.parse_args()
     data_csv_folder_path = args.experimentsFolder
+    # data_csv_folder_path = os.path.join(".", "experiments", "output_partitioned")
 
     data = []
     experiment_output_files = os.listdir(data_csv_folder_path)
@@ -22,8 +23,6 @@ if __name__ == "__main__":
         exp = experiment_output_file_parts[0][:1]
         number_of_users = int(experiment_output_file_parts[0][1:])
         type_experiment = experiment_output_file_parts[1]
-        if exp == 'u' or number_of_users >= 3000:
-            continue
         if type_experiment == 'requests.csv':
             experiment_output_path = os.path.join(data_csv_folder_path, experiment_output_file)
             with open(experiment_output_path, 'r') as f:
