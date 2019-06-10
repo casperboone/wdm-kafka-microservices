@@ -33,16 +33,16 @@ if __name__ == "__main__":
                     if int(r['# requests']) > 0:
                         fraction_failures = int(r['# failures'])/int(r['# requests'])
                     data.append({
-                        'Total_users': number_of_users,
+                        'Total users': number_of_users,
                         'Method': r['Method'],
                         'Name': r['Name'],
                         '# requests': int(r['# requests']),
                         '# failures': int(r['# failures']),
-                        'Fraction_failures': fraction_failures,
-                        'Median response time': int(r['Median response time']),
-                        'Average response time': int(r['Average response time']),
-                        'Min response time': int(r['Min response time']),
-                        'Max response time': int(r['Max response time']),
+                        'Fraction of failures': fraction_failures,
+                        'Median response time (ms)': int(r['Median response time']),
+                        'Average response time (ms)': int(r['Average response time']),
+                        'Min response time (ms)': int(r['Min response time']),
+                        'Max response time (ms)': int(r['Max response time']),
                         'Average Content Size': int( r['Average Content Size']),
                         'Requests/s': float(r['Requests/s'])
                     })
@@ -50,19 +50,24 @@ if __name__ == "__main__":
     df = pd.DataFrame(data)
 
     category = 'Name'
-    x = 'Total_users'
+    x = 'Total users'
 
     ys = [
-        'Fraction_failures',
-        'Median response time',
-        'Average response time',
+        'Fraction of failures',
+        'Median response time (ms)',
+        'Average response time (ms)',
         'Requests/s'
     ]
 
     for y in ys:
         title = 'Effect of ' + x + ' on ' + y
+        title += ' (partitioned)'
 
-        sns.lineplot(x, y, data=df, hue=category, style=category, markers=True, ci="sd")
+        sns.set(rc={'figure.figsize': (7.5, 5)})
+
+        g = sns.lineplot(x, y, data=df, hue=category, style=category, markers=True, ci="sd")
+
+        g.legend(loc='upper left')
 
         # Set base axis at 0,0
         plt.ylim(0, None)
