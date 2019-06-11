@@ -7,6 +7,10 @@ The [REST](https://github.com/casperboone/wdm-kafka-microservices/tree/master/se
 The [users](https://github.com/casperboone/wdm-kafka-microservices/tree/master/service/users), [orders](https://github.com/casperboone/wdm-kafka-microservices/tree/master/service/orders), [payments](https://github.com/casperboone/wdm-kafka-microservices/tree/master/service/payments), and [stock](https://github.com/casperboone/wdm-kafka-microservices/tree/master/service/stock) services consume these messages, communicate with each other via Kafka, and finally respond by pushing a message to Kafka on the `response` topic.
 The REST service listens for messages on this topic and is now able to respond to the user.
 
+## Architecture Overview
+
+![image](https://user-images.githubusercontent.com/15815208/59261717-48473d00-8c3e-11e9-947f-5552fa147c25.png)
+
 ## Setup
 
 ### Docker compose (without build)
