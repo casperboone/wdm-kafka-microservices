@@ -29,18 +29,18 @@ public class UserController {
             @RequestParam("zip") String zip,
             @RequestParam("city") String city
     ) {
-        UUID userId = UUID.randomUUID();
-        return kafka.performAction(RestTopics.USERS_REQUEST, new UserCreatePayload(userId, firstName, lastName, street, zip, city));
+        UUID id = UUID.randomUUID();
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreatePayload(id, firstName, lastName, street, zip, city));
     }
 
     @GetMapping("/{id}")
     public CompletableFuture<User> getUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(RestTopics.USERS_REQUEST, new UserGetPayload(id));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserGetPayload(id));
     }
 
     @DeleteMapping("/{id}")
     public CompletableFuture<User> removeUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(RestTopics.USERS_REQUEST, new UserDeletePayload(id));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserDeletePayload(id));
     }
 
     @PostMapping("/{id}/credit/subtract/{amount}")
@@ -48,7 +48,7 @@ public class UserController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(RestTopics.USERS_REQUEST, new UserCreditSubtractPayload(id, amount));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreditSubtractPayload(id, amount));
     }
 
     @PostMapping("/{id}/credit/add/{amount}")
@@ -56,6 +56,6 @@ public class UserController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(RestTopics.USERS_REQUEST, new UserCreditAddPayload(id, amount));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreditAddPayload(id, amount));
     }
 }
