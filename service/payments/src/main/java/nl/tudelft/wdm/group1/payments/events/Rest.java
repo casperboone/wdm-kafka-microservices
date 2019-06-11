@@ -16,7 +16,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@KafkaListener(topics = RestTopics.REQUEST)
+@KafkaListener(topics = RestTopics.PAYMENT_REQUEST)
 public class Rest {
 
     private final PaymentRepository paymentRepository;
@@ -35,7 +35,7 @@ public class Rest {
     public void consumePaymentAdd(PaymentAddPayload payload) {
         Payment payment = new Payment(payload.getUserId(), payload.getOrderId(), payload.getAmount());
         producer.emitPaymentCreated(payment);
-        rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), payment));
+        rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), payment));
     }
 
     @KafkaHandler
@@ -43,9 +43,9 @@ public class Rest {
         try {
             Payment payment = paymentRepository.findOrElseThrow(payload.getOrderId());
             producer.emitPaymentDeleted(payment);
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), payment));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), payment));
         } catch (ResourceNotFoundException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 
@@ -53,9 +53,9 @@ public class Rest {
     public void consumePaymentGet(PaymentGetPayload payload) {
         try {
             Payment payment = paymentRepository.findOrElseThrow(payload.getOrderId());
-            rest.sendDefault(new KafkaResponse<>(payload.getRequestId(), payment));
+            rest.sendDefault(payload.getPartition(), "", new KafkaResponse<>(payload.getRequestId(), payment));
         } catch (ResourceNotFoundException e) {
-            rest.sendDefault(new KafkaErrorResponse(payload.getRequestId(), e));
+            rest.sendDefault(payload.getPartition(), "", new KafkaErrorResponse(payload.getRequestId(), e));
         }
     }
 

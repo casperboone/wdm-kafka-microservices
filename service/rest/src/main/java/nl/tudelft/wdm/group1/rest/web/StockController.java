@@ -5,6 +5,7 @@ import nl.tudelft.wdm.group1.common.payload.StockItemAddAmountPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemCreatePayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemGetPayload;
 import nl.tudelft.wdm.group1.common.payload.StockItemSubtractAmountPayload;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +30,12 @@ public class StockController {
             @RequestParam("name") String name,
             @RequestParam("price") int price
     ) {
-        return kafka.performAction(new StockItemCreatePayload(stock, name, price));
+        return kafka.performAction(RestTopics.STOCK_REQUEST, new StockItemCreatePayload(stock, name, price));
     }
 
     @GetMapping("/{id}")
     public CompletableFuture<StockItem> getStockItem(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new StockItemGetPayload(id));
+        return kafka.performAction(RestTopics.STOCK_REQUEST, new StockItemGetPayload(id));
     }
 
     @PostMapping("/{id}/subtract/{amount}")
@@ -42,7 +43,7 @@ public class StockController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(new StockItemSubtractAmountPayload(id, amount));
+        return kafka.performAction(RestTopics.STOCK_REQUEST, new StockItemSubtractAmountPayload(id, amount));
     }
 
     @PostMapping("{id}/add/{amount}")
@@ -50,7 +51,7 @@ public class StockController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(new StockItemAddAmountPayload(id, amount));
+        return kafka.performAction(RestTopics.STOCK_REQUEST, new StockItemAddAmountPayload(id, amount));
     }
 
     @ExceptionHandler

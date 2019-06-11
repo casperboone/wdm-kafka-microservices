@@ -82,7 +82,7 @@ public class OrdersApplicationTest {
 
     @Test
     public void createNewOrder() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderAddPayload(defaultOrder.getUserId())));
+        createProducer().send(new ProducerRecord<>(RestTopics.ORDERS_REQUEST, "", new OrderAddPayload(defaultOrder.getUserId())));
         Consumer<String, KafkaResponse<Order>> consumer = createConsumer();
         consumer.subscribe(Collections.singleton(RestTopics.RESPONSE));
         ConsumerRecord<String, KafkaResponse<Order>> orderRecord = KafkaTestUtils.getSingleRecord(consumer, RestTopics.RESPONSE);
@@ -97,7 +97,7 @@ public class OrdersApplicationTest {
 
     @Test
     public void removeAnOrder() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderDeletePayload(defaultOrder.getId())));
+        createProducer().send(new ProducerRecord<>(RestTopics.ORDERS_REQUEST, "", new OrderDeletePayload(defaultOrder.getId())));
 
         await().untilAsserted(() -> assertThatThrownBy(() -> orderRepository.findOrElseThrow(defaultOrder.getId()))
                 .isInstanceOf(ResourceNotFoundException.class));
@@ -107,14 +107,14 @@ public class OrdersApplicationTest {
     public void addAnItemToAnOrder() {
         UUID newItemId = UUID.randomUUID();
 
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderItemAddPayload(defaultOrder.getId(), newItemId)));
+        createProducer().send(new ProducerRecord<>(RestTopics.ORDERS_REQUEST, "", new OrderItemAddPayload(defaultOrder.getId(), newItemId)));
 
         await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).contains(defaultOrderItemId, newItemId));
     }
 
     @Test
     public void removeAnItemFromAnOrder() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new OrderItemDeletePayload(defaultOrder.getId(), defaultOrderItemId)));
+        createProducer().send(new ProducerRecord<>(RestTopics.ORDERS_REQUEST, "", new OrderItemDeletePayload(defaultOrder.getId(), defaultOrderItemId)));
 
         await().untilAsserted(() -> assertThat(orderRepository.findOrElseThrow(defaultOrder.getId()).getItemIds()).isEmpty());
     }

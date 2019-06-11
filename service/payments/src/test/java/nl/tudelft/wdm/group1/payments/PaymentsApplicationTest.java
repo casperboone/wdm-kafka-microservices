@@ -84,7 +84,7 @@ public class PaymentsApplicationTest {
         UUID userId = UUID.randomUUID();
         UUID orderId = UUID.randomUUID();
 
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentAddPayload(userId, orderId, defaultAmount))).get();
+        createProducer().send(new ProducerRecord<>(RestTopics.PAYMENT_REQUEST, "", new PaymentAddPayload(userId, orderId, defaultAmount))).get();
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> paymentRepository.existsById(orderId));
@@ -98,7 +98,7 @@ public class PaymentsApplicationTest {
 
     @Test
     public void deleteAPayment() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentDeletePayload(defaultUserId, defaultOrderId)));
+        createProducer().send(new ProducerRecord<>(RestTopics.PAYMENT_REQUEST, "", new PaymentDeletePayload(defaultUserId, defaultOrderId)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> !paymentRepository.existsById(defaultOrderId));
@@ -106,7 +106,7 @@ public class PaymentsApplicationTest {
 
     @Test
     public void retrieveAPayment() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new PaymentGetPayload(defaultOrderId)));
+        createProducer().send(new ProducerRecord<>(RestTopics.PAYMENT_REQUEST, "", new PaymentGetPayload(defaultOrderId)));
         Payment payment = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE).value().getPayload();
 
         assertThat(payment.getOrderId()).isEqualTo(defaultOrderId);
