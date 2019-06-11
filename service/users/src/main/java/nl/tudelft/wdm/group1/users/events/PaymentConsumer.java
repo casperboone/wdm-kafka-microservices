@@ -10,6 +10,7 @@ import nl.tudelft.wdm.group1.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +25,9 @@ public class PaymentConsumer {
         this.paymentProducer = paymentProducer;
     }
 
-    @KafkaListener(topics = {PaymentsTopics.PAYMENT_CREATED})
+    @KafkaListener(topicPartitions = {
+            @TopicPartition(topic = PaymentsTopics.PAYMENT_CREATED, partitions = "#{instance_id}")
+    })
     public void consumePaymentCreated(Payment payment) throws ResourceNotFoundException, CreditChangeInvalidException {
         logger.info("Consuming [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
         try {

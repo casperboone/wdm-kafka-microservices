@@ -71,7 +71,7 @@ public class UsersApplicationTests {
 
     @Before
     public void setUp() throws CreditChangeInvalidException {
-        defaultUser = new User("John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
+        defaultUser = new User(UUID.randomUUID(), "John", "Doe", "Mekelweg 4", "2628 CD", "Delft");
         defaultUser.addCredit(2249);
         userRepository.save(defaultUser);
     }
@@ -83,7 +83,7 @@ public class UsersApplicationTests {
 
     @Test
     public void createNewUser() throws Exception {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreatePayload("Jane", "Da", "Main Street", "90101", "Rome")));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreatePayload(UUID.randomUUID(), "Jane", "Da", "Main Street", "90101", "Rome")));
         ConsumerRecord<String, KafkaResponse<User>> userRecord = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
         User result = userRecord.value().getPayload();
 
@@ -101,7 +101,7 @@ public class UsersApplicationTests {
 
     @Test
     public void retrieveAUser() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserGetPayload(defaultUser.getId())));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserGetPayload(defaultUser.getId())));
         ConsumerRecord<String, KafkaResponse<User>> userRecord = KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
         User user = userRecord.value().getPayload();
 
@@ -115,7 +115,7 @@ public class UsersApplicationTests {
 
     @Test
     public void removeAUser() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserDeletePayload(defaultUser.getId())));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserDeletePayload(defaultUser.getId())));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().untilAsserted(() -> assertThatThrownBy(() -> userRepository.findOrElseThrow(defaultUser.getId()))
@@ -124,7 +124,7 @@ public class UsersApplicationTests {
 
     @Test
     public void addCredit() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditAddPayload(defaultUser.getId(), 1500)));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreditAddPayload(defaultUser.getId(), 1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().untilAsserted(() -> assertThat(userRepository.findOrElseThrow(defaultUser.getId()).getCredit()).isEqualTo(3749));
@@ -132,7 +132,7 @@ public class UsersApplicationTests {
 
     @Test
     public void addNegativeCreditAmount() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditAddPayload(defaultUser.getId(), -1500)));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreditAddPayload(defaultUser.getId(), -1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);
@@ -140,7 +140,7 @@ public class UsersApplicationTests {
 
     @Test
     public void subtractCreditWhenAvailable() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 1500)));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 749);
@@ -148,7 +148,7 @@ public class UsersApplicationTests {
 
     @Test
     public void subtractCreditWhenNotAvailable() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 3000)));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), 3000)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);
@@ -156,7 +156,7 @@ public class UsersApplicationTests {
 
     @Test
     public void subtractNegativeCreditAmount() {
-        createProducer().send(new ProducerRecord<>(RestTopics.REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), -1500)));
+        createProducer().send(new ProducerRecord<>(RestTopics.USERS_REQUEST, "", new UserCreditSubtractPayload(defaultUser.getId(), -1500)));
         KafkaTestUtils.getSingleRecord(defaultConsumer, RestTopics.RESPONSE);
 
         await().until(() -> userRepository.findOrElseThrow(defaultUser.getId()).getCredit() == 2249);

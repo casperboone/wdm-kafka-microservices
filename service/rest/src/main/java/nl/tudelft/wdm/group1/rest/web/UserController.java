@@ -2,6 +2,7 @@ package nl.tudelft.wdm.group1.rest.web;
 
 import nl.tudelft.wdm.group1.common.model.User;
 import nl.tudelft.wdm.group1.common.payload.*;
+import nl.tudelft.wdm.group1.common.topic.RestTopics;
 import nl.tudelft.wdm.group1.rest.events.KafkaInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +29,18 @@ public class UserController {
             @RequestParam("zip") String zip,
             @RequestParam("city") String city
     ) {
-        return kafka.performAction(new UserCreatePayload(firstName, lastName, street, zip, city));
+        UUID id = UUID.randomUUID();
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreatePayload(id, firstName, lastName, street, zip, city));
     }
 
     @GetMapping("/{id}")
     public CompletableFuture<User> getUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new UserGetPayload(id));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserGetPayload(id));
     }
 
     @DeleteMapping("/{id}")
     public CompletableFuture<User> removeUser(@PathVariable(value = "id") UUID id) {
-        return kafka.performAction(new UserDeletePayload(id));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserDeletePayload(id));
     }
 
     @PostMapping("/{id}/credit/subtract/{amount}")
@@ -46,7 +48,7 @@ public class UserController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(new UserCreditSubtractPayload(id, amount));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreditSubtractPayload(id, amount));
     }
 
     @PostMapping("/{id}/credit/add/{amount}")
@@ -54,6 +56,6 @@ public class UserController {
             @PathVariable(value = "id") UUID id,
             @PathVariable(value = "amount") int amount
     ) {
-        return kafka.performAction(new UserCreditAddPayload(id, amount));
+        return kafka.performAction(RestTopics.USERS_REQUEST, id.toString(), new UserCreditAddPayload(id, amount));
     }
 }

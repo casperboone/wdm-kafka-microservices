@@ -1,17 +1,18 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: wdm-kafka-users
   labels:
     app: wdm-kafka
     service: users
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: wdm-kafka
       service: users
+  serviceName: wdm-kafka-users
   template:
     metadata:
       labels:
@@ -33,20 +34,9 @@ spec:
               value: INFO
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: wdm-kafka-kafka:9092
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wdm-kafka-users
-  labels:
-    app: wdm-kafka
-    service: users
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30004
-  selector:
-    app: wdm-kafka
-    service: users
+            - name: NUM_PARTITIONS
+              value: "3"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name

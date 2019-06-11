@@ -48,12 +48,16 @@ public class KafkaInteraction<T> {
     }
 
     public CompletableFuture<T> performAction(RestPayload payload) {
+        return performAction(RestTopics.REQUEST, null, payload);
+    }
+
+    public CompletableFuture<T> performAction(String topic, String key, RestPayload payload) {
         UUID requestId = UUID.randomUUID();
         payload.setRequestId(requestId);
 
         CompletableFuture<T> future = new CompletableFuture<>();
         outstanding.put(requestId, future);
-        this.kafkaTemplate.send(RestTopics.REQUEST, payload);
+        this.kafkaTemplate.send(topic, key, payload);
 
         return future;
     }

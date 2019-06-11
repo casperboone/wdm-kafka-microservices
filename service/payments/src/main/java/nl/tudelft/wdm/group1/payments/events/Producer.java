@@ -13,15 +13,12 @@ import org.springframework.stereotype.Service;
 public class Producer {
     private static final Logger logger = LoggerFactory.getLogger(Producer.class);
 
-    @Value("${spring.kafka.topic}")
-    private String topic;
-
     @Autowired
     private KafkaTemplate<String, Payment> kafkaTemplate;
 
     public void emitPaymentCreated(Payment payment) {
         logger.info("Producing [{}] -> {}", PaymentsTopics.PAYMENT_CREATED, payment);
-        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment);
+        this.kafkaTemplate.send(PaymentsTopics.PAYMENT_CREATED, payment.getUserId().toString(), payment);
     }
 
     public void emitPaymentSuccessful(Payment payment) {
