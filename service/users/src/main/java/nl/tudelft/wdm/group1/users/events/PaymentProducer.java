@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentProducer {
-    private static final Logger logger = LoggerFactory.getLogger(Producer.class);
+    private static final Logger logger = LoggerFactory.getLogger(PaymentProducer.class);
 
     @Autowired
     private KafkaTemplate<String, Payment> kafkaTemplate;
