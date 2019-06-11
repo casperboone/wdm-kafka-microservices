@@ -40,9 +40,6 @@ docker-compose up
 Run the following commands to get up and running. Kubernetes is set up to pull latest.
 
 ```bash
-# Install nginx ingress in the cluster
-helm install stable/nginx-ingress --name nginx-ingress
-
 # Start Kafka & Zookeeper
 kubectl apply -f k8s/development
 
@@ -50,4 +47,4 @@ kubectl apply -f k8s/development
 kubectl apply -f k8s/production
 ```
 
-After this the orders, payments, stock and users services are accessible on ports 30001, 30002, 30003 and 30004 respectively (this will change to something more sensible).
+After this the service runs on `localhost`.
